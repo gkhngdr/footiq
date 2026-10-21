@@ -1,0 +1,13 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="74" height="14" viewBox="0 0 74 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 1486">
+<g id="Rectangle 318">
+<path d="M2 4C2 2.89543 2.89543 2 4 2H70C71.1046 2 72 2.89543 72 4V10C72 11.1046 71.1046 12 70 12H4C2.89543 12 2 11.1046 2 10V4Z" fill="#090909"/>
+<mask id="stroke0_0_3381" maskUnits="userSpaceOnUse" x="-5.96046e-08" y="-7.45058e-09" width="74" height="14" fill="black">
+<rect fill="white" x="-5.96046e-08" y="-7.45058e-09" width="74" height="14"/>
+<path d="M2 4C2 2.89543 2.89543 2 4 2H70C71.1046 2 72 2.89543 72 4V10C72 11.1046 71.1046 12 70 12H4C2.89543 12 2 11.1046 2 10V4Z"/>
+</mask>
+<path d="M4 12H70C71.1046 12 72 11.1046 72 10V4C72 2.89543 71.1046 2 70 2H4C2.89543 2 2 2.89543 2 4V10C2 11.1046 2.89543 12 4 12Z" stroke-width="4" stroke="black" mask="url(#stroke0_0_3381)"/>
+</g>
+<path id="Exclude" d="M11.0425 11.9668H1.77786L10.0132 1.96681H19.2779L11.0425 11.9668ZM28.5425 11.9668H19.2779L27.5132 1.96681H36.7779L28.5425 11.9668ZM46.0425 11.9668H36.7779L45.0132 1.96681H54.2779L46.0425 11.9668ZM63.5425 11.9668H54.2779L62.5132 1.96681H71.7779L63.5425 11.9668Z" fill="#D9D9D9"/>
+</g>
+</svg>

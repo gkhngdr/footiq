@@ -1,0 +1,14 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="306" height="45" viewBox="0 0 306 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Energy">
+<path id="Rectangle 153" d="M0 22.5C0 10.0736 10.0736 0 22.5 0H296C301.523 0 306 4.47715 306 10V35C306 40.5228 301.523 45 296 45H22.5C10.0736 45 0 34.9264 0 22.5Z" fill="#2DEAFE"/>
+<path id="Rectangle 136" d="M306 12C306 10.3431 304.657 9 303 9H9.5C4.8056 9 1 12.8056 1 17.5C1 22.1944 4.80557 26 9.5 26H296C301.523 26 306 21.5228 306 16V12Z" fill="url(#paint0_linear_0_17)" fill-opacity="0.4"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_17" x1="153.5" y1="9" x2="153.5" y2="26" gradientUnits="userSpaceOnUse">
+<stop stop-color="white" stop-opacity="0"/>
+<stop offset="0.341346" stop-color="white"/>
+<stop offset="0.725962" stop-color="white" stop-opacity="0.68"/>
+<stop offset="1" stop-color="white" stop-opacity="0"/>
+</linearGradient>
+</defs>
+</svg>

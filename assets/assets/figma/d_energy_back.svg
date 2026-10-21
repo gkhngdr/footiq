@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="329" height="53" viewBox="0 0 329 53" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="Energy Back">
+<g id="Rectangle 134">
+<use xlink:href="#stroke0_0_16" fill="#111111"/>
+<use xlink:href="#stroke0_0_16" fill="#27CDF9"/>
+</g>
+<path id="Rectangle 135" d="M5 26.5C5 14.0736 15.0736 4 27.5 4H296.5C308.926 4 319 14.0736 319 26.5C319 38.9264 308.926 49 296.5 49H27.5C15.0736 49 5 38.9264 5 26.5Z" fill="#1580C0"/>
+</g>
+<defs>
+<path id="stroke0_0_16" d="M0 26.5C0 11.8645 11.8645 0 26.5 0H324C326.761 0 329 2.23858 329 5V48C329 50.7614 326.761 53 324 53H26.5C11.8644 53 0 41.1355 0 26.5Z"/>
+</defs>
+</svg>
