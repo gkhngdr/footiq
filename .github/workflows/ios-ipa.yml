@@ -1,0 +1,68 @@
+name: Build iOS IPA & Web App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-web-pwa:
+    name: FootIQ iOS/Web Cloud App (gh-pages)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Build Web PWA
+        run: |
+          flutter pub get
+          flutter build web --release --base-href "/footiq/"
+          touch build/web/.nojekyll
+
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+
+  build-ios:
+    name: FootIQ iOS (.ipa)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS Release (No Codesign)
+        run: flutter build ios --release --no-codesign
+
+      - name: Package Runner.app into FootIQ.ipa
+        run: |
+          mkdir -p build/ios/ipa/Payload
+          cp -r build/ios/iphoneos/Runner.app build/ios/ipa/Payload/
+          cd build/ios/ipa
+          zip -r -9 FootIQ.ipa Payload
+
+      - name: Upload FootIQ.ipa Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FootIQ-iOS-IPA
+          path: build/ios/ipa/FootIQ.ipa
+          if-no-files-found: error

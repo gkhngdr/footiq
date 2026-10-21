@@ -1,2 +1,0 @@
-# footiq
-futbol quiz
