@@ -2,17 +2,17 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../core/cloud.dart';
 import '../core/game_state.dart';
+import '../core/sound.dart';
 import '../core/ui.dart';
 import '../data/questions.dart';
 import '../widgets/common.dart';
 import 'daily_reward_dialog.dart';
 import 'result_dialog.dart';
 
-/// Soru ekranı. Tek oyunculu modda seviyeye özel soru dilimiyle,
+/// Soru ekranı. Tek oyunculu modda seviyeye özel ve kademeli zorlaşan soru dilimiyle,
 /// PVP modunda ise ortak [seed] üzerinden iki oyuncunun birebir aynı soruları
 /// ve aynı şık sırasını eşzamanlı görmesini sağlayacak şekilde çalışır.
 class QuizScreen extends StatefulWidget {
@@ -58,6 +58,7 @@ class _QuizScreenState extends State<QuizScreen> {
   int _correctCount = 0;
   int? _selected;
   bool _revealed = false;
+  int _lastTickSec = _timeLimit;
 
   Timer? _timer;
   Timer? _pvpPollTimer;
@@ -96,7 +97,7 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   Future<void> _initPvpMatchmaking() async {
-    final minWait = Future<void>.delayed(const Duration(milliseconds: 2200));
+    final minWait = Future<void>.delayed(const Duration(milliseconds: 1400));
     final room = await Cloud.joinOrCreatePvp(
       category: widget.category!,
       playerId: _state.playerId,
@@ -114,14 +115,14 @@ class _QuizScreenState extends State<QuizScreen> {
         if (mounted) setState(() {});
       } else {
         // Gerçek bir oyuncunun odaya katılmasını bekle (eşzamanlı başlangıç için)
-        for (var i = 0; i < 5 && mounted && !_onlineOpponent; i++) {
-          await Future<void>.delayed(const Duration(milliseconds: 450));
+        for (var i = 0; i < 4 && mounted && !_onlineOpponent; i++) {
+          await Future<void>.delayed(const Duration(milliseconds: 400));
           final polled = await Cloud.pollPvpRoom(roomId: room.id, playerId: _state.playerId);
           if (polled != null && polled.isMatched) {
             _onlineOpponent = true;
             _opponentName = polled.opponentName(_state.playerId);
             if (mounted) setState(() {});
-            await Future<void>.delayed(const Duration(milliseconds: 500));
+            await Future<void>.delayed(const Duration(milliseconds: 350));
             break;
           }
         }
@@ -129,6 +130,7 @@ class _QuizScreenState extends State<QuizScreen> {
     }
     await minWait;
     if (!mounted) return;
+    Sound.matchFound();
     setState(() => _matching = false);
     if (_roomId != null) {
       _pvpPollTimer = Timer.periodic(const Duration(milliseconds: 600), (_) => _pollOnlineOpponent());
@@ -166,6 +168,7 @@ class _QuizScreenState extends State<QuizScreen> {
     _selected = null;
     _revealed = false;
     _waitingForOpponent = false;
+    _lastTickSec = _timeLimit;
     _timeLeft.value = _timeLimit.toDouble();
     _opponentAnsweredCurrent.value = _onlineOpponent && _opponentStep > _index;
     final botRng = Random(_matchSeed * 17 + _index + 3);
@@ -181,6 +184,11 @@ class _QuizScreenState extends State<QuizScreen> {
         _answer(null);
       } else {
         _timeLeft.value = left;
+        final sec = left.ceil();
+        if (sec <= 5 && sec < _lastTickSec) {
+          _lastTickSec = sec;
+          Sound.tick();
+        }
         if (widget.isPvp && !_onlineOpponent && _clock.elapsedMilliseconds / 1000 >= _botTime) {
           _opponentAnsweredCurrent.value = true;
         }
@@ -195,14 +203,12 @@ class _QuizScreenState extends State<QuizScreen> {
     _clock.stop();
     final remainingSec = _timeLeft.value;
     final correct = choice == _correctIndex;
-    if (_state.soundOn) {
-      if (correct) {
-        SystemSound.play(SystemSoundType.click);
-        HapticFeedback.lightImpact();
-      } else {
-        SystemSound.play(SystemSoundType.alert);
-        HapticFeedback.heavyImpact();
-      }
+    if (choice == null) {
+      Sound.timeout();
+    } else if (correct) {
+      Sound.correct();
+    } else {
+      Sound.wrong();
     }
     if (correct) {
       _correctCount++;
@@ -269,18 +275,26 @@ class _QuizScreenState extends State<QuizScreen> {
     _pvpPollTimer?.cancel();
     if (widget.isPvp) {
       final outcome = _myScore.compareTo(_opponentScore);
-      final trophies = outcome > 0 ? 15 : (outcome == 0 ? 5 : -5);
+      final rawTrophies = outcome > 0 ? 15 : (outcome == 0 ? 5 : -5);
+      final beforeTrophies = _state.trophies;
+      _state.addTrophies(rawTrophies);
+      // Oyuncunun kupası 0 iken kaybettiğinde -5 yerine gerçek değişimi (0) göster.
+      final actualTrophies = _state.trophies - beforeTrophies;
       final coins = outcome > 0 ? 5000 : (outcome == 0 ? 1000 : 0);
-      _state.addTrophies(trophies);
       _state.addCoins(coins);
       _state.countGame();
+      if (outcome >= 0) {
+        Sound.win();
+      } else {
+        Sound.lose();
+      }
       showPvpResult(
         context,
         outcome: outcome,
         myScore: _myScore,
         botScore: _opponentScore,
         botName: _opponentName,
-        trophies: trophies,
+        trophies: actualTrophies,
         coins: coins,
         onReplay: () => _replace(QuizScreen.pvp(category: widget.category!)),
       );
@@ -288,6 +302,11 @@ class _QuizScreenState extends State<QuizScreen> {
       final stars = switch (_correctCount) { 5 => 3, 4 => 2, 3 => 1, _ => 0 };
       final coins = _correctCount * 10 + stars * 10;
       final trophies = _state.completeLevel(widget.chapter!, widget.level!, stars, coins);
+      if (stars > 0) {
+        Sound.win();
+      } else {
+        Sound.lose();
+      }
       final hasNextLevel = widget.level! < GameState.levelsPerChapter;
       final hasNextChapter = widget.level! == GameState.levelsPerChapter && widget.chapter! < GameState.chapterCount;
       showLevelResult(
@@ -343,96 +362,110 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   Widget build(BuildContext context) {
     final bg = widget.isPvp ? 'bg_pvp.png' : 'chapter${widget.chapter}.png';
-    if (_matching) {
-      return Stage(background: bg, backgroundBlur: 10, children: [
-        at(0, 0, kDesignW, kDesignH, const ColoredBox(color: Color(0x99000000))),
-        ..._matchmaking(),
-      ]);
-    }
-    // PVP modunda üstte skor tablosu olduğu için içerik aşağı kayar.
-    final pvp = widget.isPvp;
-    final dotsY = pvp ? 440.0 : 250.0;
-    final cardY = pvp ? 590.0 : 420.0;
-    final cardH = pvp ? 420.0 : 500.0;
-    final optionsY = pvp ? 1050.0 : 980.0;
-    final optionGap = pvp ? 195.0 : 205.0;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop) _quit();
       },
-      child: Stage(background: bg, backgroundBlur: 10, children: [
-        at(0, 0, kDesignW, kDesignH, const ColoredBox(color: Color(0x73000000))),
-        at(923, 80, 116.715, 116.715, CloseBtn(onTap: _quit)),
-        if (widget.isPvp) ..._scoreboard() else ..._levelHeader(),
-        // İlerleme noktaları
-        for (var i = 0; i < _questions.length; i++)
-          at(40 + i * 64.0, dotsY, 48, 48, DecoratedBox(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 4),
-              color: i < _index
-                  ? const Color(0xFF63D998)
-                  : i == _index
-                      ? const Color(0xFFF68537)
-                      : const Color(0x33FFFFFF),
-            ),
-          )),
-        Positioned(
-          right: 40,
-          top: dotsY - 2,
-          child: Text('Soru ${_index + 1}/${_questions.length}', style: londrina(44, shadows: kTextShadow)),
-        ),
-        // Süre çubuğu (izole ValueListenableBuilder: tüm ekranı yeniden çizmez)
-        at(40, dotsY + 80, 1000, 56, ValueListenableBuilder<double>(
-          valueListenable: _timeLeft,
-          builder: (_, left, _) => _TimerBar(value: left / _timeLimit, seconds: left.ceil()),
+      child: _matching ? _buildMatching(bg) : _buildQuiz(bg),
+    );
+  }
+
+  Widget _buildMatching(String bg) {
+    return Stage(background: bg, backgroundBlur: 10, children: [
+      at(0, 0, kDesignW, kDesignH, const ColoredBox(color: Color(0x99000000))),
+      at(923, 80, 116.715, 116.715, CloseBtn(onTap: _quit)),
+      ..._matchmaking(),
+    ]);
+  }
+
+  Widget _buildQuiz(String bg) {
+    // PVP modunda üstte skor tablosu olduğu için içerik aşağı kayar.
+    final pvp = widget.isPvp;
+    final currentQ = _questions[_index];
+    final dotsY = pvp ? 440.0 : 250.0;
+    final cardY = pvp ? 590.0 : 410.0;
+    final cardH = pvp ? 400.0 : 500.0;
+    final optionsY = pvp ? 1020.0 : 960.0;
+    final optionGap = pvp ? 182.0 : 192.0;
+    final optionH = pvp ? 156.0 : 164.0;
+    return Stage(background: bg, backgroundBlur: 10, children: [
+      at(0, 0, kDesignW, kDesignH, const ColoredBox(color: Color(0x73000000))),
+      at(923, 80, 116.715, 116.715, CloseBtn(onTap: _quit)),
+      if (widget.isPvp) ..._scoreboard() else ..._levelHeader(currentQ),
+      // İlerleme noktaları
+      for (var i = 0; i < _questions.length; i++)
+        at(40 + i * 64.0, dotsY, 48, 48, DecoratedBox(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white, width: 4),
+            color: i < _index
+                ? const Color(0xFF63D998)
+                : i == _index
+                    ? const Color(0xFFF68537)
+                    : const Color(0x33FFFFFF),
+          ),
         )),
-        // Soru kartı
-        at(40, cardY, 1000, cardH, RepaintBoundary(
-          child: GlassBox(
-            radius: 40,
-            blur: 10,
-            borderWidth: 6,
-            color: const Color(0x99102A22),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 36),
-              child: Center(
+      Positioned(
+        right: 40,
+        top: dotsY - 2,
+        child: Text(
+          'Soru ${_index + 1}/${_questions.length}  •  ${currentQ.difficultyLabel} (${currentQ.difficulty}/10)',
+          style: londrina(38, shadows: kTextShadow),
+        ),
+      ),
+      // Süre çubuğu (izole ValueListenableBuilder: tüm ekranı yeniden çizmez)
+      at(40, dotsY + 80, 1000, 56, ValueListenableBuilder<double>(
+        valueListenable: _timeLeft,
+        builder: (_, left, _) => _TimerBar(value: left / _timeLimit, seconds: left.ceil()),
+      )),
+      // Soru kartı (soru değişiminde yumuşak geçiş)
+      at(40, cardY, 1000, cardH, RepaintBoundary(
+        child: GlassBox(
+          radius: 40,
+          blur: 10,
+          borderWidth: 6,
+          color: const Color(0x99102A22),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 32),
+            child: Center(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 220),
                 child: Text(
-                  _questions[_index].text,
+                  currentQ.text,
+                  key: ValueKey<int>(_index),
                   textAlign: TextAlign.center,
-                  style: exo(_questions[_index].text.length > 110 ? 44 : 52, weight: 700, shadows: kTextShadow),
+                  style: exo(currentQ.text.length > 110 ? 44 : 52, weight: 700, shadows: kTextShadow),
                 ),
               ),
             ),
           ),
+        ),
+      )),
+      for (var i = 0; i < _options.length; i++)
+        at(90, optionsY + i * optionGap, 900, optionH, _OptionButton(
+          letter: String.fromCharCode(65 + i),
+          text: _options[i],
+          state: !_revealed
+              ? _OptionState.idle
+              : i == _correctIndex
+                  ? _OptionState.correct
+                  : i == _selected
+                      ? _OptionState.wrong
+                      : _OptionState.dim,
+          onTap: () => _answer(i),
         )),
-        for (var i = 0; i < _options.length; i++)
-          at(90, optionsY + i * optionGap, 900, pvp ? 160 : 170, _OptionButton(
-            letter: String.fromCharCode(65 + i),
-            text: _options[i],
-            state: !_revealed
-                ? _OptionState.idle
-                : i == _correctIndex
-                    ? _OptionState.correct
-                    : i == _selected
-                        ? _OptionState.wrong
-                        : _OptionState.dim,
-            onTap: () => _answer(i),
-          )),
-        if (_revealed && _selected == null)
-          at(0, 1820, kDesignW, 70, centerText('Süre doldu!', londrina(52, color: const Color(0xFFFFB199), shadows: kTextShadow)))
-        else if (_waitingForOpponent)
-          at(0, 1820, kDesignW, 70, centerText('Rakibin cevabı bekleniyor...', exo(36, weight: 700, color: const Color(0xFF9BE7FF), shadows: kTextShadow))),
-      ]),
-    );
+      if (_revealed && _selected == null)
+        at(0, 1805, kDesignW, 70, centerText('Süre doldu!', londrina(52, color: const Color(0xFFFFB199), shadows: kTextShadow)))
+      else if (_waitingForOpponent)
+        at(0, 1805, kDesignW, 70, centerText('Rakibin cevabı bekleniyor...', exo(36, weight: 700, color: const Color(0xFF9BE7FF), shadows: kTextShadow))),
+    ]);
   }
 
-  List<Widget> _levelHeader() => [
+  List<Widget> _levelHeader(Question currentQ) => [
         at(40, 96, 560, 100, GlassBox(
           radius: 100,
-          blur: 7.5,
-          color: const Color(0x66111111),
+          color: const Color(0x88111111),
           borderWidth: 3,
           child: centerText('Chapter ${widget.chapter}  •  Seviye ${widget.level}', londrina(48, shadows: kTextShadow)),
         )),
@@ -441,10 +474,9 @@ class _QuizScreenState extends State<QuizScreen> {
   List<Widget> _scoreboard() {
     Widget side(String name, int score, Color color, {Widget? status}) => GlassBox(
           radius: 40,
-          blur: 7.5,
           borderWidth: 4,
           borderColor: color,
-          color: const Color(0x80111111),
+          color: const Color(0xAA111111),
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -535,6 +567,7 @@ class _OptionButton extends StatelessWidget {
     return Opacity(
       opacity: state == _OptionState.dim ? 0.55 : 1,
       child: Tap(
+        playSound: false,
         onTap: state == _OptionState.idle ? onTap : null,
         child: Stack(children: [
           Positioned(left: 0, right: 0, top: 12, bottom: 0, child: DecoratedBox(
@@ -547,14 +580,14 @@ class _OptionButton extends StatelessWidget {
             child: Row(children: [
               const SizedBox(width: 22),
               Container(
-                width: 90,
-                height: 90,
+                width: 86,
+                height: 86,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: const Color(0x33000000),
                   border: Border.all(color: Colors.white, width: 4),
                 ),
-                child: centerText(letter, londrina(52)),
+                child: centerText(letter, londrina(50)),
               ),
               const SizedBox(width: 24),
               Expanded(
@@ -565,8 +598,8 @@ class _OptionButton extends StatelessWidget {
                   style: exo(text.length > 26 ? 36 : 44, weight: 700, shadows: kTextShadow),
                 ),
               ),
-              if (state == _OptionState.correct) const Icon(Icons.check_circle_rounded, color: Colors.white, size: 72),
-              if (state == _OptionState.wrong) const Icon(Icons.cancel_rounded, color: Colors.white, size: 72),
+              if (state == _OptionState.correct) const Icon(Icons.check_circle_rounded, color: Colors.white, size: 70),
+              if (state == _OptionState.wrong) const Icon(Icons.cancel_rounded, color: Colors.white, size: 70),
               const SizedBox(width: 24),
             ]),
           )),

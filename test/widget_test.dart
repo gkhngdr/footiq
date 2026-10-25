@@ -4,13 +4,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:footiq/data/questions.dart';
 
 void main() {
-  test('her bölümde 80 soru, her PVP modunda 60 soru (toplam 500 benzersiz soru) ve 4 benzersiz seçenek var', () {
+  test('her bölümde 80 soru, her PVP modunda 60 soru (toplam 500 benzersiz soru), 4 seçenek ve geçerli zorluk değeri (1..10) var', () {
     final allTexts = <String>{};
     for (final pool in [chapter1, chapter2, chapter3, chapter4]) {
       expect(pool.length, 80);
       for (final q in pool) {
         expect(q.options.length, 4, reason: q.text);
         expect(q.options.toSet().length, 4, reason: 'Tekrarlanan seçenek: ${q.text}');
+        expect(q.difficulty, inInclusiveRange(1, 10), reason: 'Geçersiz zorluk: ${q.text}');
+        expect(q.difficultyLabel.isNotEmpty, isTrue);
         expect(allTexts.add(q.text), isTrue, reason: 'Tekrarlanan soru metni: ${q.text}');
       }
     }
@@ -19,26 +21,37 @@ void main() {
       for (final q in pool) {
         expect(q.options.length, 4, reason: q.text);
         expect(q.options.toSet().length, 4, reason: 'Tekrarlanan seçenek: ${q.text}');
+        expect(q.difficulty, inInclusiveRange(1, 10), reason: 'Geçersiz zorluk: ${q.text}');
         expect(allTexts.add(q.text), isTrue, reason: 'Tekrarlanan soru metni: ${q.text}');
       }
     }
     expect(allTexts.length, 500);
   });
 
-  test('aynı bölümdeki 1..10 seviyeleri çakışmaz ve aynı seviye tekrar oynandığında farklı kombinasyonlar üretir', () {
+  test('aynı bölümdeki 1..10 seviyeleri çakışmaz, kademeli zorlaşır ve seviye içinde kolaydan zora sıralanır', () {
     for (var ch = 1; ch <= 4; ch++) {
       final seen = <String>{};
+      double? level1Avg;
+      double? level10Avg;
       for (var lvl = 1; lvl <= 10; lvl++) {
         final qs = pickLevelQuestions(ch, lvl, 5, Random(42));
         expect(qs.length, 5);
-        for (final q in qs) {
-          expect(seen.add(q.text), isTrue, reason: 'Bölüm $ch Seviye $lvl sorusu tekrar etti: ${q.text}');
+        for (var i = 0; i < qs.length; i++) {
+          expect(seen.add(qs[i].text), isTrue, reason: 'Bölüm $ch Seviye $lvl sorusu tekrar etti: ${qs[i].text}');
+          if (i > 0) {
+            expect(qs[i].difficulty >= qs[i - 1].difficulty, isTrue, reason: 'Seviye içi zorluk sırası bozuk');
+          }
         }
-        // Aynı seviye farklı rng ile tekrar oynandığında 8'lik dilimden farklı sıralama/soru seçebilmeli
+        final avg = qs.map((q) => q.difficulty).reduce((a, b) => a + b) / qs.length;
+        if (lvl == 1) level1Avg = avg;
+        if (lvl == 10) level10Avg = avg;
+
+        // Aynı seviye farklı rng ile tekrar oynandığında 8'lik dilimden farklı soru kombinasyonu seçebilmeli
         final runA = pickLevelQuestions(ch, lvl, 5, Random(1)).map((q) => q.text).join('|');
-        final runB = pickLevelQuestions(ch, lvl, 5, Random(2)).map((q) => q.text).join('|');
+        final runB = pickLevelQuestions(ch, lvl, 5, Random(7)).map((q) => q.text).join('|');
         expect(runA, isNot(equals(runB)));
       }
+      expect(level10Avg! > level1Avg!, isTrue, reason: 'Bölüm $ch Seviye 10, Seviye 1\'den daha zor olmalı');
     }
   });
 

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../core/game_state.dart';
+import '../core/sound.dart';
 import '../core/ui.dart';
 import '../widgets/common.dart';
 import 'chapter_select_screen.dart';
@@ -12,7 +13,7 @@ import 'leaderboard_dialog.dart';
 import 'pvp_mode_screen.dart';
 import 'settings_dialog.dart';
 
-/// Figma: "Main Screen" (25:10784)
+/// Figma: "Main Screen" (25:10784) — Dikey yerleşimi dengelenmiş ana menü.
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -27,11 +28,22 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     _state.addListener(_refresh);
-    // Günlük ödül alınmadıysa açılışta göster; alt ekran arka planlarını arka planda ısıt.
+    // Günlük ödül alınmadıysa açılışta göster; PVP ve bölüm ekranı görsellerini
+    // arka planda belleğe al (PVP OYNA'ya tıklandığında 0 sn gecikmeyle açılsın).
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (_state.canClaimDaily) showDailyReward(context);
-      for (final bg in ['bg_map.png', 'bg_pvp.png', 'chapter1.png']) {
+      for (final bg in [
+        'bg_map.png',
+        'bg_pvp.png',
+        'chapter1.png',
+        'pvp_card1.png',
+        'pvp_card2.png',
+        'pvp_card3.png',
+        'pvp_char1.png',
+        'pvp_char2.png',
+        'pvp_char3.png',
+      ]) {
         precacheImage(AssetImage(fig(bg)), context);
       }
     });
@@ -56,6 +68,7 @@ class _MainScreenState extends State<MainScreen> {
     }
     showFakeAd(context, onDone: () {
       _state.addEnergy(1);
+      Sound.energyRefill();
       toast(context, '+1 enerji kazandın!');
     });
   }
@@ -63,6 +76,7 @@ class _MainScreenState extends State<MainScreen> {
   void _gift() {
     if (_state.giftReady) {
       _state.claimGift();
+      Sound.giftOpen();
       toast(context, '+${GameState.giftReward} coin kazandın!');
     } else {
       toast(context, '${GameState.giftGoal} oyun tamamla, hediyeyi aç! (${_state.giftProgress}/${GameState.giftGoal})');
@@ -71,35 +85,38 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final totalStars = List.generate(GameState.chapterCount, (i) => _state.chapterStars(i + 1)).fold(0, (a, b) => a + b);
     return Stage(background: 'bg_main.png', children: [
-      at(1000, 84, 60, 60, Tap(onTap: () => showSettings(context), child: svg('settings.svg'))),
-      const _SeasonBar(),
-      _GiftButton(progress: _state.giftProgress, onTap: _gift),
-      const TopHud(top: 160, rankX: 390),
-      // OYNA
+      at(1000, 72, 60, 60, Tap(onTap: () => showSettings(context), child: svg('settings.svg'))),
+      _SeasonBar(top: 825, rank: _state.displayRank, trophies: _state.trophies),
+      _GiftButton(top: 345, progress: _state.giftProgress, onTap: _gift),
+      const TopHud(top: 145, rankX: 390),
+      // OYNA (1110..1530 aralığına dengelendi)
       ..._playCard(
         left: 110,
         cardLeft: 148,
+        cardTop: 1110,
         label: 'OYNA',
         layers: const [
-          _CardLayer('card_play.png', 148, 330, 303, 6, -0.4437, 0, 1.884, 1.0007),
+          _CardLayer('card_play.png', 148, 1110, 330, 303, 6, -0.4437, 0, 1.884, 1.0007),
         ],
-        topLayer: const _CardLayer.cover('card_play_b.png', 147.5, 329.063, 292.5, 2),
+        topLayer: const _CardLayer.cover('card_play_b.png', 147.5, 1110, 329.063, 292.5, 2),
         onTap: () => _open(const ChapterSelectScreen()),
       ),
       // PVP OYNA
       ..._playCard(
         left: 565,
         cardLeft: 602.5,
+        cardTop: 1110,
         label: 'PVP OYNA',
         layers: const [
-          _CardLayer('card_pvp.png', 602.5, 330, 303, 6, -0.3099, -0.0013, 1.6387, 1.0012),
+          _CardLayer('card_pvp.png', 602.5, 1110, 330, 303, 6, -0.3099, -0.0013, 1.6387, 1.0012),
         ],
-        topLayer: const _CardLayer('card_pvp_b.png', 603, 330, 303, 2, -0.3184, -0.0395, 1.6368, 1.0),
+        topLayer: const _CardLayer('card_pvp_b.png', 603, 1110, 330, 303, 2, -0.3184, -0.0395, 1.6368, 1.0),
         onTap: () => _open(const PvpModeScreen()),
         extra: Positioned(
           left: 751,
-          top: 1395,
+          top: 1240,
           child: Text.rich(
             TextSpan(children: [
               TextSpan(text: 'V', style: londrina(36, color: const Color(0xFFEB6CA1))),
@@ -108,15 +125,64 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
       ),
-      _SideButton(top: 384, label: 'Izle Kazan', fontSize: 32, labelX: 774, labelY: 439, icon: const _WatchIcon(), onTap: _watchAd),
+      _SideButton(top: 345, label: 'Izle Kazan', fontSize: 32, labelX: 774, labelY: 400, icon: const _WatchIcon(), onTap: _watchAd),
       _SideButton(
-        top: 561,
+        top: 520,
         label: 'Davet Et Kazan',
         fontSize: 24,
         labelX: 767,
-        labelY: 621,
+        labelY: 580,
         icon: const _PlusBadge(),
         onTap: () => showInvite(context),
+      ),
+      // Alt bilgi & hızlı durum şeridi (boşluğu dengeler, yıldız ve sezon durumunu gösterir)
+      at(
+        110,
+        1615,
+        860,
+        96,
+        RepaintBoundary(
+          child: GlassBox(
+            radius: 48,
+            color: const Color(0x990D261F),
+            borderWidth: 3,
+            borderColor: const Color(0x9963D998),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 28),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Tap(
+                      onTap: () => _open(const ChapterSelectScreen()),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(mainAxisSize: MainAxisSize.min, children: [
+                          const StarIcon(filled: true, size: 44),
+                          const SizedBox(width: 10),
+                          Text('Yıldız: $totalStars / 120', style: exo(28, weight: 700, shadows: kTextShadow)),
+                        ]),
+                      ),
+                    ),
+                  ),
+                  Container(width: 2, height: 44, margin: const EdgeInsets.symmetric(horizontal: 16), color: Colors.white24),
+                  Expanded(
+                    child: Tap(
+                      onTap: () => showLeaderboard(context),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(mainAxisSize: MainAxisSize.min, children: [
+                          SizedBox(width: 42, height: 42, child: png('trophy.png')),
+                          const SizedBox(width: 10),
+                          Text('Sezon Ligi: #${_state.displayRank}', style: exo(28, weight: 700, color: const Color(0xFFFFE27A), shadows: kTextShadow)),
+                        ]),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     ]);
   }
@@ -124,6 +190,7 @@ class _MainScreenState extends State<MainScreen> {
   List<Widget> _playCard({
     required double left,
     required double cardLeft,
+    required double cardTop,
     required String label,
     required List<_CardLayer> layers,
     required _CardLayer topLayer,
@@ -131,14 +198,15 @@ class _MainScreenState extends State<MainScreen> {
     Widget? extra,
   }) {
     final btnL = left + 405 * 0.0245;
+    final btnTop = cardTop + 271;
     return [
       for (final l in layers) l.build(),
       topLayer.build(),
       ?extra,
       // Kart görseline dokununca da ölçekleme + sesli tepki
-      at(cardLeft, 1265, 330, 270, Tap(onTap: onTap, child: const SizedBox.expand())),
+      at(cardLeft, cardTop, 330, 270, Tap(onTap: onTap, child: const SizedBox.expand())),
       // Düğme: gölge, gövde, parlama ve süsler (tümü birlikte basılma animasyonu yapar)
-      at(btnL, 1536, 383, 144, Tap(
+      at(btnL, btnTop, 383, 144, Tap(
         onTap: onTap,
         child: Stack(clipBehavior: Clip.none, children: [
           at(0, 8, 382.912, 136, svg(left < 500 ? 'btn_play_shadow.svg' : 'btn_pvp_shadow.svg')),
@@ -155,9 +223,9 @@ class _MainScreenState extends State<MainScreen> {
 
 /// Kart görseli: beyaz çerçeveli, köşeleri yuvarlatılmış ve Figma'daki gibi kırpılmış.
 class _CardLayer {
-  const _CardLayer(this.image, this.left, this.w, this.h, this.border, this.dx, this.dy, this.sw, this.sh) : cover = false;
+  const _CardLayer(this.image, this.left, this.top, this.w, this.h, this.border, this.dx, this.dy, this.sw, this.sh) : cover = false;
 
-  const _CardLayer.cover(this.image, this.left, this.w, this.h, this.border)
+  const _CardLayer.cover(this.image, this.left, this.top, this.w, this.h, this.border)
       : dx = 0,
         dy = 0,
         sw = 1,
@@ -165,10 +233,10 @@ class _CardLayer {
         cover = true;
 
   final String image;
-  final double left, w, h, border, dx, dy, sw, sh;
+  final double left, top, w, h, border, dx, dy, sw, sh;
   final bool cover;
 
-  Widget build() => at(left, 1265, w, h, RepaintBoundary(
+  Widget build() => at(left, top, w, h, RepaintBoundary(
         child: Stack(fit: StackFit.expand, children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
@@ -190,27 +258,48 @@ class _CardLayer {
 
 /// Kupa simgesi + sezon çubuğu (Figma 25:10787 ve 25:10798). Dokununca sıralama açılır.
 class _SeasonBar extends StatelessWidget {
-  const _SeasonBar();
+  const _SeasonBar({required this.top, required this.rank, required this.trophies});
+
+  final double top;
+  final int rank;
+  final int trophies;
 
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
     final end = DateTime(now.year, now.month + 1);
     final left = end.difference(now);
-    return at(278, 1095, 524, 132, RepaintBoundary(
+    return at(240, top, 600, 180, RepaintBoundary(
       child: Tap(
         onTap: () => showLeaderboard(context),
         child: Stack(clipBehavior: Clip.none, children: [
-          at(60, 40.5, 463.5, 46.5, flipX(svg('season_bar.svg'))),
-          at(165, 43.5, 48, 39.75, flipX(svg('season_r128.svg'))),
-          at(114, 43.5, 48, 39.75, flipX(svg('season_r130.svg'))),
-          at(64.5, 43.5, 46.5, 39.75, flipX(svg('season_r132.svg'))),
-          at(165, 63, 48, 20.25, flipX(svg('season_r129.svg'))),
-          at(114, 63, 48, 20.25, flipX(svg('season_r129.svg'))),
-          at(64.5, 63, 46.5, 20.25, flipX(svg('season_r133.svg'))),
-          at(0, 0, 120, 120, png('trophy.png')),
-          at(138, 100, 247.5, 30, const GlassBox(radius: 12, color: Color(0x4D111111))),
-          at(138, 100, 247.5, 30, centerText('Sezonun bitmesine ${left.inDays}g ${left.inHours % 24}h', londrina(22.5, spacing: -0.02))),
+          // Arka plan vurgu kapsülü
+          at(30, 16, 550, 148, const GlassBox(
+            radius: 44,
+            color: Color(0x880D261F),
+            borderWidth: 3,
+            borderColor: Color(0x99FFE27A),
+          )),
+          at(98, 42, 463.5, 46.5, flipX(svg('season_bar.svg'))),
+          at(203, 45, 48, 39.75, flipX(svg('season_r128.svg'))),
+          at(152, 45, 48, 39.75, flipX(svg('season_r130.svg'))),
+          at(102.5, 45, 46.5, 39.75, flipX(svg('season_r132.svg'))),
+          at(203, 64.5, 48, 20.25, flipX(svg('season_r129.svg'))),
+          at(152, 64.5, 48, 20.25, flipX(svg('season_r129.svg'))),
+          at(102.5, 64.5, 46.5, 20.25, flipX(svg('season_r133.svg'))),
+          at(260, 44, 290, 42, centerText('SEZON LİGİ  •  #$rank', londrina(28, color: const Color(0xFFFFE27A), shadows: kTextShadow))),
+          at(18, 16, 132, 132, png('trophy.png')),
+          at(150, 102, 400, 42, const GlassBox(radius: 18, color: Color(0x80111111))),
+          at(
+            150,
+            102,
+            400,
+            42,
+            centerText(
+              'Sezonun bitmesine ${left.inDays}g ${left.inHours % 24}s  •  Ödülleri Gör',
+              exo(23, weight: 700, shadows: kTextShadow),
+            ),
+          ),
         ]),
       ),
     ));
@@ -219,8 +308,9 @@ class _SeasonBar extends StatelessWidget {
 
 /// "Oynadıkça kazan" hediye düğmesi (Figma 25:10801).
 class _GiftButton extends StatelessWidget {
-  const _GiftButton({required this.progress, required this.onTap});
+  const _GiftButton({required this.top, required this.progress, required this.onTap});
 
+  final double top;
   final int progress;
   final VoidCallback onTap;
 
@@ -228,7 +318,7 @@ class _GiftButton extends StatelessWidget {
   Widget build(BuildContext context) {
     const ratio = 165.0;
     final fill = (ratio * progress / GameState.giftGoal).clamp(0.0, ratio);
-    return at(19.9, 384, 174.2, 168.1, RepaintBoundary(
+    return at(19.9, top, 174.2, 168.1, RepaintBoundary(
       child: Tap(
         onTap: onTap,
         child: Stack(clipBehavior: Clip.none, children: [
@@ -264,19 +354,32 @@ class _GiftButton extends StatelessWidget {
               ),
             )),
           at(6.1, 130.44, 61.5, 14.298, flipX(svg('gift_r137.svg'))),
+          // Sarı dolgu üzerinde sayının her zaman net okunması için koyu kapsül + gölge
           at(
             4.6,
             124.5,
             165,
             36,
-            centerText(
-              progress >= GameState.giftGoal ? 'AÇ! ($progress/${GameState.giftGoal})' : '$progress/${GameState.giftGoal}',
-              londrina(25, shadows: const [
-                Shadow(color: Color(0xFF3A2A00), offset: Offset(-2, -2)),
-                Shadow(color: Color(0xFF3A2A00), offset: Offset(2, -2)),
-                Shadow(color: Color(0xFF3A2A00), offset: Offset(-2, 2)),
-                Shadow(color: Color(0xFF3A2A00), offset: Offset(2, 2)),
-              ]),
+            Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 1),
+                decoration: BoxDecoration(
+                  color: const Color(0x88000000),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  progress >= GameState.giftGoal ? 'AÇ! ($progress/${GameState.giftGoal})' : '$progress/${GameState.giftGoal}',
+                  maxLines: 1,
+                  softWrap: false,
+                  textAlign: TextAlign.center,
+                  style: londrina(25, shadows: const [
+                    Shadow(color: Color(0xFF1A1200), offset: Offset(-2, -2), blurRadius: 2),
+                    Shadow(color: Color(0xFF1A1200), offset: Offset(2, -2), blurRadius: 2),
+                    Shadow(color: Color(0xFF1A1200), offset: Offset(-2, 2), blurRadius: 2),
+                    Shadow(color: Color(0xFF1A1200), offset: Offset(2, 2), blurRadius: 2),
+                  ]),
+                ),
+              ),
             ),
           ),
         ]),

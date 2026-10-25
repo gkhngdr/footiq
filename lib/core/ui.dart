@@ -1,10 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'game_state.dart';
+import 'sound.dart';
 
 /// Figma tasarımları 1080x1920 boyutunda. Tüm ekranlar bu sanal tuval
 /// üzerinde, Figma'daki koordinatlarla çizilir ve ekrana ölçeklenir.
@@ -20,6 +19,7 @@ class Stage extends StatelessWidget {
     required this.children,
     this.exactBackground = false,
     this.backgroundBlur = 0,
+    this.keyboardShift = false,
   });
 
   /// Arka planı bulanıklaştırır (soru ekranında okunabilirlik için).
@@ -32,40 +32,64 @@ class Stage extends StatelessWidget {
   /// düğmeler varsa) true. Kenarlarda kalan boşluk yine görselle doldurulur.
   final bool exactBackground;
 
+  /// Klavye açıldığında tuvali küçültmek yerine form alanlarını yukarı kaydırır.
+  final bool keyboardShift;
+
   @override
   Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final shiftY = (keyboardShift && bottomInset > 0) ? -(bottomInset * 0.85).clamp(0.0, 260.0) : 0.0;
     return Scaffold(
       backgroundColor: const Color(0xFF0D1B2A),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          RepaintBoundary(
-            child: backgroundBlur > 0
-                ? ImageFiltered(
-                    imageFilter: ImageFilter.blur(sigmaX: backgroundBlur, sigmaY: backgroundBlur, tileMode: TileMode.mirror),
-                    child: Image.asset(fig(background), fit: BoxFit.cover, gaplessPlayback: true),
-                  )
-                : Image.asset(fig(background), fit: BoxFit.cover, gaplessPlayback: true),
-          ),
-          Center(
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: SizedBox(
-                width: kDesignW,
-                height: kDesignH,
-                child: Stack(clipBehavior: Clip.none, children: [
-                  if (exactBackground)
-                    Positioned.fill(
-                      child: RepaintBoundary(
-                        child: Image.asset(fig(background), fit: BoxFit.fill, gaplessPlayback: true),
-                      ),
-                    ),
-                  ...children,
-                ]),
+      resizeToAvoidBottomInset: false,
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: MediaQuery.removeViewInsets(
+          context: context,
+          removeBottom: true,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              RepaintBoundary(
+                child: backgroundBlur > 0
+                    ? ImageFiltered(
+                        imageFilter: ImageFilter.blur(sigmaX: backgroundBlur, sigmaY: backgroundBlur, tileMode: TileMode.mirror),
+                        child: Image.asset(fig(background), fit: BoxFit.cover, gaplessPlayback: true),
+                      )
+                    : Image.asset(fig(background), fit: BoxFit.cover, gaplessPlayback: true),
               ),
-            ),
+              Center(
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: SizedBox(
+                    width: kDesignW,
+                    height: kDesignH,
+                    child: Stack(clipBehavior: Clip.none, children: [
+                      if (exactBackground)
+                        Positioned.fill(
+                          child: RepaintBoundary(
+                            child: Image.asset(fig(background), fit: BoxFit.fill, gaplessPlayback: true),
+                          ),
+                        ),
+                      if (shiftY != 0)
+                        Transform.translate(
+                          offset: Offset(0, shiftY),
+                          child: SizedBox(
+                            width: kDesignW,
+                            height: kDesignH,
+                            child: Stack(clipBehavior: Clip.none, children: children),
+                          ),
+                        )
+                      else
+                        ...children,
+                    ]),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -88,32 +112,51 @@ Widget flipX(Widget child) =>
 Widget flipY(Widget child) =>
     Transform(alignment: Alignment.center, transform: Matrix4.diagonal3Values(1, -1, 1), child: child);
 
-/// Tasarımda kullanılan oyun fontu. Londrina Solid Türkçe karakterleri
-/// (ğ, ş, ı, İ) içermediği için bu harfler Exo 2 ile çizilir.
-TextStyle londrina(double size, {Color color = Colors.white, double spacing = 0.02, List<Shadow>? shadows}) =>
+/// Ana oyun başlıkları, düğmeler ve sayaçlar için tam Türkçe destekli (ğ, ş, ı, İ, ö, ü, ç)
+/// yuvarlak hatlı modern oyun fontu (Fredoka Bold).
+TextStyle londrina(double size, {Color color = Colors.white, double spacing = 0.015, List<Shadow>? shadows}) =>
     TextStyle(
-      fontFamily: 'LondrinaSolid',
-      fontFamilyFallback: const ['Exo2'],
+      fontFamily: 'Fredoka',
+      fontFamilyFallback: const ['Nunito', 'Rubik'],
       fontSize: size,
       color: color,
+      fontVariations: const [FontVariation('wght', 700), FontVariation('wdth', 100)],
       letterSpacing: size * spacing,
-      height: 1.2,
+      height: 1.18,
       shadows: shadows,
     );
 
-TextStyle exo(double size, {Color color = Colors.white, double weight = 600, List<Shadow>? shadows}) => TextStyle(
-      fontFamily: 'Exo2',
+/// Soru metinleri, açıklamalar ve listeler için yüksek okunabilirlikli,
+/// tam Türkçe destekli modern font (Nunito).
+TextStyle exo(double size, {Color color = Colors.white, double weight = 700, List<Shadow>? shadows}) => TextStyle(
+      fontFamily: 'Nunito',
+      fontFamilyFallback: const ['Rubik', 'Exo2'],
       fontSize: size,
       color: color,
-      fontVariations: [FontVariation('wght', weight)],
-      height: 1.2,
+      fontVariations: [FontVariation('wght', weight.clamp(400, 900))],
+      height: 1.22,
       shadows: shadows,
     );
 
-TextStyle poppins(double size, {FontWeight weight = FontWeight.w400, Color color = Colors.white, double spacing = 0}) =>
-    TextStyle(fontFamily: 'Poppins', fontSize: size, fontWeight: weight, color: color, letterSpacing: size * spacing);
+/// Giriş ekranı ve form alanları için tam Türkçe destekli modern font (Nunito / Rubik).
+TextStyle poppins(double size, {FontWeight weight = FontWeight.w600, Color color = Colors.white, double spacing = 0}) {
+  final w = switch (weight) {
+    FontWeight.w300 => 500.0,
+    FontWeight.w400 => 600.0,
+    FontWeight.w500 => 700.0,
+    _ => 700.0,
+  };
+  return TextStyle(
+    fontFamily: 'Nunito',
+    fontFamilyFallback: const ['Rubik', 'Poppins'],
+    fontSize: size,
+    fontVariations: [FontVariation('wght', w)],
+    color: color,
+    letterSpacing: size * spacing,
+  );
+}
 
-const kTextShadow = [Shadow(color: Color(0x99000000), offset: Offset(0, 3), blurRadius: 4)];
+const kTextShadow = [Shadow(color: Color(0xAA000000), offset: Offset(0, 3), blurRadius: 5)];
 
 Widget centerText(String text, TextStyle style) =>
     Center(child: Text(text, style: style, textAlign: TextAlign.center, maxLines: 1, softWrap: false));
@@ -187,10 +230,11 @@ class GlowFrame extends StatelessWidget {
 
 /// Basılınca hafifçe küçülen dokunma alanı.
 class Tap extends StatefulWidget {
-  const Tap({super.key, required this.child, this.onTap});
+  const Tap({super.key, required this.child, this.onTap, this.playSound = true});
 
   final Widget child;
   final VoidCallback? onTap;
+  final bool playSound;
 
   @override
   State<Tap> createState() => _TapState();
@@ -209,7 +253,7 @@ class _TapState extends State<Tap> {
       onTap: widget.onTap == null
           ? null
           : () {
-              if (GameState.instance.soundOn) SystemSound.play(SystemSoundType.click);
+              if (widget.playSound) Sound.click();
               widget.onTap!();
             },
       child: AnimatedScale(

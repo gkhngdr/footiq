@@ -62,13 +62,24 @@ drop trigger if exists on_auth_user_autoconfirm on auth.users;
 create trigger on_auth_user_autoconfirm before insert on auth.users
   for each row execute function public.auto_confirm_email();
 
--- Hile siniri: kupa/coin artisi, son guncellemeden bu yana gecen sureyle sinirlanir.
--- Izin: kupa en fazla 20 + 1/sn, coin en fazla 6000 + 250/sn. updated_at sunucuda yazilir.
+-- Hile siniri: ilk kayitta (INSERT) ve guncellemede (UPDATE) kupa/coin artisi sinirlanir.
+-- Ilk kayitta (misafirden gecis dahil) en fazla 500 kupa ve 50.000 coin kabul edilir.
+-- Guncellemede: kupa en fazla 20 + 1/sn, coin en fazla 6000 + 250/sn. updated_at sunucuda yazilir.
 create or replace function public.limit_profile_growth()
 returns trigger language plpgsql as $$
 declare secs numeric;
 begin
   if current_user <> 'authenticated' then return new; end if;
+  if tg_op = 'INSERT' then
+    if new.trophies > 500 then
+      raise exception 'initial trophies too high' using errcode = 'P0001';
+    end if;
+    if new.coins > 50000 then
+      raise exception 'initial coins too high' using errcode = 'P0001';
+    end if;
+    new.updated_at := now();
+    return new;
+  end if;
   secs := greatest(extract(epoch from (now() - old.updated_at)), 0);
   if new.trophies - old.trophies > 20 + secs * 1 then
     raise exception 'trophy growth too fast' using errcode = 'P0001';
@@ -81,7 +92,7 @@ begin
 end $$;
 
 drop trigger if exists profiles_limit_growth on public.profiles;
-create trigger profiles_limit_growth before update on public.profiles
+create trigger profiles_limit_growth before insert or update on public.profiles
   for each row execute function public.limit_profile_growth();
 
 -- Kullanicinin sirasi (kupa sayisina gore).
@@ -91,18 +102,19 @@ returns int language sql security definer set search_path = public as $$
   where trophies > coalesce((select trophies from public.profiles where id = auth.uid()), 0);
 $$;
 
--- Ilk 50 oyuncu.
+-- Ilk 50 oyuncu (misafir ve hesapli oyuncular gorebilir).
 create or replace function public.leaderboard()
 returns table(username text, trophies int) language sql security definer set search_path = public as $$
   select username, trophies from public.profiles order by trophies desc limit 50;
 $$;
 
--- Davet kodunu kullan: davet eden ve davet edilen 500 coin kazanir (bir kez).
+-- Davet kodunu kullan: davet eden ve davet edilen 500 coin kazanir (bir kez, buyuk/kucuk harf duyarsiz).
 create or replace function public.redeem_invite(code text)
 returns int language plpgsql security definer set search_path = public as $$
 declare inviter uuid;
 begin
-  select id into inviter from public.profiles where invite_code = code and id <> auth.uid();
+  select id into inviter from public.profiles
+  where lower(invite_code) = lower(trim(code)) and id <> auth.uid();
   if inviter is null then return 0; end if;
   update public.profiles set invited_by = inviter, coins = coins + 500
     where id = auth.uid() and invited_by is null;
@@ -122,8 +134,8 @@ revoke all on function public.redeem_invite(text) from public, anon;
 grant execute on function public.redeem_invite(text) to authenticated;
 revoke all on function public.my_rank() from public, anon;
 grant execute on function public.my_rank() to authenticated;
-revoke all on function public.leaderboard() from public, anon;
-grant execute on function public.leaderboard() to authenticated;
+revoke all on function public.leaderboard() from public;
+grant execute on function public.leaderboard() to anon, authenticated;
 revoke all on function public.delete_account() from public, anon;
 grant execute on function public.delete_account() to authenticated;
 
@@ -173,7 +185,7 @@ begin
   end if;
   if clean_name = '' then clean_name := 'Oyuncu'; end if;
 
-  -- Eski (30 saniyeden eski) acik odalari temizle
+  -- Eski (10 dakikadan eski) acik odalari temizle
   delete from public.pvp_rooms where created_at < now() - interval '10 minutes';
 
   -- Son 12 saniye icinde acilmis uygun bir oda bul ve esles
@@ -251,3 +263,24 @@ revoke all on function public.poll_pvp_room(uuid, text) from public;
 grant execute on function public.poll_pvp_room(uuid, text) to anon, authenticated;
 revoke all on function public.update_pvp_progress(uuid, text, int, int) from public;
 grant execute on function public.update_pvp_progress(uuid, text, int, int) to anon, authenticated;
+
+-- ============================================================================
+-- UZAKTAN SORU BANKASI TABLOSU (SALT OKUNUR / RLS KORUMALI)
+-- ============================================================================
+create table if not exists public.questions (
+  id bigint generated always as identity primary key,
+  category text not null check (category in ('chapter1', 'chapter2', 'chapter3', 'chapter4', 'benKimim', 'championsLeague', 'hangiTakim')),
+  prompt text not null check (char_length(prompt) between 5 and 300),
+  options jsonb not null,
+  difficulty int not null default 5 check (difficulty between 1 and 10),
+  active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+alter table public.questions enable row level security;
+revoke all on public.questions from public, anon, authenticated;
+grant select on public.questions to anon, authenticated;
+
+drop policy if exists "questions_select_active" on public.questions;
+create policy "questions_select_active" on public.questions
+  for select to anon, authenticated using (active = true);

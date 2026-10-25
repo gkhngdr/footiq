@@ -49,3 +49,11 @@ app.*.map.json
 .aider*
 
 *.apk
+
+# Secrets and signing keys
+.env
+*.env
+*.key
+*.jks
+*.keystore
+key.properties

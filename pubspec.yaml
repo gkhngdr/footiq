@@ -25,8 +25,18 @@ flutter:
 
   assets:
     - assets/figma/
+    - assets/sounds/
 
   fonts:
+    - family: Fredoka
+      fonts:
+        - asset: assets/fonts/Fredoka.ttf
+    - family: Nunito
+      fonts:
+        - asset: assets/fonts/Nunito.ttf
+    - family: Rubik
+      fonts:
+        - asset: assets/fonts/Rubik.ttf
     - family: LondrinaSolid
       fonts:
         - asset: assets/fonts/LondrinaSolid-Regular.ttf

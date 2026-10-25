@@ -7,7 +7,7 @@ import '../widgets/common.dart';
 import 'daily_reward_dialog.dart';
 import 'quiz_screen.dart';
 
-/// Figma: "Pvp Mode Change" (25:12502)
+/// Figma: "Pvp Mode Change" (25:12502) — Hızlı açılış için RepaintBoundary ile optimize edildi.
 class PvpModeScreen extends StatelessWidget {
   const PvpModeScreen({super.key});
 
@@ -21,17 +21,19 @@ class PvpModeScreen extends StatelessWidget {
     goStage(context, QuizScreen.pvp(category: category));
   }
 
-  Widget _cardBg(String image, double imageTop, double imageH) => Stack(fit: StackFit.expand, children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(40),
-          child: imageH == 1
-              ? png(image)
-              : Stack(clipBehavior: Clip.hardEdge, children: [
-                  Positioned(left: 0, top: imageTop * 400, width: 1040, height: imageH * 400, child: png(image, fit: BoxFit.fill)),
-                ]),
-        ),
-        const GlassBox(radius: 40, color: Colors.transparent, borderWidth: 6),
-      ]);
+  Widget _cardBg(String image, double imageTop, double imageH) => RepaintBoundary(
+        child: Stack(fit: StackFit.expand, children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(40),
+            child: imageH == 1
+                ? png(image)
+                : Stack(clipBehavior: Clip.hardEdge, children: [
+                    Positioned(left: 0, top: imageTop * 400, width: 1040, height: imageH * 400, child: png(image, fit: BoxFit.fill)),
+                  ]),
+          ),
+          const GlassBox(radius: 40, color: Colors.transparent, borderWidth: 6),
+        ]),
+      );
 
   /// Kupa ve coin ödül satırı (+15 / +5k).
   List<Widget> _rewards(double trophyX, double coinX, double y) => [
@@ -44,7 +46,8 @@ class PvpModeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stage(background: 'bg_pvp.png', children: [
-      for (final top in [344.0, 804.0, 1264.0]) at(20, top, 1040, 400, const GlowFrame(radius: 40, color: Colors.white)),
+      for (final top in [344.0, 804.0, 1264.0])
+        at(20, top, 1040, 400, const GlowFrame(radius: 40, color: Colors.white, width: 3, blur: 4)),
       // 1. Mod: Ben Kimim?
       at(20, 344, 1040, 400, Tap(
         onTap: () => _play(context, PvpCategory.benKimim),
@@ -86,9 +89,8 @@ class PvpModeScreen extends StatelessWidget {
         92,
         GlassBox(
           radius: 46,
-          blur: 8,
           borderWidth: 3,
-          color: const Color(0x80111111),
+          color: const Color(0xBB0D261F),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 28),
             child: FittedBox(

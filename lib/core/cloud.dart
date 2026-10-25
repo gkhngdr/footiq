@@ -234,7 +234,7 @@ class Cloud {
   }
 
   static Future<List<({String name, int trophies})>> leaderboard() async {
-    if (!signedIn) return [];
+    if (_db == null) return [];
     try {
       final rows = await _db!.rpc('leaderboard') as List;
       return [for (final r in rows) (name: r['username'] as String, trophies: r['trophies'] as int)];

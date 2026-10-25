@@ -2,16 +2,18 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'cloud.dart';
 
 /// Oyuncunun tüm ilerlemesi. Cihazda SharedPreferences ile saklanır ve
 /// hesapla giriş yapıldığında Supabase ile senkronize edilir.
-class GameState extends ChangeNotifier {
+class GameState extends ChangeNotifier with WidgetsBindingObserver {
   GameState._();
   static final GameState instance = GameState._();
+
+  bool _observerAttached = false;
 
   static const int maxEnergy = 6;
   static const Duration energyRegen = Duration(minutes: 20);
@@ -81,6 +83,10 @@ class GameState extends ChangeNotifier {
   bool get guestInviteUsed => _guestInviteUsed;
 
   Future<void> load() async {
+    if (!_observerAttached) {
+      WidgetsBinding.instance.addObserver(this);
+      _observerAttached = true;
+    }
     _prefs = await SharedPreferences.getInstance();
     final raw = _prefs!.getString(_key);
     if (raw == null) return;
@@ -130,6 +136,19 @@ class GameState extends ChangeNotifier {
       };
 
   Timer? _cloudTimer;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.detached) {
+      // Uygulama arka plana alındığında bekleyen bulut kaydını anında gönder.
+      if (_cloudTimer?.isActive ?? false) {
+        _cloudTimer?.cancel();
+        if (isAccount) Cloud.pushProfile();
+      }
+    }
+  }
 
   void _save() {
     _prefs?.setString(_key, jsonEncode(toMap()));

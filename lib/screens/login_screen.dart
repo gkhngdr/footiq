@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _enter() {
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const MainScreen()));
+    goStage(context, const MainScreen(), replace: true);
   }
 
   void _guest() {
@@ -54,6 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _submit() async {
     if (_busy) return;
+    FocusManager.instance.primaryFocus?.unfocus();
     final problem = _validate();
     if (problem != null) {
       toast(context, problem);
@@ -96,100 +97,117 @@ class _LoginScreenState extends State<LoginScreen> {
     toast(context, err ?? 'Şifre sıfırlama bağlantısı e-postana gönderildi.');
   }
 
-  Widget _field(double y, String label, TextEditingController c,
-      {bool password = false, TextInputType? type, List<TextInputFormatter>? formatters}) {
-    final style = poppins(32, weight: FontWeight.w400, color: Colors.white);
+  Widget _field(
+    double y,
+    String label,
+    TextEditingController c, {
+    bool password = false,
+    TextInputType? type,
+    TextInputAction? action,
+    ValueChanged<String>? onSubmitted,
+    List<TextInputFormatter>? formatters,
+  }) {
+    final style = poppins(32, weight: FontWeight.w500, color: Colors.white);
     return at(170, y, 720, 80, GlassBox(
       radius: 50,
-      blur: 8,
-      borderWidth: 2,
+      color: const Color(0x66102A22),
+      borderWidth: 2.5,
       child: Padding(
         padding: const EdgeInsets.only(left: 38, right: 24),
-        child: Row(children: [
-          Expanded(
-            child: TextField(
-              controller: c,
-              obscureText: password && _hidePass,
-              keyboardType: type,
-              autocorrect: false,
-              enableSuggestions: !password,
-              maxLength: password ? 72 : 64,
-              inputFormatters: formatters,
-              style: style,
-              cursorColor: Colors.white,
-              decoration: InputDecoration(
-                counterText: '',
-                border: InputBorder.none,
-                hintText: label,
-                hintStyle: poppins(28, weight: FontWeight.w300, color: Colors.white60),
+        child: Center(
+          child: Row(children: [
+            Expanded(
+              child: TextField(
+                controller: c,
+                obscureText: password && _hidePass,
+                keyboardType: type ?? (password ? TextInputType.visiblePassword : TextInputType.text),
+                textInputAction: action ?? (password ? TextInputAction.done : TextInputAction.next),
+                onSubmitted: onSubmitted ?? (password ? (_) => _submit() : null),
+                autocorrect: false,
+                enableSuggestions: !password,
+                maxLength: password ? 72 : 64,
+                inputFormatters: formatters,
+                style: style,
+                cursorColor: Colors.white,
+                decoration: InputDecoration(
+                  isCollapsed: true,
+                  counterText: '',
+                  border: InputBorder.none,
+                  hintText: label,
+                  hintStyle: poppins(28, weight: FontWeight.w300, color: Colors.white70),
+                ),
               ),
             ),
-          ),
-          if (password)
-            GestureDetector(
-              onTap: () => setState(() => _hidePass = !_hidePass),
-              child: Icon(_hidePass ? Icons.visibility_off_rounded : Icons.visibility_rounded, color: Colors.white70, size: 44),
-            ),
-        ]),
+            if (password)
+              GestureDetector(
+                onTap: () => setState(() => _hidePass = !_hidePass),
+                child: Icon(_hidePass ? Icons.visibility_off_rounded : Icons.visibility_rounded, color: Colors.white70, size: 44),
+              ),
+          ]),
+        ),
       ),
     ));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stage(background: 'bg_splash.png', children: [
-      // Cam panel
-      at(120, 464, 840, 860, const GlassBox(radius: 35, blur: 8.8, borderWidth: 4)),
-      at(120, 464, 840, 860, const GlowFrame(radius: 35, color: Colors.white, width: 7, blur: 11.45)),
-      at(411.2, 504, 257.528, 268.8, png('logo.png')),
-      at(120, 805, 840, 86, centerText(_register ? 'Hesap oluştur' : 'Hesabı’na giriş yap', poppins(57.6, weight: FontWeight.w500, spacing: 0.02))),
-      if (_register) ...[
-        _field(905, 'KULLANICI ADI', _username),
-        _field(995, 'E-POSTA', _email, type: TextInputType.emailAddress),
-        _field(1085, 'ŞİFRE', _password, password: true),
-      ] else ...[
-        _field(931, 'E-POSTA', _email, type: TextInputType.emailAddress),
-        _field(1051, 'ŞİFRE', _password, password: true),
-        at(560, 1135, 330, 44, Tap(
-          onTap: _forgot,
-          child: Align(alignment: Alignment.centerRight, child: Text('Şifremi unuttum', style: poppins(24, weight: FontWeight.w300))),
+    return Stage(
+      background: 'bg_splash.png',
+      keyboardShift: true,
+      children: [
+        // Cam panel
+        at(120, 464, 840, 860, const GlassBox(radius: 35, blur: 8.8, borderWidth: 4)),
+        at(120, 464, 840, 860, const GlowFrame(radius: 35, color: Colors.white, width: 7, blur: 11.45)),
+        at(411.2, 504, 257.528, 268.8, png('logo.png')),
+        at(120, 805, 840, 86, centerText(_register ? 'Hesap oluştur' : 'Hesabına giriş yap', londrina(58, shadows: kTextShadow))),
+        if (_register) ...[
+          _field(905, 'KULLANICI ADI', _username),
+          _field(995, 'E-POSTA', _email, type: TextInputType.emailAddress),
+          _field(1085, 'ŞİFRE', _password, password: true),
+        ] else ...[
+          _field(931, 'E-POSTA', _email, type: TextInputType.emailAddress),
+          _field(1051, 'ŞİFRE', _password, password: true),
+          at(560, 1135, 330, 44, Tap(
+            onTap: _forgot,
+            child: Align(alignment: Alignment.centerRight, child: Text('Şifremi unuttum', style: poppins(24, weight: FontWeight.w400))),
+          )),
+        ],
+        // GİRİŞ YAP / KAYIT OL (ortalanmış)
+        at(290, 1193, 500, 90, const GlassBox(radius: 15, color: Color(0xFFAC594E))),
+        at(292.4, 1187, 495.2, 90, Tap(
+          onTap: _submit,
+          child: GlassBox(
+            radius: 10,
+            gradient: kOrange,
+            borderWidth: 3,
+            borderColor: const Color(0xFFFEC665),
+            child: _busy
+                ? const Center(child: SizedBox(width: 44, height: 44, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 5)))
+                : centerText(_register ? 'KAYIT OL' : 'GİRİŞ YAP', londrina(42, shadows: kTextShadow)),
+          ),
+        )),
+        // Alt düğmeler
+        at(120, 1384, 384, 72, Tap(
+          onTap: () => setState(() => _register = !_register),
+          child: GlassBox(radius: 50, color: const Color(0x66102A22), borderWidth: 2, child: centerText(_register ? 'GİRİŞE DÖN' : 'KAYIT OL', poppins(28, weight: FontWeight.w500))),
+        )),
+        at(552, 1384, 408, 72, Tap(
+          onTap: _guest,
+          child: GlassBox(
+            radius: 50,
+            color: const Color(0x66102A22),
+            borderWidth: 2,
+            child: centerText('MİSAFİR OLARAK DEVAM ET', poppins(28, weight: FontWeight.w500)),
+          ),
+        )),
+        at(120, 1480, 840, 90, Center(
+          child: Text(
+            'Misafir ilerlemesi bu cihazda saklanır.\nHesap açarsan her cihazda devam edersin.',
+            textAlign: TextAlign.center,
+            style: poppins(24, weight: FontWeight.w400, color: Colors.white70),
+          ),
         )),
       ],
-      // GİRİŞ YAP / KAYIT OL (ortalanmış)
-      at(290, 1193, 500, 90, const GlassBox(radius: 15, color: Color(0xFFAC594E))),
-      at(292.4, 1187, 495.2, 90, Tap(
-        onTap: _submit,
-        child: GlassBox(
-          radius: 10,
-          gradient: kOrange,
-          borderWidth: 3,
-          borderColor: const Color(0xFFFEC665),
-          child: _busy
-              ? const Center(child: SizedBox(width: 44, height: 44, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 5)))
-              : centerText(_register ? 'KAYIT OL' : 'GİRİŞ YAP', poppins(38.4)),
-        ),
-      )),
-      // Alt düğmeler
-      at(120, 1384, 384, 72, Tap(
-        onTap: () => setState(() => _register = !_register),
-        child: GlassBox(radius: 50, blur: 8, borderWidth: 2, child: centerText(_register ? 'GİRİŞE DÖN' : 'KAYIT OL', poppins(28.8, weight: FontWeight.w300))),
-      )),
-      at(552, 1384, 408, 72, Tap(
-        onTap: _guest,
-        child: GlassBox(
-          radius: 50,
-          blur: 8,
-          borderWidth: 2,
-          child: centerText('MİSAFİR OLARAK DEVAM ET', poppins(28.8, weight: FontWeight.w300)),
-        ),
-      )),
-      at(120, 1480, 840, 90, Center(
-        child: Text(
-          'Misafir ilerlemesi bu cihazda saklanır.\nHesap açarsan her cihazda devam edersin.',
-          textAlign: TextAlign.center,
-          style: poppins(24, weight: FontWeight.w300, color: Colors.white70),
-        ),
-      )),
-    ]);
+    );
   }
 }

@@ -3,11 +3,17 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../core/game_state.dart';
+import '../core/sound.dart';
 import '../core/ui.dart';
 import '../widgets/common.dart';
 
 /// Ekranı bulanıklaştıran ve 1080x1920 tuval üzerinde çizilen tam ekran pencere.
-Future<T?> showStageDialog<T>(BuildContext context, List<Widget> Function(BuildContext) children) {
+/// Klavye açıldığında tuvali küçültmez (`removeViewInsets`); gerekirse içeriği yukarı kaydırır.
+Future<T?> showStageDialog<T>(
+  BuildContext context,
+  List<Widget> Function(BuildContext) children, {
+  bool keyboardShift = false,
+}) {
   return showGeneralDialog<T>(
     context: context,
     barrierDismissible: false,
@@ -17,21 +23,40 @@ Future<T?> showStageDialog<T>(BuildContext context, List<Widget> Function(BuildC
       opacity: a,
       child: ScaleTransition(scale: Tween(begin: 0.92, end: 1.0).animate(CurvedAnimation(parent: a, curve: Curves.easeOutBack)), child: child),
     ),
-    pageBuilder: (ctx, _, _) => Material(
-      type: MaterialType.transparency,
-      child: Stack(fit: StackFit.expand, children: [
-        BackdropFilter(filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8), child: const ColoredBox(color: Color(0x66000000))),
-        Center(
-          child: FittedBox(
-            child: SizedBox(width: kDesignW, height: kDesignH, child: Stack(clipBehavior: Clip.none, children: children(ctx))),
+    pageBuilder: (ctx, _, _) => Builder(builder: (innerCtx) {
+      final bottomInset = MediaQuery.viewInsetsOf(innerCtx).bottom;
+      final shiftY = (keyboardShift && bottomInset > 0) ? -(bottomInset * 0.75).clamp(0.0, 240.0) : 0.0;
+      return GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: MediaQuery.removeViewInsets(
+          context: innerCtx,
+          removeBottom: true,
+          child: Material(
+            type: MaterialType.transparency,
+            child: Stack(fit: StackFit.expand, children: [
+              BackdropFilter(filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8), child: const ColoredBox(color: Color(0x66000000))),
+              Center(
+                child: FittedBox(
+                  child: SizedBox(
+                    width: kDesignW,
+                    height: kDesignH,
+                    child: Transform.translate(
+                      offset: Offset(0, shiftY),
+                      child: Stack(clipBehavior: Clip.none, children: children(ctx)),
+                    ),
+                  ),
+                ),
+              ),
+            ]),
           ),
         ),
-      ]),
-    ),
+      );
+    }),
   );
 }
 
-/// Oyun tasarım diline (1080x1920 Stage, cam panel ve Londrina/Exo fontlar) uygun onay penceresi.
+/// Oyun tasarım diline (1080x1920 Stage, cam panel ve Fredoka/Nunito fontlar) uygun onay penceresi.
 Future<bool> showStageConfirm(
   BuildContext context, {
   required String title,
@@ -95,6 +120,7 @@ Future<void> promptRefillEnergy(BuildContext context, {VoidCallback? onRefilled}
   if (ok && context.mounted) {
     showFakeAd(context, onDone: () {
       state.addEnergy(1);
+      Sound.energyRefill();
       if (context.mounted) {
         toast(context, '+1 enerji kazandın!');
         onRefilled?.call();
@@ -220,6 +246,7 @@ class _DailyPanelState extends State<_DailyPanel> {
 
   void _claim(int multiplier) {
     final reward = _state.claimDaily(multiplier: multiplier);
+    Sound.dailyReward();
     setState(() {});
     toast(context, '+$reward coin kazandın!');
     Future.delayed(const Duration(milliseconds: 700), () {

@@ -9,7 +9,7 @@ import 'login_screen.dart';
 
 /// Figma'da ayarlar ekranı yok; mevcut tasarım diliyle (1080x1920 Stage) oluşturuldu.
 Future<void> showSettings(BuildContext context) {
-  return showStageDialog(context, (ctx) => [const _SettingsPanel()]);
+  return showStageDialog(context, (ctx) => [const _SettingsPanel()], keyboardShift: true);
 }
 
 class _SettingsPanel extends StatefulWidget {
@@ -56,7 +56,7 @@ class _SettingsPanelState extends State<_SettingsPanel> {
       if (_editingName)
         at(200, 560, 680, 96, GlassBox(
           radius: 48,
-          blur: 8,
+          color: const Color(0xCC0D261F),
           borderWidth: 3,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 28),
@@ -91,7 +91,7 @@ class _SettingsPanelState extends State<_SettingsPanel> {
             const Icon(Icons.edit_rounded, color: Colors.white70, size: 38),
           ]),
         )),
-      _button(690, _state.soundOn ? 'Ses: Açık' : 'Ses: Kapalı', () => setState(_state.toggleSound)),
+      _button(690, _state.soundOn ? 'Ses: Açık' : 'Ses: Kapalı', () => setState(() => _state.toggleSound())),
       _button(855, 'İlerlemeyi Sıfırla', () async {
         final ok = await showStageConfirm(
           context,
