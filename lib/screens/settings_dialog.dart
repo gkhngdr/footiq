@@ -44,7 +44,15 @@ class _SettingsPanelState extends State<_SettingsPanel> {
   Widget _button(double y, String label, VoidCallback onTap, {Gradient gradient = kMint}) {
     return at(240, y, 600, 130, Tap(
       onTap: onTap,
-      child: GlassBox(radius: 34, borderWidth: 5, gradient: gradient, child: centerText(label, londrina(38, shadows: kTextShadow))),
+      child: GlassBox(
+        radius: 34,
+        borderWidth: 5,
+        gradient: gradient,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 28),
+          child: centerText(label, londrina(36, shadows: kTextShadow)),
+        ),
+      ),
     ));
   }
 

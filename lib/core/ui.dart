@@ -157,8 +157,12 @@ TextStyle poppins(double size, {FontWeight weight = FontWeight.w600, Color color
 
 const kTextShadow = [Shadow(color: Color(0xAA000000), offset: Offset(0, 3), blurRadius: 5)];
 
-Widget centerText(String text, TextStyle style) =>
-    Center(child: Text(text, style: style, textAlign: TextAlign.center, maxLines: 1, softWrap: false));
+Widget centerText(String text, TextStyle style) => Center(
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(text, style: style, textAlign: TextAlign.center, maxLines: 1),
+      ),
+    );
 
 /// Kenarlıklı, yuvarlak köşeli bir kutu; isteğe bağlı arka plan bulanıklığı.
 class GlassBox extends StatelessWidget {
