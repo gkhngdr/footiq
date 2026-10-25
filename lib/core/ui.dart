@@ -114,7 +114,7 @@ Widget flipY(Widget child) =>
 
 /// Ana oyun başlıkları, düğmeler ve sayaçlar için %100 kusursuz Türkçe destekli (ğ, ş, ı, İ, ö, ü, ç),
 /// modern, güçlü spor ve bilgi yarışması fontu (Montserrat ExtraBold).
-TextStyle londrina(double size, {Color color = Colors.white, double spacing = -0.015, List<Shadow>? shadows, FontWeight weight = FontWeight.w800}) =>
+TextStyle displayFont(double size, {Color color = Colors.white, double spacing = -0.015, List<Shadow>? shadows, FontWeight weight = FontWeight.w800}) =>
     TextStyle(
       fontFamily: 'Montserrat',
       fontFamilyFallback: const ['Outfit', 'Rubik'],
@@ -125,6 +125,10 @@ TextStyle londrina(double size, {Color color = Colors.white, double spacing = -0
       height: 1.15,
       shadows: shadows,
     );
+
+/// Geriye dönük uyumluluk takma adı (displayFont ile eşdeğerdir).
+TextStyle londrina(double size, {Color color = Colors.white, double spacing = -0.015, List<Shadow>? shadows, FontWeight weight = FontWeight.w800}) =>
+    displayFont(size, color: color, spacing: spacing, shadows: shadows, weight: weight);
 
 /// Soru metinleri, açıklamalar ve listeler için %100 Türkçe destekli,
 /// net ve dengeli modern font (Montserrat).
