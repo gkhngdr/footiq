@@ -72,6 +72,7 @@ class _SettingsPanelState extends State<_SettingsPanel> {
               Expanded(
                 child: TextField(
                   controller: _nameCtrl,
+                  onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
                   maxLength: 20,
                   autofocus: true,
                   style: exo(30, weight: 700),

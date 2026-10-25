@@ -42,53 +42,52 @@ class Stage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFF0D1B2A),
       resizeToAvoidBottomInset: false,
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: MediaQuery.removeViewInsets(
-          context: context,
-          removeBottom: true,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              RepaintBoundary(
-                child: backgroundBlur > 0
-                    ? ImageFiltered(
-                        imageFilter: ImageFilter.blur(sigmaX: backgroundBlur, sigmaY: backgroundBlur, tileMode: TileMode.mirror),
-                        child: Image.asset(fig(background), fit: BoxFit.cover, gaplessPlayback: true),
-                      )
-                    : Image.asset(fig(background), fit: BoxFit.cover, gaplessPlayback: true),
-              ),
-              Center(
-                child: FittedBox(
-                  fit: BoxFit.contain,
-                  child: SizedBox(
-                    width: kDesignW,
-                    height: kDesignH,
-                    child: Stack(clipBehavior: Clip.none, children: [
-                      if (exactBackground)
-                        Positioned.fill(
-                          child: RepaintBoundary(
-                            child: Image.asset(fig(background), fit: BoxFit.fill, gaplessPlayback: true),
-                          ),
-                        ),
-                      if (shiftY != 0)
-                        Transform.translate(
-                          offset: Offset(0, shiftY),
-                          child: SizedBox(
-                            width: kDesignW,
-                            height: kDesignH,
-                            child: Stack(clipBehavior: Clip.none, children: children),
-                          ),
+      body: MediaQuery.removeViewInsets(
+        context: context,
+        removeBottom: true,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+                child: RepaintBoundary(
+                  child: backgroundBlur > 0
+                      ? ImageFiltered(
+                          imageFilter: ImageFilter.blur(sigmaX: backgroundBlur, sigmaY: backgroundBlur, tileMode: TileMode.mirror),
+                          child: Image.asset(fig(background), fit: BoxFit.cover, gaplessPlayback: true),
                         )
-                      else
-                        ...children,
-                    ]),
-                  ),
+                      : Image.asset(fig(background), fit: BoxFit.cover, gaplessPlayback: true),
                 ),
               ),
-            ],
-          ),
+            ),
+            Center(
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: SizedBox(
+                  width: kDesignW,
+                  height: kDesignH,
+                  child: Stack(clipBehavior: Clip.none, children: [
+                    if (exactBackground)
+                      Positioned.fill(
+                        child: RepaintBoundary(
+                          child: Image.asset(fig(background), fit: BoxFit.fill, gaplessPlayback: true),
+                        ),
+                      ),
+                    Transform.translate(
+                      offset: Offset(0, shiftY),
+                      child: SizedBox(
+                        width: kDesignW,
+                        height: kDesignH,
+                        child: Stack(clipBehavior: Clip.none, children: children),
+                      ),
+                    ),
+                  ]),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

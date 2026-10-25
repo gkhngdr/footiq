@@ -330,4 +330,43 @@ void main() {
     expect(state.trophies, 0);
     expect(state.coins, 500);
   });
+
+  testWidgets('Giriş ekranında TextField tıklandığında klavye açılsa bile odak kaybolmaz ve dışarı tıklayınca kapanır', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    GameState.instance
+      ..resetProgress()
+      ..logout();
+    tester.view.physicalSize = const Size(1080, 1920);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(const FootIQApp());
+    for (var i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+
+    final field = find.byType(TextField).first;
+    expect(field, findsOneWidget);
+
+    // Tıkla ve odaklan
+    await tester.tap(field);
+    await tester.pump();
+
+    final primaryBefore = FocusManager.instance.primaryFocus;
+    expect(primaryBefore?.context?.findAncestorWidgetOfExactType<TextField>() != null, isTrue);
+
+    // Sanal klavyenin açıldığını simüle et (bottom insets = 300)
+    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+    await tester.pump();
+
+    // Klavye açılınca ve ekran yukarı kayınca odağın bozulmadığını doğrula
+    final primaryAfter = FocusManager.instance.primaryFocus;
+    expect(primaryAfter?.context?.findAncestorWidgetOfExactType<TextField>() != null, isTrue, reason: 'Klavye açıldığında odak kaybolmamalı');
+
+    // Dışarıya (boş arka plana) tıklandığında klavyenin ve odağın kapandığını doğrula
+    await tester.tapAt(const Offset(100, 100));
+    await tester.pump();
+    final primaryAfterTapOutside = FocusManager.instance.primaryFocus;
+    expect(primaryAfterTapOutside?.context?.findAncestorWidgetOfExactType<TextField>(), isNull, reason: 'Dışarı tıklandığında odak kapanmalı');
+  });
 }

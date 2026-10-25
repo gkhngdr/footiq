@@ -186,6 +186,7 @@ class _InvitePanelState extends State<_InvitePanel> {
               Expanded(
                 child: TextField(
                   controller: _input,
+                  onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
                   maxLength: 8,
                   autocorrect: false,
                   enableSuggestions: false,

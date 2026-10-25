@@ -26,30 +26,32 @@ Future<T?> showStageDialog<T>(
     pageBuilder: (ctx, _, _) => Builder(builder: (innerCtx) {
       final bottomInset = MediaQuery.viewInsetsOf(innerCtx).bottom;
       final shiftY = (keyboardShift && bottomInset > 0) ? -(bottomInset * 0.75).clamp(0.0, 240.0) : 0.0;
-      return GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: MediaQuery.removeViewInsets(
-          context: innerCtx,
-          removeBottom: true,
-          child: Material(
-            type: MaterialType.transparency,
-            child: Stack(fit: StackFit.expand, children: [
-              BackdropFilter(filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8), child: const ColoredBox(color: Color(0x66000000))),
-              Center(
-                child: FittedBox(
-                  child: SizedBox(
-                    width: kDesignW,
-                    height: kDesignH,
-                    child: Transform.translate(
-                      offset: Offset(0, shiftY),
-                      child: Stack(clipBehavior: Clip.none, children: children(ctx)),
-                    ),
+      return MediaQuery.removeViewInsets(
+        context: innerCtx,
+        removeBottom: true,
+        child: Material(
+          type: MaterialType.transparency,
+          child: Stack(fit: StackFit.expand, children: [
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+                child: BackdropFilter(filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8), child: const ColoredBox(color: Color(0x66000000))),
+              ),
+            ),
+            Center(
+              child: FittedBox(
+                child: SizedBox(
+                  width: kDesignW,
+                  height: kDesignH,
+                  child: Transform.translate(
+                    offset: Offset(0, shiftY),
+                    child: Stack(clipBehavior: Clip.none, children: children(ctx)),
                   ),
                 ),
               ),
-            ]),
-          ),
+            ),
+          ]),
         ),
       );
     }),

@@ -119,6 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Expanded(
               child: TextField(
                 controller: c,
+                onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
                 obscureText: password && _hidePass,
                 keyboardType: type ?? (password ? TextInputType.visiblePassword : TextInputType.text),
                 textInputAction: action ?? (password ? TextInputAction.done : TextInputAction.next),
