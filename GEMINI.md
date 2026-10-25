@@ -16,6 +16,7 @@ Bu dosya, yapılan tüm mimari analizleri, kod değişikliklerini, Supabase yap�
 - **Ses Sistemi (`lib/core/sound.dart`, `assets/sounds/`):**
   - `Sound` sınıfı (`click`, `correct`, `wrong`, `timeout`, `win`, `lose`, `tick`, `coin`, `trophy`, `matchFound`, `energyRefill`, `giftOpen`, `dailyReward`, `levelUp`) `GameState.instance.soundOn` durumuna bağlı çalışır.
   - Web'de HTML5 `Audio` (`lib/core/sound_web.dart`), Android'de `MainActivity.kt` içindeki düşük gecikmeli `SoundPool` (`MethodChannel('footiq/sound')`) üzerinden gerçek `.mp3` / `.wav` ses dosyalarını çalar (öncelik `.mp3`, yoksa `.wav`).
+  - **Akustik Mastering & Doygunluk Dengesi:** Tüm sesler `-3.0 dB` tavan sınırlayıcı (True Peak) ile yeniden master edildi; hakem düdükleri ve uyarı seslerindeki kulak tırmalayıcı patlama ve dijital kırpılma (clipping) 12kHz yumuşak filtre ve ses seviyesi düşürme ile giderildi; kısık kalan altın para (`coin`) ve enerji dolum (`energy_refill`) sesleri duyulabilir seviyeye yükseltildi. Web (`0.55`) ve Android (`0.70f`) oynatıcı ses çıkışları dengelendi.
 - **Durum Yönetimi (`lib/core/game_state.dart`):** `GameState.instance` (`ChangeNotifier` + `WidgetsBindingObserver` singleton) tüm oyuncu verilerini (`playerId`, `playerName`, `trophies`, `coins`, `energy`, `_stars`, `_dailyStreak`, `_giftProgress`, `soundOn`) yönetir, `SharedPreferences` (`footiq_state_v1`) ile cihazda saklar, hesaplı oyuncularda 3 sn gecikmeli (debounced) olarak Supabase'e yazar ve uygulama arka plana alındığında (`paused`/`inactive`/`detached`) bekleyen bulut kaydını anında gönderir.
 
 ---
@@ -47,6 +48,7 @@ Bu dosya, yapılan tüm mimari analizleri, kod değişikliklerini, Supabase yap�
    - `QuizScreen` içinde hem eşleşme (`_matching`) hem soru ekranı `PopScope` ve `CloseBtn` ile korundu; sorular arası geçişe `AnimatedSwitcher` eklendi; oyuncunun kupası `0` iken PVP kaybettiğinde sonuç ekranında `-5` yerine gerçek değişim olan `+0` gösterilmesi sağlandı (`actualTrophies = _state.trophies - beforeTrophies`).
    - `InviteDialog` ("Davet Et Kazan") penceresinde arkadaş davet kodu giriş alanı yüksek kontrastlı koyu kutu, altın çerçeve ve "Yapıştır" düğmesiyle belirginleştirildi; hem çevrimiçi Supabase (`redeem_invite`) hem de çevrimdışı/misafir (`redeemGuestInvite`) modda `+500 Coin` ödülü çalışır hale getirildi.
    - **Sezon Sıralaması (`leaderboard_dialog.dart`) ve Rank:** Üstte Sezon Ödül rozetleri (`🥇 1. +10.000`, `🥈 2. +5.000`, `🥉 3. +2.500`), ilk 3 için madalya rozetleri (`🥇 #1`, `🥈 #2`, `🥉 #3`), sezon geri sayımı ve altta sabit `"Senin sıran: #..."` kartı ile zenginleştirildi.
+   - **Dinamik Enerji Barı (`TopHud` — `lib/widgets/common.dart`):** Önceden sabit `Positioned` sıkı kısıtlaması (tight constraint) nedeniyle enerji düştüğünde azalamayan ve sürekli %100 dolu kalan enerji çubuğu, `(306.0 * energy / maxEnergy)` dinamik genişliği ve `ClipRRect` + `OverflowBox` ile düzeltildi; enerji azaldıkça bar akıcı şekilde sola doğru çekilir, 0 enerjide tamamen boşalır.
 
 ---
 
