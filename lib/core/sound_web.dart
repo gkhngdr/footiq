@@ -11,7 +11,7 @@ extension type _HTMLAudio._(JSObject _) implements JSObject {
 
 Future<void> playPlatformSound(String name) async {
   try {
-    final audio = _HTMLAudio('assets/assets/sounds/$name.mp3'.toJS)..volume = 0.75.toJS;
+    final audio = _HTMLAudio('assets/assets/sounds/$name.mp3'.toJS)..volume = 0.55.toJS;
     audio.onerror = ((JSAny? _) {
       audio.onerror = null;
       audio.src = 'assets/assets/sounds/$name.wav'.toJS;

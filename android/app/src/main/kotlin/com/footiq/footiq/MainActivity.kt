@@ -25,7 +25,7 @@ class MainActivity : FlutterActivity() {
 
         pool.setOnLoadCompleteListener { sp, sampleId, status ->
             if (status == 0) {
-                sp.play(sampleId, 0.85f, 0.85f, 1, 0, 1f)
+                sp.play(sampleId, 0.70f, 0.70f, 1, 0, 1f)
             }
         }
 
@@ -45,7 +45,7 @@ class MainActivity : FlutterActivity() {
         val pool = soundPool ?: return
         val cached = loadedSounds[name]
         if (cached != null) {
-            pool.play(cached, 0.85f, 0.85f, 1, 0, 1f)
+            pool.play(cached, 0.70f, 0.70f, 1, 0, 1f)
             return
         }
         val loader = FlutterInjector.instance().flutterLoader()

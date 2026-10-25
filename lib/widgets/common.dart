@@ -119,13 +119,31 @@ class _TopHudState extends State<TopHud> {
               : const GlassBox(radius: 100, color: Color(0x66111111), blur: 7.5)),
           // Enerji
           at(676, t + 68, 315, 53, svg('energy_back.svg')),
-          at(681, t + 72, 306, 45, ClipRect(
-            child: Align(
-              alignment: Alignment.centerRight,
-              widthFactor: energy / GameState.maxEnergy,
-              child: SizedBox(width: 306, height: 45, child: svg('energy_full.svg')),
+          if (energy > 0)
+            at(
+              681,
+              t + 72,
+              (306.0 * energy / GameState.maxEnergy).clamp(0.0, 306.0),
+              45,
+              ClipRRect(
+                borderRadius: BorderRadius.horizontal(
+                  left: const Radius.circular(22.5),
+                  right: Radius.circular(energy >= GameState.maxEnergy ? 10 : 6),
+                ),
+                child: OverflowBox(
+                  alignment: Alignment.centerLeft,
+                  minWidth: 306,
+                  maxWidth: 306,
+                  minHeight: 45,
+                  maxHeight: 45,
+                  child: SizedBox(
+                    width: 306,
+                    height: 45,
+                    child: svg('energy_full.svg'),
+                  ),
+                ),
+              ),
             ),
-          )),
           at(676, t + 70, 300, 45, centerText('$energy / ${GameState.maxEnergy}', londrina(36, shadows: kTextShadow))),
           if (next != null)
             at(676, t + 122, 300, 30, centerText(
