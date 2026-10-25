@@ -169,10 +169,15 @@ class GameState extends ChangeNotifier with WidgetsBindingObserver {
   int? rank;
 
   void loginAsGuest() {
+    _cloudTimer?.cancel();
+    Cloud.signOut();
     loggedIn = true;
     isAccount = false;
-    if (playerName == 'Misafir' || playerName.isEmpty) {
+    rank = null;
+    if (!playerName.startsWith('Misafir') || playerName == 'Misafir') {
+      resetProgress();
       playerName = 'Misafir${Random().nextInt(9000) + 1000}';
+      playerId = _generateId();
     }
     _save();
   }
@@ -229,6 +234,9 @@ class GameState extends ChangeNotifier with WidgetsBindingObserver {
     loggedIn = false;
     isAccount = false;
     rank = null;
+    resetProgress();
+    playerName = 'Misafir${Random().nextInt(9000) + 1000}';
+    playerId = _generateId();
     _save();
   }
 

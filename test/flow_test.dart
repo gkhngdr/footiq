@@ -304,4 +304,30 @@ void main() {
     }
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('Hesaptan çıkış yapılıp misafir olarak devam edildiğinde hesap verileri yerine temiz misafir profili gelir', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final state = GameState.instance;
+    state.setAccount('Ahmet1905');
+    state.trophies = 150;
+    state.coins = 5000;
+    expect(state.playerName, 'Ahmet1905');
+    expect(state.isAccount, isTrue);
+
+    // Çıkış yap
+    state.logout();
+    expect(state.loggedIn, isFalse);
+    expect(state.isAccount, isFalse);
+    expect(state.trophies, 0);
+    expect(state.playerName.startsWith('Misafir'), isTrue);
+
+    // Misafir olarak devam et
+    state.loginAsGuest();
+    expect(state.loggedIn, isTrue);
+    expect(state.isAccount, isFalse);
+    expect(state.playerName.startsWith('Misafir'), isTrue);
+    expect(state.playerName, isNot('Ahmet1905'));
+    expect(state.trophies, 0);
+    expect(state.coins, 500);
+  });
 }

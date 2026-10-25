@@ -27,16 +27,15 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
   }
 
   Future<void> _start() async {
-    // Bulut başlatma ve yerel durum okuma birbirini beklemeden paralel çalışır.
-    final Future<void> loading = Future.wait([
-      Cloud.init().timeout(const Duration(seconds: 5), onTimeout: () {}),
-      GameState.instance.load(),
-    ]).then((_) async {
+    // Bulut başlatma tamamlandıktan sonra yerel durum okunur ve profil senkronize edilir.
+    final Future<void> loading = () async {
+      await Cloud.init().timeout(const Duration(seconds: 5), onTimeout: () {});
+      await GameState.instance.load();
       if (GameState.instance.isAccount) {
         await Cloud.pullProfile().timeout(const Duration(seconds: 5), onTimeout: () {});
         GameState.instance.refreshRank();
       }
-    });
+    }();
     // İlk açılışta yalnızca giriş ve ana menü görsellerini önbelleğe al (RAM sıçramasını önler).
     for (final name in [
       'bg_splash.png',
