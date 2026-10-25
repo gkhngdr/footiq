@@ -28,6 +28,12 @@ flutter:
     - assets/sounds/
 
   fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat.ttf
+    - family: Outfit
+      fonts:
+        - asset: assets/fonts/Outfit.ttf
     - family: Fredoka
       fonts:
         - asset: assets/fonts/Fredoka.ttf

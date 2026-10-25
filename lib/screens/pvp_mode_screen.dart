@@ -38,9 +38,9 @@ class PvpModeScreen extends StatelessWidget {
   /// Kupa ve coin ödül satırı (+15 / +5k).
   List<Widget> _rewards(double trophyX, double coinX, double y) => [
         at(trophyX, y, 50, 50, png('trophy.png')),
-        Positioned(left: trophyX + 58, top: y + 4, child: Text('+15', style: londrina(32, shadows: kTextShadow))),
+        Positioned(left: trophyX + 58, top: y + 8, child: Text('+15', style: londrina(26, shadows: kTextShadow))),
         at(coinX, y, 50, 50, svg('coin.svg')),
-        Positioned(left: coinX + 58, top: y + 4, child: Text('+5k', style: londrina(32, shadows: kTextShadow))),
+        Positioned(left: coinX + 58, top: y + 8, child: Text('+5k', style: londrina(26, shadows: kTextShadow))),
       ];
 
   @override
@@ -54,7 +54,7 @@ class PvpModeScreen extends StatelessWidget {
         child: Stack(clipBehavior: Clip.none, children: [
           Positioned.fill(child: _cardBg('pvp_card1.png', 0, 1)),
           at(80, 30, 174, 364, flipX(png('pvp_char1.png'))),
-          at(0, 162, 1040, 80, centerText('Ben Kimim?', londrina(64, shadows: kTextShadow))),
+          at(0, 162, 1040, 80, centerText('Ben Kimim?', londrina(46, shadows: kTextShadow))),
           ..._rewards(404, 532, 246),
         ]),
       )),
@@ -68,7 +68,7 @@ class PvpModeScreen extends StatelessWidget {
               Positioned(left: 0, top: -0.001 * 385, width: 243, height: 1.0099 * 385, child: png('pvp_char3.png', fit: BoxFit.fill)),
             ]),
           )),
-          Positioned(left: 206, top: 162, child: Text('Champions League', style: londrina(64, shadows: kTextShadow))),
+          Positioned(left: 206, top: 168, child: Text('Champions League', style: londrina(42, shadows: kTextShadow))),
           ..._rewards(326, 454, 246),
         ]),
       )),
@@ -78,7 +78,7 @@ class PvpModeScreen extends StatelessWidget {
         child: Stack(clipBehavior: Clip.none, children: [
           Positioned.fill(child: _cardBg('pvp_card3.png', -0.8702, 3.9)),
           at(80, 6, 218, 388, flipX(png('pvp_char2.png'))),
-          at(0, 162, 1040, 80, centerText('Hangi Takım?', londrina(64, shadows: kTextShadow))),
+          at(0, 162, 1040, 80, centerText('Hangi Takım?', londrina(46, shadows: kTextShadow))),
           ..._rewards(404, 532, 246),
         ]),
       )),

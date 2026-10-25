@@ -44,7 +44,7 @@ class _SettingsPanelState extends State<_SettingsPanel> {
   Widget _button(double y, String label, VoidCallback onTap, {Gradient gradient = kMint}) {
     return at(240, y, 600, 130, Tap(
       onTap: onTap,
-      child: GlassBox(radius: 34, borderWidth: 5, gradient: gradient, child: centerText(label, londrina(52, shadows: kTextShadow))),
+      child: GlassBox(radius: 34, borderWidth: 5, gradient: gradient, child: centerText(label, londrina(38, shadows: kTextShadow))),
     ));
   }
 
@@ -52,7 +52,7 @@ class _SettingsPanelState extends State<_SettingsPanel> {
   Widget build(BuildContext context) {
     return Stack(clipBehavior: Clip.none, children: [
       at(80, 360, 920, 1200, svg('daily_panel.svg')),
-      at(80, 440, 920, 100, centerText('Ayarlar', londrina(80, shadows: kTextShadow))),
+      at(80, 440, 920, 100, centerText('Ayarlar', londrina(58, shadows: kTextShadow))),
       if (_editingName)
         at(200, 560, 680, 96, GlassBox(
           radius: 48,
@@ -66,7 +66,7 @@ class _SettingsPanelState extends State<_SettingsPanel> {
                   controller: _nameCtrl,
                   maxLength: 20,
                   autofocus: true,
-                  style: exo(34, weight: 700),
+                  style: exo(30, weight: 700),
                   cursorColor: Colors.white,
                   onSubmitted: (_) => _saveName(),
                   decoration: const InputDecoration(counterText: '', border: InputBorder.none),
@@ -86,7 +86,7 @@ class _SettingsPanelState extends State<_SettingsPanel> {
             _editingName = true;
           }),
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Flexible(child: Text(_state.playerName, maxLines: 1, overflow: TextOverflow.ellipsis, style: exo(38, weight: 700, shadows: kTextShadow))),
+            Flexible(child: Text(_state.playerName, maxLines: 1, overflow: TextOverflow.ellipsis, style: exo(32, weight: 700, shadows: kTextShadow))),
             const SizedBox(width: 14),
             const Icon(Icons.edit_rounded, color: Colors.white70, size: 38),
           ]),

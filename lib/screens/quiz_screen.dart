@@ -411,7 +411,7 @@ class _QuizScreenState extends State<QuizScreen> {
         top: dotsY - 2,
         child: Text(
           'Soru ${_index + 1}/${_questions.length}  •  ${currentQ.difficultyLabel} (${currentQ.difficulty}/10)',
-          style: londrina(38, shadows: kTextShadow),
+          style: londrina(30, shadows: kTextShadow),
         ),
       ),
       // Süre çubuğu (izole ValueListenableBuilder: tüm ekranı yeniden çizmez)
@@ -435,7 +435,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   currentQ.text,
                   key: ValueKey<int>(_index),
                   textAlign: TextAlign.center,
-                  style: exo(currentQ.text.length > 110 ? 44 : 52, weight: 700, shadows: kTextShadow),
+                  style: exo(currentQ.text.length > 110 ? 36 : 42, weight: 700, shadows: kTextShadow),
                 ),
               ),
             ),
@@ -467,7 +467,7 @@ class _QuizScreenState extends State<QuizScreen> {
           radius: 100,
           color: const Color(0x88111111),
           borderWidth: 3,
-          child: centerText('Chapter ${widget.chapter}  •  Seviye ${widget.level}', londrina(48, shadows: kTextShadow)),
+          child: centerText('Chapter ${widget.chapter}  •  Seviye ${widget.level}', londrina(38, shadows: kTextShadow)),
         )),
       ];
 
@@ -480,9 +480,9 @@ class _QuizScreenState extends State<QuizScreen> {
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(name, style: exo(32), maxLines: 1, overflow: TextOverflow.ellipsis),
+              child: Text(name, style: exo(26), maxLines: 1, overflow: TextOverflow.ellipsis),
             ),
-            Text('$score', style: londrina(64, color: color, shadows: kTextShadow)),
+            Text('$score', style: londrina(50, color: color, shadows: kTextShadow)),
             ?status,
           ]),
         );
@@ -493,7 +493,7 @@ class _QuizScreenState extends State<QuizScreen> {
         const Color(0xFF21ABD1),
         status: _revealed ? Text('cevapladı ✓', style: exo(22, color: const Color(0xFF63D998))) : null,
       )),
-      at(480, 270, 120, 100, centerText('VS', londrina(64, color: const Color(0xFFEB6CA1), shadows: kTextShadow))),
+      at(480, 270, 120, 100, centerText('VS', londrina(50, color: const Color(0xFFEB6CA1), shadows: kTextShadow))),
       at(620, 220, 420, 200, ValueListenableBuilder<bool>(
         valueListenable: _opponentAnsweredCurrent,
         builder: (_, answered, _) => side(
@@ -509,13 +509,13 @@ class _QuizScreenState extends State<QuizScreen> {
       )),
       at(40, 90, 800, 100, Align(
         alignment: Alignment.centerLeft,
-        child: Text(widget.category!.title, style: londrina(56, shadows: kTextShadow)),
+        child: Text(widget.category!.title, style: londrina(46, shadows: kTextShadow)),
       )),
     ];
   }
 
   List<Widget> _matchmaking() => [
-        at(0, 600, kDesignW, 100, centerText(widget.category!.title, londrina(80, shadows: kTextShadow))),
+        at(0, 600, kDesignW, 90, centerText(widget.category!.title, londrina(60, shadows: kTextShadow))),
         at(
           0,
           720,
@@ -523,11 +523,11 @@ class _QuizScreenState extends State<QuizScreen> {
           60,
           centerText(
             _onlineOpponent ? 'Rakip bulundu: $_opponentName' : 'Rakip aranıyor...',
-            exo(40),
+            exo(32),
           ),
         ),
         at(140, 880, 300, 300, const _Pulse(child: Icon(Icons.person_rounded, size: 200, color: Color(0xFF21ABD1)))),
-        at(440, 960, 200, 140, centerText('VS', londrina(110, color: const Color(0xFFEB6CA1), shadows: kTextShadow))),
+        at(440, 960, 200, 140, centerText('VS', londrina(76, color: const Color(0xFFEB6CA1), shadows: kTextShadow))),
         at(
           640,
           880,
@@ -541,7 +541,7 @@ class _QuizScreenState extends State<QuizScreen> {
             ),
           ),
         ),
-        at(0, 1240, kDesignW, 60, centerText('5 soru • Eşzamanlı karşılaşma', exo(34, color: Colors.white70))),
+        at(0, 1240, kDesignW, 60, centerText('5 soru • Eşzamanlı karşılaşma', exo(28, color: Colors.white70))),
       ];
 }
 
@@ -587,7 +587,7 @@ class _OptionButton extends StatelessWidget {
                   color: const Color(0x33000000),
                   border: Border.all(color: Colors.white, width: 4),
                 ),
-                child: centerText(letter, londrina(50)),
+                child: centerText(letter, londrina(40)),
               ),
               const SizedBox(width: 24),
               Expanded(
@@ -595,7 +595,7 @@ class _OptionButton extends StatelessWidget {
                   text,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: exo(text.length > 26 ? 36 : 44, weight: 700, shadows: kTextShadow),
+                  style: exo(text.length > 26 ? 30 : 34, weight: 700, shadows: kTextShadow),
                 ),
               ),
               if (state == _OptionState.correct) const Icon(Icons.check_circle_rounded, color: Colors.white, size: 70),

@@ -125,11 +125,11 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
       ),
-      _SideButton(top: 345, label: 'Izle Kazan', fontSize: 32, labelX: 774, labelY: 400, icon: const _WatchIcon(), onTap: _watchAd),
+      _SideButton(top: 345, label: 'İzle Kazan', fontSize: 26, labelX: 774, labelY: 400, icon: const _WatchIcon(), onTap: _watchAd),
       _SideButton(
         top: 520,
         label: 'Davet Et Kazan',
-        fontSize: 24,
+        fontSize: 22,
         labelX: 767,
         labelY: 580,
         icon: const _PlusBadge(),
@@ -214,7 +214,7 @@ class _MainScreenState extends State<MainScreen> {
           at(25 - (btnL - left), 2, 177.883, 48.492, svg('btn_shine.svg')),
           at(329.52 - (btnL - left), 4.33, 14.468, 5.526, svg('btn_dot.svg')),
           at(101.25 - (btnL - left), 4.33, 225.394, 4.667, svg('btn_line.svg')),
-          at(15.9 - (btnL - left), 0, 372.642, 137, centerText(label, londrina(54, shadows: kTextShadow))),
+          at(15.9 - (btnL - left), 0, 372.642, 137, centerText(label, londrina(42, shadows: kTextShadow))),
         ]),
       )),
     ];
@@ -287,7 +287,7 @@ class _SeasonBar extends StatelessWidget {
           at(203, 64.5, 48, 20.25, flipX(svg('season_r129.svg'))),
           at(152, 64.5, 48, 20.25, flipX(svg('season_r129.svg'))),
           at(102.5, 64.5, 46.5, 20.25, flipX(svg('season_r133.svg'))),
-          at(260, 44, 290, 42, centerText('SEZON LİGİ  •  #$rank', londrina(28, color: const Color(0xFFFFE27A), shadows: kTextShadow))),
+          at(260, 44, 290, 42, centerText('SEZON LİGİ  •  #$rank', londrina(24, color: const Color(0xFFFFE27A), shadows: kTextShadow))),
           at(18, 16, 132, 132, png('trophy.png')),
           at(150, 102, 400, 42, const GlassBox(radius: 18, color: Color(0x80111111))),
           at(
@@ -297,7 +297,7 @@ class _SeasonBar extends StatelessWidget {
             42,
             centerText(
               'Sezonun bitmesine ${left.inDays}g ${left.inHours % 24}s  •  Ödülleri Gör',
-              exo(23, weight: 700, shadows: kTextShadow),
+              exo(20, weight: 700, shadows: kTextShadow),
             ),
           ),
         ]),

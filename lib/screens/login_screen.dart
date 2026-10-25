@@ -159,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
         at(120, 464, 840, 860, const GlassBox(radius: 35, blur: 8.8, borderWidth: 4)),
         at(120, 464, 840, 860, const GlowFrame(radius: 35, color: Colors.white, width: 7, blur: 11.45)),
         at(411.2, 504, 257.528, 268.8, png('logo.png')),
-        at(120, 805, 840, 86, centerText(_register ? 'Hesap oluştur' : 'Hesabına giriş yap', londrina(58, shadows: kTextShadow))),
+        at(120, 805, 840, 86, centerText(_register ? 'Hesap oluştur' : 'Hesabına giriş yap', londrina(48, shadows: kTextShadow))),
         if (_register) ...[
           _field(905, 'KULLANICI ADI', _username),
           _field(995, 'E-POSTA', _email, type: TextInputType.emailAddress),
@@ -169,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
           _field(1051, 'ŞİFRE', _password, password: true),
           at(560, 1135, 330, 44, Tap(
             onTap: _forgot,
-            child: Align(alignment: Alignment.centerRight, child: Text('Şifremi unuttum', style: poppins(24, weight: FontWeight.w400))),
+            child: Align(alignment: Alignment.centerRight, child: Text('Şifremi unuttum', style: poppins(24, weight: FontWeight.w500))),
           )),
         ],
         // GİRİŞ YAP / KAYIT OL (ortalanmış)
@@ -183,13 +183,13 @@ class _LoginScreenState extends State<LoginScreen> {
             borderColor: const Color(0xFFFEC665),
             child: _busy
                 ? const Center(child: SizedBox(width: 44, height: 44, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 5)))
-                : centerText(_register ? 'KAYIT OL' : 'GİRİŞ YAP', londrina(42, shadows: kTextShadow)),
+                : centerText(_register ? 'KAYIT OL' : 'GİRİŞ YAP', londrina(36, shadows: kTextShadow)),
           ),
         )),
         // Alt düğmeler
         at(120, 1384, 384, 72, Tap(
           onTap: () => setState(() => _register = !_register),
-          child: GlassBox(radius: 50, color: const Color(0x66102A22), borderWidth: 2, child: centerText(_register ? 'GİRİŞE DÖN' : 'KAYIT OL', poppins(28, weight: FontWeight.w500))),
+          child: GlassBox(radius: 50, color: const Color(0x66102A22), borderWidth: 2, child: centerText(_register ? 'GİRİŞE DÖN' : 'KAYIT OL', poppins(24, weight: FontWeight.w600))),
         )),
         at(552, 1384, 408, 72, Tap(
           onTap: _guest,
@@ -197,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
             radius: 50,
             color: const Color(0x66102A22),
             borderWidth: 2,
-            child: centerText('MİSAFİR OLARAK DEVAM ET', poppins(28, weight: FontWeight.w500)),
+            child: centerText('MİSAFİR OLARAK DEVAM ET', poppins(22, weight: FontWeight.w600)),
           ),
         )),
         at(120, 1480, 840, 90, Center(

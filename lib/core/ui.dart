@@ -112,49 +112,48 @@ Widget flipX(Widget child) =>
 Widget flipY(Widget child) =>
     Transform(alignment: Alignment.center, transform: Matrix4.diagonal3Values(1, -1, 1), child: child);
 
-/// Ana oyun başlıkları, düğmeler ve sayaçlar için tam Türkçe destekli (ğ, ş, ı, İ, ö, ü, ç)
-/// yuvarlak hatlı modern oyun fontu (Fredoka Bold).
-TextStyle londrina(double size, {Color color = Colors.white, double spacing = 0.015, List<Shadow>? shadows}) =>
+/// Ana oyun başlıkları, düğmeler ve sayaçlar için %100 kusursuz Türkçe destekli (ğ, ş, ı, İ, ö, ü, ç),
+/// modern, güçlü spor ve bilgi yarışması fontu (Montserrat ExtraBold).
+TextStyle londrina(double size, {Color color = Colors.white, double spacing = -0.015, List<Shadow>? shadows, FontWeight weight = FontWeight.w800}) =>
     TextStyle(
-      fontFamily: 'Fredoka',
-      fontFamilyFallback: const ['Nunito', 'Rubik'],
+      fontFamily: 'Montserrat',
+      fontFamilyFallback: const ['Outfit', 'Rubik'],
       fontSize: size,
       color: color,
-      fontVariations: const [FontVariation('wght', 700), FontVariation('wdth', 100)],
+      fontWeight: weight,
       letterSpacing: size * spacing,
-      height: 1.18,
+      height: 1.15,
       shadows: shadows,
     );
 
-/// Soru metinleri, açıklamalar ve listeler için yüksek okunabilirlikli,
-/// tam Türkçe destekli modern font (Nunito).
+/// Soru metinleri, açıklamalar ve listeler için %100 Türkçe destekli,
+/// net ve dengeli modern font (Montserrat).
 TextStyle exo(double size, {Color color = Colors.white, double weight = 700, List<Shadow>? shadows}) => TextStyle(
-      fontFamily: 'Nunito',
-      fontFamilyFallback: const ['Rubik', 'Exo2'],
+      fontFamily: 'Montserrat',
+      fontFamilyFallback: const ['Outfit', 'Rubik'],
       fontSize: size,
       color: color,
-      fontVariations: [FontVariation('wght', weight.clamp(400, 900))],
-      height: 1.22,
+      fontWeight: weight >= 800
+          ? FontWeight.w800
+          : (weight >= 700
+              ? FontWeight.w700
+              : (weight >= 600 ? FontWeight.w600 : (weight >= 500 ? FontWeight.w500 : FontWeight.w400))),
+      letterSpacing: -0.2,
+      height: 1.25,
       shadows: shadows,
     );
 
-/// Giriş ekranı ve form alanları için tam Türkçe destekli modern font (Nunito / Rubik).
-TextStyle poppins(double size, {FontWeight weight = FontWeight.w600, Color color = Colors.white, double spacing = 0}) {
-  final w = switch (weight) {
-    FontWeight.w300 => 500.0,
-    FontWeight.w400 => 600.0,
-    FontWeight.w500 => 700.0,
-    _ => 700.0,
-  };
-  return TextStyle(
-    fontFamily: 'Nunito',
-    fontFamilyFallback: const ['Rubik', 'Poppins'],
-    fontSize: size,
-    fontVariations: [FontVariation('wght', w)],
-    color: color,
-    letterSpacing: size * spacing,
-  );
-}
+/// Giriş ekranı ve form alanları için modern font (Montserrat).
+TextStyle poppins(double size, {FontWeight weight = FontWeight.w600, Color color = Colors.white, double spacing = 0}) =>
+    TextStyle(
+      fontFamily: 'Montserrat',
+      fontFamilyFallback: const ['Outfit', 'Rubik'],
+      fontSize: size,
+      color: color,
+      fontWeight: weight,
+      letterSpacing: spacing,
+      height: 1.25,
+    );
 
 const kTextShadow = [Shadow(color: Color(0xAA000000), offset: Offset(0, 3), blurRadius: 5)];
 

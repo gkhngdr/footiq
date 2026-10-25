@@ -181,7 +181,7 @@ class LevelButton extends StatelessWidget {
       at(36.21, 14.15, 129.31, 127.385, svg('lvl_e132.svg')),
       at(41, 14, 120.69, 115, svg('lvl_e131.svg')),
       at(43.17, 14, 102.706, 63.846, svg('lvl_shine.svg')),
-      at(41, 14, 120.69, 115, centerText('$number', londrina(64, color: const Color(0xFFD39A41)))),
+      at(41, 14, 120.69, 115, centerText('$number', londrina(48, color: const Color(0xFFD39A41)))),
       at(68.1, 22.5, 29, 12.476, Transform.rotate(angle: -0.2618, child: svg('lvl_e138.svg'))),
     ]);
     if (locked) {

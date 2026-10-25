@@ -12,7 +12,10 @@ Bu dosya, yapılan tüm mimari analizleri, kod değişikliklerini, Supabase yap�
   - `MainScreen` açılışında tüm PVP kart ve karakter görselleri (`pvp_card1..3.png`, `pvp_char1..3.png`) `precacheImage` ile belleğe alınarak `PvpModeScreen` geçişindeki 1 saniyelik gecikme sıfırlandı.
   - `TopHud` içindeki saniyelik sayaç yalnızca enerji `< 6` iken çalışacak şekilde optimize edildi (enerji doluyken gereksiz yeniden çizim yapılmaz).
   - `QuizScreen` içindeki 100ms'lik süre sayacı `ValueNotifier<double>` ile yalnızca `_TimerBar` bileşenine izole edildi; böylece saniyede 10 kez tüm soru ekranının yeniden çizilmesi önlendi.
-- **Fontlar (%100 Türkçe Karakter Destekli):** `Fredoka` (`assets/fonts/Fredoka.ttf` — ana oyun başlıkları, butonlar, sayaçlar; `ğ, ş, ı, İ, ö, ü, ç` tam destekli), `Nunito` (`assets/fonts/Nunito.ttf` — soru metinleri, şıklar, açıklamalar), `Rubik` (`assets/fonts/Rubik.ttf` — giriş ekranı ve form alanları).
+- **Fontlar ve Tipografi (%100 Türkçe Karakter Destekli Montserrat & Outfit):**
+  - Önceki `Fredoka` fontundaki `ş` ve `ç` harflerinin altındaki kopuk virgül benzeri çengel anomalisi ve orantısız yazı boyutları giderildi.
+  - Spor ve mobil bilgi yarışması estetiğine tam uyan, Türkçe karakterleri kusursuz ve bitişik tipografik kancaya sahip **`Montserrat`** (ana başlıklar `ExtraBold 800`, soru metinleri `Bold 700`, butonlar ve sayaçlar `SemiBold 600`) ve **`Outfit`** fontlarına geçildi.
+  - Eski Londrina dar fontuna göre kalibre edilmiş aşırı büyük (80, 110) yazı boyutları komponent sınırlarına göre dengelendi (başlıklar 56-60px, butonlar 36-40px, soru metinleri 36-42px).
 - **Ses Sistemi (`lib/core/sound.dart`, `assets/sounds/`):**
   - `Sound` sınıfı (`click`, `correct`, `wrong`, `timeout`, `win`, `lose`, `tick`, `coin`, `trophy`, `matchFound`, `energyRefill`, `giftOpen`, `dailyReward`, `levelUp`) `GameState.instance.soundOn` durumuna bağlı çalışır.
   - Web'de HTML5 `Audio` (`lib/core/sound_web.dart`), Android'de `MainActivity.kt` içindeki düşük gecikmeli `SoundPool` (`MethodChannel('footiq/sound')`) üzerinden gerçek `.mp3` / `.wav` ses dosyalarını çalar (öncelik `.mp3`, yoksa `.wav`).

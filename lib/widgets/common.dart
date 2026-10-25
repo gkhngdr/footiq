@@ -144,11 +144,11 @@ class _TopHudState extends State<TopHud> {
                 ),
               ),
             ),
-          at(676, t + 70, 300, 45, centerText('$energy / ${GameState.maxEnergy}', londrina(36, shadows: kTextShadow))),
+          at(676, t + 70, 300, 45, centerText('$energy / ${GameState.maxEnergy}', londrina(28, shadows: kTextShadow))),
           if (next != null)
             at(676, t + 122, 300, 30, centerText(
               '+1 ${next.inMinutes.toString().padLeft(2, '0')}:${(next.inSeconds % 60).toString().padLeft(2, '0')}',
-              londrina(24),
+              londrina(20),
             )),
           at(972, t + 57, 64.5, 76.5, svg('energy_icon.svg')),
           at(676, t + 57, 360, 76, Tap(
@@ -165,14 +165,14 @@ class _TopHudState extends State<TopHud> {
             top: t + 25,
             child: SizedBox(
               width: widget.rankX - 182,
-              child: Text(_state.playerName, maxLines: 1, overflow: TextOverflow.ellipsis, style: exo(24)),
+              child: Text(_state.playerName, maxLines: 1, overflow: TextOverflow.ellipsis, style: exo(20)),
             ),
           ),
           at(widget.rankX - 10, t + 15, 240, 52, Tap(
             onTap: () => showLeaderboard(context),
             child: Padding(
               padding: const EdgeInsets.only(left: 10, top: 10),
-              child: Text('Rank: #${_state.displayRank}', style: exo(24)),
+              child: Text('Rank: #${_state.displayRank}', style: exo(20)),
             ),
           )),
           // Kupa (dokununca sıralama açılır)
@@ -187,7 +187,7 @@ class _TopHudState extends State<TopHud> {
                 ),
               ),
               at(0, 1, 50, 50, png('trophy.png')),
-              Positioned(left: 58, top: 4, child: Text(formatNumber(_state.trophies), style: londrina(32, color: const Color(0xFFFEFEFE)))),
+              Positioned(left: 58, top: 4, child: Text(formatNumber(_state.trophies), style: londrina(26, color: const Color(0xFFFEFEFE)))),
             ]),
           )),
           // Coin
@@ -197,7 +197,7 @@ class _TopHudState extends State<TopHud> {
             gradient: LinearGradient(colors: [Color(0xFF58B387), Color(0xFFD6D85D)], stops: [0.38462, 1]),
           )),
           at(406, t + 69, 50, 50, svg('coin.svg')),
-          Positioned(left: 464, top: t + 73, child: Text(formatNumber(_state.coins), style: londrina(32, color: const Color(0xFFFEFEFE)))),
+          Positioned(left: 464, top: t + 73, child: Text(formatNumber(_state.coins), style: londrina(26, color: const Color(0xFFFEFEFE)))),
           at(622.29, t + 72.64, 42.715, 42.715, Tap(
             onTap: () => showDailyReward(context),
             child: const _SmallPlus(),

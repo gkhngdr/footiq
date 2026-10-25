@@ -98,7 +98,7 @@ class _LeaderboardPanelState extends State<_LeaderboardPanel> {
 
     return Stack(clipBehavior: Clip.none, children: [
       at(80, 220, 920, 1560, svg('daily_panel.svg')),
-      at(80, 290, 920, 88, centerText('Sezon Sıralaması', londrina(78, shadows: kTextShadow))),
+      at(80, 290, 920, 88, centerText('Sezon Sıralaması', londrina(56, shadows: kTextShadow))),
       at(
         220,
         378,
@@ -174,7 +174,7 @@ class _LeaderboardPanelState extends State<_LeaderboardPanel> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           medal,
-                          style: londrina(isTop3 ? 42 : 44, color: badgeColor, shadows: kTextShadow),
+                          style: londrina(isTop3 ? 32 : 30, color: badgeColor, shadows: kTextShadow),
                         ),
                       ),
                     ),
@@ -183,12 +183,12 @@ class _LeaderboardPanelState extends State<_LeaderboardPanel> {
                         r.isMe ? '${r.name} (Sen)' : r.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: exo(34, weight: 700, shadows: kTextShadow),
+                        style: exo(26, weight: 700, shadows: kTextShadow),
                       ),
                     ),
                     SizedBox(width: 44, height: 44, child: png('trophy.png')),
                     const SizedBox(width: 10),
-                    Text(formatNumber(r.trophies), style: londrina(46, color: badgeColor, shadows: kTextShadow)),
+                    Text(formatNumber(r.trophies), style: londrina(32, color: badgeColor, shadows: kTextShadow)),
                   ]),
                 ),
               ),
@@ -213,7 +213,7 @@ class _LeaderboardPanelState extends State<_LeaderboardPanel> {
               child: Row(children: [
                 Text(
                   'Senin sıran: #${myIndex + 1}',
-                  style: londrina(42, color: const Color(0xFFFFE27A), shadows: kTextShadow),
+                  style: londrina(30, color: const Color(0xFFFFE27A), shadows: kTextShadow),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -222,13 +222,13 @@ class _LeaderboardPanelState extends State<_LeaderboardPanel> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.right,
-                    style: exo(30, weight: 700, shadows: kTextShadow),
+                    style: exo(26, weight: 700, shadows: kTextShadow),
                   ),
                 ),
                 const SizedBox(width: 14),
                 SizedBox(width: 46, height: 46, child: png('trophy.png')),
                 const SizedBox(width: 8),
-                Text(formatNumber(myRow.trophies), style: londrina(44, shadows: kTextShadow)),
+                Text(formatNumber(myRow.trophies), style: londrina(32, shadows: kTextShadow)),
               ]),
             ),
           ),

@@ -179,7 +179,7 @@ void main() {
     GameState.instance.useEnergy();
     await wait(200);
     expect(GameState.instance.energy, 5);
-    await tester.tap(find.text('Izle Kazan'));
+    await tester.tap(find.textContaining('zle Kazan'));
     await wait(400);
     expect(find.text('Bonus Ödül'), findsOneWidget);
     for (var i = 0; i < 6; i++) {
