@@ -99,20 +99,8 @@ class _SettingsPanelState extends State<_SettingsPanel> {
             const Icon(Icons.edit_rounded, color: Colors.white70, size: 38),
           ]),
         )),
-      _button(690, _state.soundOn ? 'Ses: Açık' : 'Ses: Kapalı', () => setState(() => _state.toggleSound())),
-      _button(855, 'İlerlemeyi Sıfırla', () async {
-        final ok = await showStageConfirm(
-          context,
-          title: 'İlerlemeyi Sıfırla',
-          message: 'Tüm ilerlemen, coin ve kupaların sıfırlanacak. Emin misin?',
-          confirmLabel: 'Sıfırla',
-        );
-        if (ok) {
-          _state.resetProgress();
-          if (context.mounted) toast(context, 'İlerleme sıfırlandı.');
-        }
-      }),
-      _button(1020, _state.isAccount ? 'Çıkış Yap' : 'Hesap Değiştir / Giriş', () async {
+      _button(720, _state.soundOn ? 'Ses: Açık' : 'Ses: Kapalı', () => setState(() => _state.toggleSound())),
+      _button(900, 'Çıkış Yap', () async {
         final text = _state.isAccount
             ? 'Hesabından çıkış yapılsın mı? İlerlemen bulutta saklı.'
             : 'Giriş ekranına dönmek istiyor musun?';
@@ -129,7 +117,7 @@ class _SettingsPanelState extends State<_SettingsPanel> {
         }
       }, gradient: kOrange),
       if (_state.isAccount)
-        _button(1185, 'Hesabı Sil', () async {
+        _button(1080, 'Hesabı Sil', () async {
           final ok = await showStageConfirm(
             context,
             title: 'Hesabı Sil',
@@ -148,7 +136,7 @@ class _SettingsPanelState extends State<_SettingsPanel> {
             Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const LoginScreen()), (_) => false);
           }
         }, gradient: const LinearGradient(colors: [Color(0xFFEB5A3C), Color(0xFFB42A12)])),
-      at(80, 1365, 920, 60, centerText('FootIQ v1.0', exo(26, color: Colors.white70))),
+      at(80, _state.isAccount ? 1280 : 1120, 920, 60, centerText('FootIQ v1.0', exo(26, color: Colors.white70))),
       at(905, 320, 116.715, 116.715, CloseBtn(onTap: () => Navigator.of(context).pop())),
     ]);
   }

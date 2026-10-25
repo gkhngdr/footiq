@@ -4,6 +4,7 @@ import 'package:footiq/core/cloud.dart';
 import 'package:footiq/core/game_state.dart';
 import 'package:footiq/data/questions.dart';
 import 'package:footiq/main.dart';
+import 'package:footiq/screens/settings_dialog.dart';
 import 'package:footiq/widgets/common.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -186,6 +187,29 @@ void main() {
       await wait(400);
     }
     expect(GameState.instance.energy, 6);
+
+    // Ayarlar penceresi
+    showSettings(tester.element(find.text('OYNA')));
+    await wait(600);
+    expect(find.text('Ayarlar'), findsOneWidget);
+    expect(find.text('Çıkış Yap'), findsOneWidget);
+    expect(find.text('İlerlemeyi Sıfırla'), findsNothing);
+    expect(find.text('Hesap Değiştir / Giriş'), findsNothing);
+    expect(find.text('Ses: Açık'), findsOneWidget);
+    await tester.tap(find.text('Ses: Açık'));
+    await wait(300);
+    expect(find.text('Ses: Kapalı'), findsOneWidget);
+    expect(GameState.instance.soundOn, isFalse);
+    await tester.tap(find.text('Ses: Kapalı'));
+    await wait(300);
+    expect(find.text('Ses: Açık'), findsOneWidget);
+    expect(GameState.instance.soundOn, isTrue);
+    await tester.tap(find.byType(CloseBtn));
+    await wait(300);
+    await wait(300);
+    await wait(300);
+    expect(find.text('Ayarlar'), findsNothing);
+
     expect(tester.takeException(), isNull);
   });
 
