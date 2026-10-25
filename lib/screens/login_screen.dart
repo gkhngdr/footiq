@@ -173,19 +173,33 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Align(alignment: Alignment.centerRight, child: Text('Şifremi unuttum', style: poppins(24, weight: FontWeight.w500))),
           )),
         ],
-        // GİRİŞ YAP / KAYIT OL (ortalanmış)
-        at(290, 1193, 500, 90, const GlassBox(radius: 15, color: Color(0xFFAC594E))),
-        at(292.4, 1187, 495.2, 90, Tap(
+        // GİRİŞ YAP / KAYIT OL (ortalanmış, 3D derinliğiyle birlikte basılan düğme)
+        at(290, 1187, 500, 96, Tap(
           onTap: _submit,
-          child: GlassBox(
-            radius: 10,
-            gradient: kOrange,
-            borderWidth: 3,
-            borderColor: const Color(0xFFFEC665),
-            child: _busy
-                ? const Center(child: SizedBox(width: 44, height: 44, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 5)))
-                : centerText(_register ? 'KAYIT OL' : 'GİRİŞ YAP', londrina(36, shadows: kTextShadow)),
-          ),
+          child: Stack(clipBehavior: Clip.none, children: [
+            const Positioned(
+              left: 0,
+              top: 6,
+              width: 500,
+              height: 90,
+              child: GlassBox(radius: 15, color: Color(0xFFAC594E)),
+            ),
+            Positioned(
+              left: 2.4,
+              top: 0,
+              width: 495.2,
+              height: 90,
+              child: GlassBox(
+                radius: 10,
+                gradient: kOrange,
+                borderWidth: 3,
+                borderColor: const Color(0xFFFEC665),
+                child: _busy
+                    ? const Center(child: SizedBox(width: 44, height: 44, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 5)))
+                    : centerText(_register ? 'KAYIT OL' : 'GİRİŞ YAP', londrina(36, shadows: kTextShadow)),
+              ),
+            ),
+          ]),
         )),
         // Alt düğmeler
         at(120, 1384, 384, 72, Tap(

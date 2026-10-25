@@ -248,23 +248,44 @@ class Tap extends StatefulWidget {
 
 class _TapState extends State<Tap> {
   bool _down = false;
+  int _downEpoch = 0;
+
+  void _onTapDown(TapDownDetails _) {
+    if (widget.onTap == null) return;
+    _downEpoch = DateTime.now().millisecondsSinceEpoch;
+    if (widget.playSound) Sound.click();
+    setState(() => _down = true);
+  }
+
+  void _onTapUp(TapUpDetails _) {
+    if (widget.onTap == null) return;
+    final elapsed = DateTime.now().millisecondsSinceEpoch - _downEpoch;
+    const minHoldMs = 85;
+    if (elapsed < minHoldMs) {
+      Future.delayed(Duration(milliseconds: minHoldMs - elapsed), () {
+        if (mounted) setState(() => _down = false);
+      });
+    } else {
+      if (mounted) setState(() => _down = false);
+    }
+    widget.onTap!();
+  }
+
+  void _onTapCancel() {
+    if (mounted) setState(() => _down = false);
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTapDown: widget.onTap == null ? null : (_) => setState(() => _down = true),
-      onTapCancel: () => setState(() => _down = false),
-      onTapUp: (_) => setState(() => _down = false),
-      onTap: widget.onTap == null
-          ? null
-          : () {
-              if (widget.playSound) Sound.click();
-              widget.onTap!();
-            },
+      onTapDown: widget.onTap == null ? null : _onTapDown,
+      onTapCancel: widget.onTap == null ? null : _onTapCancel,
+      onTapUp: widget.onTap == null ? null : _onTapUp,
       child: AnimatedScale(
-        scale: _down ? 0.94 : 1,
-        duration: const Duration(milliseconds: 90),
+        scale: _down ? 0.94 : 1.0,
+        duration: const Duration(milliseconds: 70),
+        curve: Curves.easeOutQuad,
         child: widget.child,
       ),
     );

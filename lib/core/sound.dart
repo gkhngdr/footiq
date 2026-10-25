@@ -9,6 +9,9 @@ import 'sound_stub.dart' if (dart.library.js_interop) 'sound_web.dart';
 class Sound {
   Sound._();
 
+  /// Sesleri arka planda önbelleğe alarak 0ms gecikmesiz çalmaya hazırlar.
+  static void init() => preloadPlatformSounds();
+
   static void _play(String name) {
     if (!GameState.instance.soundOn) return;
     playPlatformSound(name);

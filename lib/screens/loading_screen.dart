@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/cloud.dart';
+import '../core/sound.dart';
 import '../core/game_state.dart';
 import '../core/ui.dart';
 import 'login_screen.dart';
@@ -27,6 +28,8 @@ class _LoadingScreenState extends State<LoadingScreen> with SingleTickerProvider
   }
 
   Future<void> _start() async {
+    // Sesleri gecikmesiz çalmak için önbelleğe al
+    Sound.init();
     // Bulut başlatma tamamlandıktan sonra yerel durum okunur ve profil senkronize edilir.
     final Future<void> loading = () async {
       await Cloud.init().timeout(const Duration(seconds: 5), onTimeout: () {});
