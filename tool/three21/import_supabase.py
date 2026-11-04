@@ -62,10 +62,18 @@ def chunks(rows, n):
         yield rows[i:i + n]
 
 
-def difficulty(top_fame: int, fame_a: int, fame_b: int) -> int:
-    if top_fame >= 60 and min(fame_a, fame_b) >= 60:
+# Türk oyuncunun en iyi bildiği kulüpler: kolay sorular bunlardan en az birini içerir.
+TR_BIG = {"gs", "fb", "bjk", "ts"}
+GIANTS = {"realmadrid", "barcelona", "manutd", "liverpool", "chelsea", "arsenal",
+          "mancity", "juventus", "milan", "inter", "bayern", "dortmund", "psg"}
+
+
+def difficulty(a: str, b: str, top_fame: int) -> int:
+    """1 kolay, 2 orta, 3 zor. top_fame = en bilinen cevabın Wikipedia dil sayısı."""
+    known = {a, b} & (TR_BIG | GIANTS)
+    if top_fame >= 40 and ({a, b} & TR_BIG or len(known) == 2):
         return 1
-    if top_fame >= 30:
+    if top_fame >= 25 and known:
         return 2
     return 3
 
@@ -133,7 +141,7 @@ def main() -> None:
         "answers": [pid[q] for q in p["answers"]],
         "alt_answers": [pid[q] for q in p["unverified"] if q in pid],
         "top_fame": p["top_fame"],
-        "difficulty": difficulty(p["top_fame"], club_fame[p["a"]], club_fame[p["b"]]),
+        "difficulty": difficulty(p["a"], p["b"], p["top_fame"]),
     } for i, p in enumerate(pairs)]
     n = 0
     for ch in chunks(pair_rows, 300):

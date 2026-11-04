@@ -52,14 +52,14 @@ void main() {
     await wait(800);
     await wait(800);
     expect(find.text('Toplam Yıldız: 0 / 120'), findsOneWidget);
-    await tester.tap(find.text('Chapter 1'));
+    await tester.tap(find.text('Bölüm 1'));
     await wait(800);
     await wait(800);
     final energyBefore = GameState.instance.energy;
     await tester.tap(find.text('1').first);
     await wait(800);
     await wait(800);
-    expect(find.text('Chapter 1  •  Seviye 1'), findsOneWidget);
+    expect(find.text('Bölüm 1  •  Seviye 1'), findsOneWidget);
     expect(GameState.instance.energy, energyBefore - 1);
 
     // 5 soruyu doğru cevapla
@@ -82,7 +82,7 @@ void main() {
     await tester.tap(find.text('Haritaya Dön'));
     await wait(800);
     await wait(800);
-    expect(find.text('Chapter 1  •  Seviye 1'), findsNothing);
+    expect(find.text('Bölüm 1  •  Seviye 1'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -168,12 +168,15 @@ void main() {
       await wait(1000);
       await wait(1000);
 
-      // Sıralama penceresi (Rank etiketine tıkla)
-      expect(find.textContaining('Rank: #'), findsOneWidget);
-      await tester.tap(find.textContaining('Rank: #'));
+      // Sıralama penceresi: ana ekranda sıra yalnızca sezon çubuğunda (üst çubukta tekrar yok)
+      expect(find.textContaining('Sıra: #'), findsNothing);
+      expect(find.text('SEZON LİGİ'), findsOneWidget);
+      await tester.tap(find.text('SEZON LİGİ'));
       await wait(600);
       expect(find.text('Sezon Sıralaması'), findsOneWidget);
-      expect(find.textContaining('Senin sıran: #'), findsOneWidget);
+      // Misafir sıralamada yer almaz; sahte rakip de gösterilmez
+      expect(find.text('Hesap aç, sıralamaya gir!'), findsOneWidget);
+      expect(find.text('EfsaneKaptan10'), findsNothing);
       // Kapat
       await tester.tap(find.byType(CloseBtn));
       await wait(600);
@@ -187,7 +190,10 @@ void main() {
       await tester.tap(find.text('ODAYI AÇ'));
       await wait(1000);
       await wait(500);
-      expect(find.text('Oda açılamadı. İnternetini kontrol et.'), findsOneWidget);
+      expect(
+        find.text('Oda açılamadı. İnternetini kontrol et.'),
+        findsOneWidget,
+      );
       await wait(2200);
       // Koda katıl: eksik kod uyarısı
       await tester.tap(find.text('KODA KATIL'));
@@ -196,7 +202,10 @@ void main() {
       await tester.tap(find.text('KATIL'));
       await wait(1000);
       await wait(500);
-      expect(find.text('Oda kodu 4 haneli olmalı (ör. FQ-4032).'), findsOneWidget);
+      expect(
+        find.text('Oda kodu 4 haneli olmalı (ör. FQ-4032).'),
+        findsOneWidget,
+      );
       await wait(2200);
       await tester.tap(find.textContaining('Davet kodunla arkadaşını getir'));
       await wait(600);
@@ -291,7 +300,7 @@ void main() {
       await wait(500);
       await wait(500);
       expect(find.text('Toplam Yıldız: 90 / 120'), findsOneWidget);
-      await tester.tap(find.text('Chapter 4'));
+      await tester.tap(find.text('Bölüm 4'));
       await wait(500);
       await wait(500);
       state.addEnergy(6);
@@ -299,7 +308,7 @@ void main() {
       await tester.tapAt(const Offset(276, 760));
       await wait(500);
       await wait(500);
-      expect(find.text('Chapter 4  •  Seviye 1'), findsOneWidget);
+      expect(find.text('Bölüm 4  •  Seviye 1'), findsOneWidget);
 
       for (var i = 0; i < 5; i++) {
         final q = chapter4.firstWhere(
@@ -538,7 +547,7 @@ void main() {
       await tester.tap(find.text('OYNA'));
       await wait(800);
       await wait(800);
-      await tester.tap(find.text('Chapter 1'));
+      await tester.tap(find.text('Bölüm 1'));
       await wait(800);
       await wait(800);
       await tester.tap(
@@ -546,13 +555,13 @@ void main() {
       );
       await wait(800);
       await wait(800);
-      expect(find.text('Chapter 1  •  Seviye 10'), findsOneWidget);
+      expect(find.text('Bölüm 1  •  Seviye 10'), findsOneWidget);
       await answerAll(chapter1);
 
       await tester.tap(find.text('Sonraki Bölüm'));
       await wait(800);
       await wait(800);
-      expect(find.text('Chapter 2  •  Seviye 1'), findsOneWidget);
+      expect(find.text('Bölüm 2  •  Seviye 1'), findsOneWidget);
       // Alttaki harita artık Bölüm 2 haritası (Bölüm 1 haritası yığından çıktı)
       expect(mapOf(1), findsNothing);
       expect(
@@ -568,7 +577,7 @@ void main() {
       await wait(800);
       await wait(800);
       expect(mapOf(2), findsOneWidget);
-      expect(find.text('Chapter 2  •  Seviye 1'), findsNothing);
+      expect(find.text('Bölüm 2  •  Seviye 1'), findsNothing);
       expect(state.stars(2, 1), 3);
       expect(tester.takeException(), isNull);
     },

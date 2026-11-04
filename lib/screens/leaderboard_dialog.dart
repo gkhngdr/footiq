@@ -20,9 +20,8 @@ class _LeaderboardPanel extends StatefulWidget {
 }
 
 class _LeaderboardPanelState extends State<_LeaderboardPanel> {
-  late List<({String name, int trophies, bool isMe})> _rows = _mergeRows(
-    const [],
-  );
+  List<({String name, int trophies, bool isMe})> _rows = const [];
+  bool _loading = true;
 
   @override
   void initState() {
@@ -30,26 +29,19 @@ class _LeaderboardPanelState extends State<_LeaderboardPanel> {
     _loadOnline();
   }
 
-  List<({String name, int trophies, bool isMe})> _mergeRows(
+  /// Yalnızca gerçek (sunucudaki) oyuncular listelenir.
+  List<({String name, int trophies, bool isMe})> _toRows(
     List<({String name, int trophies})> online,
   ) {
     final s = GameState.instance;
-    final byName = <String, int>{
-      for (final r in GameState.seasonRivals) r.name: r.trophies,
-      for (final r in online) r.name: r.trophies,
-    };
-    byName[s.playerName] = s.trophies;
-
     return [
-      for (final e in byName.entries)
-        (name: e.key, trophies: e.value, isMe: e.key == s.playerName),
-    ]..sort((a, b) {
-      final cmp = b.trophies.compareTo(a.trophies);
-      if (cmp != 0) return cmp;
-      if (a.isMe) return -1;
-      if (b.isMe) return 1;
-      return a.name.compareTo(b.name);
-    });
+      for (final r in online)
+        (
+          name: r.name,
+          trophies: r.trophies,
+          isMe: s.isAccount && r.name == s.playerName,
+        ),
+    ]..sort((a, b) => b.trophies.compareTo(a.trophies));
   }
 
   Future<void> _loadOnline() async {
@@ -58,8 +50,11 @@ class _LeaderboardPanelState extends State<_LeaderboardPanel> {
     if (s.isAccount) {
       s.refreshRank();
     }
-    if (mounted && online.isNotEmpty) {
-      setState(() => _rows = _mergeRows(online));
+    if (mounted) {
+      setState(() {
+        _rows = _toRows(online);
+        _loading = false;
+      });
     }
   }
 
@@ -157,133 +152,150 @@ class _LeaderboardPanelState extends State<_LeaderboardPanel> {
           556,
           820,
           960,
-          ListView.separated(
-            padding: EdgeInsets.zero,
-            itemCount: rows.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 12),
-            itemBuilder: (_, i) {
-              final r = rows[i];
-              final isTop3 = i < 3;
-              final badgeColor = switch (i) {
-                0 => const Color(0xFFFFE27A),
-                1 => const Color(0xFFE0E6ED),
-                2 => const Color(0xFFFFB07C),
-                _ => Colors.white,
-              };
-              final medal = switch (i) {
-                0 => '🥇 #1',
-                1 => '🥈 #2',
-                2 => '🥉 #3',
-                _ => '#${i + 1}',
-              };
-              return SizedBox(
-                height: 92,
-                child: GlassBox(
-                  radius: 30,
-                  color: r.isMe
-                      ? const Color(0xCCF68537)
-                      : isTop3
-                      ? const Color(0xAA0D261F)
-                      : const Color(0x33FFFFFF),
-                  borderWidth: r.isMe || isTop3 ? 4 : 1.5,
-                  borderColor: r.isMe
-                      ? const Color(0xFFFFE27A)
-                      : (isTop3 ? badgeColor : Colors.white30),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 125,
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              medal,
-                              style: londrina(
-                                isTop3 ? 32 : 30,
-                                color: badgeColor,
-                                shadows: kTextShadow,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            r.isMe ? '${r.name} (Sen)' : r.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: exo(26, weight: 700, shadows: kTextShadow),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 44,
-                          height: 44,
-                          child: png('trophy.png'),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          formatNumber(r.trophies),
-                          style: londrina(
-                            32,
-                            color: badgeColor,
-                            shadows: kTextShadow,
-                          ),
-                        ),
-                      ],
-                    ),
+          rows.isEmpty
+              ? Center(
+                  child: Text(
+                    _loading
+                        ? 'Sıralama yükleniyor…'
+                        : 'Henüz sıralamada kimse yok.\nMaç kazan, ilk sen ol!',
+                    textAlign: TextAlign.center,
+                    style: exo(32, weight: 700, shadows: kTextShadow),
                   ),
+                )
+              : ListView.separated(
+                  padding: EdgeInsets.zero,
+                  itemCount: rows.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
+                  itemBuilder: (_, i) {
+                    final r = rows[i];
+                    final isTop3 = i < 3;
+                    final badgeColor = switch (i) {
+                      0 => const Color(0xFFFFE27A),
+                      1 => const Color(0xFFE0E6ED),
+                      2 => const Color(0xFFFFB07C),
+                      _ => Colors.white,
+                    };
+                    final medal = switch (i) {
+                      0 => '🥇 #1',
+                      1 => '🥈 #2',
+                      2 => '🥉 #3',
+                      _ => '#${i + 1}',
+                    };
+                    return SizedBox(
+                      height: 92,
+                      child: GlassBox(
+                        radius: 30,
+                        color: r.isMe
+                            ? const Color(0xCCF68537)
+                            : isTop3
+                            ? const Color(0xAA0D261F)
+                            : const Color(0x33FFFFFF),
+                        borderWidth: r.isMe || isTop3 ? 4 : 1.5,
+                        borderColor: r.isMe
+                            ? const Color(0xFFFFE27A)
+                            : (isTop3 ? badgeColor : Colors.white30),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 125,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    medal,
+                                    style: londrina(
+                                      isTop3 ? 32 : 30,
+                                      color: badgeColor,
+                                      shadows: kTextShadow,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  r.isMe ? '${r.name} (Sen)' : r.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: exo(
+                                    26,
+                                    weight: 700,
+                                    shadows: kTextShadow,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 44,
+                                height: 44,
+                                child: png('trophy.png'),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                formatNumber(r.trophies),
+                                style: londrina(
+                                  32,
+                                  color: badgeColor,
+                                  shadows: kTextShadow,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
         ),
         // Altta sabit "Senin Sıran" kartı
-        if (myRow != null)
-          at(
-            130,
-            1545,
-            820,
-            115,
-            GlassBox(
-              radius: 36,
-              gradient: kOrange,
-              borderWidth: 5,
-              borderColor: const Color(0xFFFFE27A),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28),
-                child: Row(
-                  children: [
-                    Text(
-                      'Senin sıran: #${myIndex + 1}',
-                      style: londrina(
-                        30,
-                        color: const Color(0xFFFFE27A),
-                        shadows: kTextShadow,
-                      ),
+        at(
+          130,
+          1545,
+          820,
+          115,
+          GlassBox(
+            radius: 36,
+            gradient: kOrange,
+            borderWidth: 5,
+            borderColor: const Color(0xFFFFE27A),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 28),
+              child: Row(
+                children: [
+                  Text(
+                    GameState.instance.isAccount
+                        ? 'Senin sıran: ${myIndex >= 0 ? '#${myIndex + 1}' : GameState.instance.rankLabel}'
+                        : 'Hesap aç, sıralamaya gir!',
+                    style: londrina(
+                      30,
+                      color: const Color(0xFFFFE27A),
+                      shadows: kTextShadow,
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Text(
-                        myRow.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.right,
-                        style: exo(26, weight: 700, shadows: kTextShadow),
-                      ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      GameState.instance.playerName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.right,
+                      style: exo(26, weight: 700, shadows: kTextShadow),
                     ),
-                    const SizedBox(width: 14),
-                    SizedBox(width: 46, height: 46, child: png('trophy.png')),
-                    const SizedBox(width: 8),
-                    Text(
-                      formatNumber(myRow.trophies),
-                      style: londrina(32, shadows: kTextShadow),
+                  ),
+                  const SizedBox(width: 14),
+                  SizedBox(width: 46, height: 46, child: png('trophy.png')),
+                  const SizedBox(width: 8),
+                  Text(
+                    formatNumber(
+                      myRow?.trophies ?? GameState.instance.trophies,
                     ),
-                  ],
-                ),
+                    style: londrina(32, shadows: kTextShadow),
+                  ),
+                ],
               ),
             ),
           ),
+        ),
         at(
           895,
           190,

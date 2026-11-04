@@ -48,7 +48,7 @@ class _ChapterSelectScreenState extends State<ChapterSelectScreen> {
     if (!_state.isChapterUnlocked(chapter)) {
       toast(
         context,
-        'Chapter $chapter kilitli. Önce Chapter ${chapter - 1}\'deki tüm seviyeleri geç!',
+        'Bölüm $chapter kilitli. Önce Bölüm ${chapter - 1}\'deki tüm seviyeleri geç!',
       );
       return;
     }
@@ -134,7 +134,7 @@ class _ChapterSelectScreenState extends State<ChapterSelectScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  'Chapter $chapter',
+                                  'Bölüm $chapter',
                                   style: londrina(
                                     64,
                                     color: unlocked

@@ -51,31 +51,9 @@ class GameState extends ChangeNotifier with WidgetsBindingObserver {
     return List.generate(24, (_) => chars[rng.nextInt(chars.length)]).join();
   }
 
-  /// Sezon ligindeki sabit rakipler (sıralama tablosu ve yerel Rank hesabı için).
-  static const List<({String name, int trophies})> seasonRivals = [
-    (name: 'EfsaneKaptan10', trophies: 420),
-    (name: 'ŞampiyonlarKralı', trophies: 360),
-    (name: 'GolMakinesi9', trophies: 310),
-    (name: 'TaktikDehası', trophies: 265),
-    (name: 'PanenkaUstası', trophies: 220),
-    (name: 'BoğazınBoğası', trophies: 185),
-    (name: 'TrivelaQuaresma', trophies: 150),
-    (name: 'KadıköyBoğası', trophies: 120),
-    (name: 'AslanYürek1905', trophies: 95),
-    (name: 'KaraKartal1903', trophies: 75),
-    (name: 'Fırtına61', trophies: 55),
-    (name: 'AltınAyakkabı', trophies: 40),
-    (name: 'Maestro8', trophies: 25),
-    (name: 'YeşilSaha34', trophies: 15),
-    (name: 'ÇaylakForvet', trophies: 5),
-  ];
-
-  /// Oyuncunun kupa sayısına göre sezon içindeki sırası (#1 ve üzeri).
-  int get displayRank {
-    if (rank != null && rank! > 0) return rank!;
-    final ahead = seasonRivals.where((r) => r.trophies > trophies).length;
-    return ahead + 1;
-  }
+  /// Sezondaki gerçek sıra (yalnızca hesaplı oyuncu; sunucudan). Bilinmiyorsa "#—".
+  /// (Eskiden sabit sahte rakiplere göre hesaplanıyordu; yanıltıcı olduğu için kaldırıldı.)
+  String get rankLabel => (rank != null && rank! > 0) ? '#$rank' : '#—';
 
   /// Oyuncunun cihaz kimliğinden türetilen 8 karakterlik davet kodu.
   String get localInviteCode => playerId.substring(0, 8).toUpperCase();

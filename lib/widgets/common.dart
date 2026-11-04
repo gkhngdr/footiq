@@ -75,6 +75,7 @@ class TopHud extends StatefulWidget {
     required this.top,
     this.rankX = 405,
     this.coverBaked = false,
+    this.showRank = true,
   });
 
   final double top;
@@ -82,6 +83,9 @@ class TopHud extends StatefulWidget {
 
   /// Arka plan görselinde hazır çizili bir üst çubuk varsa onu bulanıklaştırarak örter.
   final bool coverBaked;
+
+  /// Sıra bilgisi (ana ekranda sezon çubuğu zaten gösterdiği için kapatılır).
+  final bool showRank;
 
   @override
   State<TopHud> createState() => _TopHudState();
@@ -238,19 +242,20 @@ class _TopHudState extends State<TopHud> {
                 ),
               ),
             ),
-            at(
-              widget.rankX - 10,
-              t + 15,
-              240,
-              52,
-              Tap(
-                onTap: () => showLeaderboard(context),
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10, top: 10),
-                  child: Text('Rank: #${_state.displayRank}', style: exo(20)),
+            if (widget.showRank)
+              at(
+                widget.rankX - 10,
+                t + 15,
+                240,
+                52,
+                Tap(
+                  onTap: () => showLeaderboard(context),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10, top: 10),
+                    child: Text('Sıra: ${_state.rankLabel}', style: exo(20)),
+                  ),
                 ),
               ),
-            ),
             // Kupa (dokununca sıralama açılır)
             at(
               174,

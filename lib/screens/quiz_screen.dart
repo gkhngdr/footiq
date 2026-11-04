@@ -682,7 +682,7 @@ class _QuizScreenState extends State<QuizScreen> {
         color: const Color(0x88111111),
         borderWidth: 3,
         child: centerText(
-          'Chapter ${widget.chapter}  •  Seviye ${widget.level}',
+          'Bölüm ${widget.chapter}  •  Seviye ${widget.level}',
           londrina(38, shadows: kTextShadow),
         ),
       ),

@@ -100,12 +100,12 @@ Future<void> showPvpResult(
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _scoreColumn('Sen', myScore, const Color(0xFF21ABD1)),
+            _scoreColumn('Sen', myScore, const Color(0xFF7FE3FF)),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Text('-', style: londrina(70)),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text('VS', style: londrina(56, shadows: kTextShadow)),
             ),
-            _scoreColumn(botName, botScore, const Color(0xFFEB6CA1)),
+            _scoreColumn(botName, botScore, const Color(0xFFFF9EC6)),
           ],
         ),
       ),
@@ -118,19 +118,32 @@ Future<void> showPvpResult(
   );
 }
 
+/// Skor kutusu: yeşil panel üstünde okunur olsun diye koyu kapsül + beyaz büyük rakam.
 Widget _scoreColumn(String name, int score, Color color) => SizedBox(
-  width: 330,
-  child: FittedBox(
-    fit: BoxFit.scaleDown,
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(name, style: exo(30), maxLines: 1),
-        Text(
-          '$score',
-          style: londrina(50, color: color, shadows: kTextShadow),
+  width: 360,
+  height: 240,
+  child: GlassBox(
+    radius: 40,
+    color: const Color(0xCC0D261F),
+    borderWidth: 5,
+    borderColor: color,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              name,
+              maxLines: 1,
+              style: exo(34, weight: 800, color: color, shadows: kTextShadow),
+            ),
+            const SizedBox(height: 6),
+            Text('$score', style: londrina(84, shadows: kTextShadow)),
+          ],
         ),
-      ],
+      ),
     ),
   ),
 );

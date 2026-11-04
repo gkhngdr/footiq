@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../core/cloud.dart';
 import '../core/game_state.dart';
@@ -8,6 +10,9 @@ import 'daily_reward_dialog.dart';
 import 'login_screen.dart';
 
 /// Figma'da ayarlar ekranı yok; mevcut tasarım diliyle (1080x1920 Stage) oluşturuldu.
+/// Gizlilik politikası sayfası (web/gizlilik.html, GitHub Pages'te yayınlanır).
+const kPrivacyUrl = 'https://gkhngdr.github.io/footiq/gizlilik.html';
+
 Future<void> showSettings(BuildContext context) {
   return showStageDialog(
     context,
@@ -103,8 +108,10 @@ class _SettingsPanelState extends State<_SettingsPanel> {
                     Expanded(
                       child: TextField(
                         controller: _nameCtrl,
-                        onTapOutside: (_) =>
-                            FocusManager.instance.primaryFocus?.unfocus(),
+                        onTapOutside: kIsWeb
+                            ? null
+                            : (_) =>
+                                  FocusManager.instance.primaryFocus?.unfocus(),
                         maxLength: 20,
                         autofocus: true,
                         style: exo(30, weight: 700),
@@ -215,9 +222,31 @@ class _SettingsPanelState extends State<_SettingsPanel> {
               colors: [Color(0xFFEB5A3C), Color(0xFFB42A12)],
             ),
           ),
+        // Mağazaların zorunlu tuttuğu gizlilik politikası bağlantısı
+        at(
+          240,
+          _state.isAccount ? 1250 : 1080,
+          600,
+          100,
+          Tap(
+            onTap: () => launchUrl(
+              Uri.parse(kPrivacyUrl),
+              mode: LaunchMode.externalApplication,
+            ),
+            child: GlassBox(
+              radius: 30,
+              color: const Color(0x66102A22),
+              borderWidth: 2.5,
+              child: centerText(
+                'Gizlilik Politikası  ›',
+                exo(30, weight: 700, shadows: kTextShadow),
+              ),
+            ),
+          ),
+        ),
         at(
           80,
-          _state.isAccount ? 1280 : 1120,
+          _state.isAccount ? 1390 : 1220,
           920,
           60,
           centerText('FootIQ v1.0', exo(26, color: Colors.white70)),

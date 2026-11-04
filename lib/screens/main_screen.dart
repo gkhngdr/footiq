@@ -126,13 +126,9 @@ class _MainScreenState extends State<MainScreen> {
           60,
           Tap(onTap: () => showSettings(context), child: svg('settings.svg')),
         ),
-        _SeasonBar(
-          top: 825,
-          rank: _state.displayRank,
-          trophies: _state.trophies,
-        ),
+        _SeasonBar(top: 825, rank: _state.rankLabel, trophies: _state.trophies),
         _GiftButton(top: 345, progress: _state.giftProgress, onTap: _gift),
-        const TopHud(top: 145, rankX: 390),
+        const TopHud(top: 145, rankX: 390, showRank: false),
         // OYNA (1110..1530 aralığına dengelendi)
         ..._playCard(
           left: 110,
@@ -415,7 +411,7 @@ class _SeasonBar extends StatelessWidget {
   });
 
   final double top;
-  final int rank;
+  final String rank;
   final int trophies;
 
   @override
@@ -474,7 +470,7 @@ class _SeasonBar extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   child: FittedBox(
                     child: Text(
-                      '#$rank',
+                      rank,
                       style: londrina(48, shadows: kTextShadow),
                     ),
                   ),
