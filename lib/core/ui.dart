@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -38,7 +39,9 @@ class Stage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
-    final shiftY = (keyboardShift && bottomInset > 0) ? -(bottomInset * 0.85).clamp(0.0, 260.0) : 0.0;
+    final shiftY = (keyboardShift && bottomInset > 0)
+        ? -(bottomInset * 0.85).clamp(0.0, 260.0)
+        : 0.0;
     return Scaffold(
       backgroundColor: const Color(0xFF0D1B2A),
       resizeToAvoidBottomInset: false,
@@ -53,12 +56,22 @@ class Stage extends StatelessWidget {
                 behavior: HitTestBehavior.opaque,
                 onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
                 child: RepaintBoundary(
+                  // Bulanık arka plan: her karede blur filtresi hesaplamak yerine
+                  // görsel çok küçük çözülüp büyütülür (aynı yumuşak görünüm,
+                  // özellikle web/telefonda çok daha ucuz).
                   child: backgroundBlur > 0
-                      ? ImageFiltered(
-                          imageFilter: ImageFilter.blur(sigmaX: backgroundBlur, sigmaY: backgroundBlur, tileMode: TileMode.mirror),
-                          child: Image.asset(fig(background), fit: BoxFit.cover, gaplessPlayback: true),
+                      ? Image.asset(
+                          fig(background),
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
+                          cacheWidth: (720 / backgroundBlur).round(),
+                          filterQuality: FilterQuality.high,
                         )
-                      : Image.asset(fig(background), fit: BoxFit.cover, gaplessPlayback: true),
+                      : Image.asset(
+                          fig(background),
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
+                        ),
                 ),
               ),
             ),
@@ -68,22 +81,32 @@ class Stage extends StatelessWidget {
                 child: SizedBox(
                   width: kDesignW,
                   height: kDesignH,
-                  child: Stack(clipBehavior: Clip.none, children: [
-                    if (exactBackground)
-                      Positioned.fill(
-                        child: RepaintBoundary(
-                          child: Image.asset(fig(background), fit: BoxFit.fill, gaplessPlayback: true),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      if (exactBackground)
+                        Positioned.fill(
+                          child: RepaintBoundary(
+                            child: Image.asset(
+                              fig(background),
+                              fit: BoxFit.fill,
+                              gaplessPlayback: true,
+                            ),
+                          ),
+                        ),
+                      Transform.translate(
+                        offset: Offset(0, shiftY),
+                        child: SizedBox(
+                          width: kDesignW,
+                          height: kDesignH,
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: children,
+                          ),
                         ),
                       ),
-                    Transform.translate(
-                      offset: Offset(0, shiftY),
-                      child: SizedBox(
-                        width: kDesignW,
-                        height: kDesignH,
-                        child: Stack(clipBehavior: Clip.none, children: children),
-                      ),
-                    ),
-                  ]),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -101,71 +124,110 @@ Widget at(double x, double y, double w, double h, Widget child) =>
 Widget svg(String name, {BoxFit fit = BoxFit.fill}) =>
     SvgPicture.asset(fig(name), fit: fit);
 
-Widget png(String name, {BoxFit fit = BoxFit.cover}) =>
-    Image.asset(fig(name), fit: fit, filterQuality: FilterQuality.medium, gaplessPlayback: true);
+Widget png(String name, {BoxFit fit = BoxFit.cover}) => Image.asset(
+  fig(name),
+  fit: fit,
+  filterQuality: FilterQuality.medium,
+  gaplessPlayback: true,
+);
 
 /// Figma'daki "-scale-y-100 rotate-180" = yatay ayna.
-Widget flipX(Widget child) =>
-    Transform(alignment: Alignment.center, transform: Matrix4.diagonal3Values(-1, 1, 1), child: child);
+Widget flipX(Widget child) => Transform(
+  alignment: Alignment.center,
+  transform: Matrix4.diagonal3Values(-1, 1, 1),
+  child: child,
+);
 
-Widget flipY(Widget child) =>
-    Transform(alignment: Alignment.center, transform: Matrix4.diagonal3Values(1, -1, 1), child: child);
+Widget flipY(Widget child) => Transform(
+  alignment: Alignment.center,
+  transform: Matrix4.diagonal3Values(1, -1, 1),
+  child: child,
+);
 
 /// Ana oyun başlıkları, düğmeler ve sayaçlar için %100 kusursuz Türkçe destekli (ğ, ş, ı, İ, ö, ü, ç),
 /// modern, güçlü spor ve bilgi yarışması fontu (Montserrat ExtraBold).
-TextStyle displayFont(double size, {Color color = Colors.white, double spacing = -0.015, List<Shadow>? shadows, FontWeight weight = FontWeight.w800}) =>
-    TextStyle(
-      fontFamily: 'Montserrat',
-      fontFamilyFallback: const ['Outfit', 'Rubik'],
-      fontSize: size,
-      color: color,
-      fontWeight: weight,
-      letterSpacing: size * spacing,
-      height: 1.15,
-      shadows: shadows,
-    );
+TextStyle displayFont(
+  double size, {
+  Color color = Colors.white,
+  double spacing = -0.015,
+  List<Shadow>? shadows,
+  FontWeight weight = FontWeight.w800,
+}) => TextStyle(
+  fontFamily: 'Montserrat',
+  fontFamilyFallback: const ['Outfit', 'Rubik'],
+  fontSize: size,
+  color: color,
+  fontWeight: weight,
+  letterSpacing: size * spacing,
+  height: 1.15,
+  shadows: shadows,
+);
 
 /// Geriye dönük uyumluluk takma adı (displayFont ile eşdeğerdir).
-TextStyle londrina(double size, {Color color = Colors.white, double spacing = -0.015, List<Shadow>? shadows, FontWeight weight = FontWeight.w800}) =>
-    displayFont(size, color: color, spacing: spacing, shadows: shadows, weight: weight);
+TextStyle londrina(
+  double size, {
+  Color color = Colors.white,
+  double spacing = -0.015,
+  List<Shadow>? shadows,
+  FontWeight weight = FontWeight.w800,
+}) => displayFont(
+  size,
+  color: color,
+  spacing: spacing,
+  shadows: shadows,
+  weight: weight,
+);
 
 /// Soru metinleri, açıklamalar ve listeler için %100 Türkçe destekli,
 /// net ve dengeli modern font (Montserrat).
-TextStyle exo(double size, {Color color = Colors.white, double weight = 700, List<Shadow>? shadows}) => TextStyle(
-      fontFamily: 'Montserrat',
-      fontFamilyFallback: const ['Outfit', 'Rubik'],
-      fontSize: size,
-      color: color,
-      fontWeight: weight >= 800
-          ? FontWeight.w800
-          : (weight >= 700
-              ? FontWeight.w700
-              : (weight >= 600 ? FontWeight.w600 : (weight >= 500 ? FontWeight.w500 : FontWeight.w400))),
-      letterSpacing: -0.2,
-      height: 1.25,
-      shadows: shadows,
-    );
+TextStyle exo(
+  double size, {
+  Color color = Colors.white,
+  double weight = 700,
+  List<Shadow>? shadows,
+}) => TextStyle(
+  fontFamily: 'Montserrat',
+  fontFamilyFallback: const ['Outfit', 'Rubik'],
+  fontSize: size,
+  color: color,
+  fontWeight: weight >= 800
+      ? FontWeight.w800
+      : (weight >= 700
+            ? FontWeight.w700
+            : (weight >= 600
+                  ? FontWeight.w600
+                  : (weight >= 500 ? FontWeight.w500 : FontWeight.w400))),
+  letterSpacing: -0.2,
+  height: 1.25,
+  shadows: shadows,
+);
 
 /// Giriş ekranı ve form alanları için modern font (Montserrat).
-TextStyle poppins(double size, {FontWeight weight = FontWeight.w600, Color color = Colors.white, double spacing = 0}) =>
-    TextStyle(
-      fontFamily: 'Montserrat',
-      fontFamilyFallback: const ['Outfit', 'Rubik'],
-      fontSize: size,
-      color: color,
-      fontWeight: weight,
-      letterSpacing: spacing,
-      height: 1.25,
-    );
+TextStyle poppins(
+  double size, {
+  FontWeight weight = FontWeight.w600,
+  Color color = Colors.white,
+  double spacing = 0,
+}) => TextStyle(
+  fontFamily: 'Montserrat',
+  fontFamilyFallback: const ['Outfit', 'Rubik'],
+  fontSize: size,
+  color: color,
+  fontWeight: weight,
+  letterSpacing: spacing,
+  height: 1.25,
+);
 
-const kTextShadow = [Shadow(color: Color(0xAA000000), offset: Offset(0, 3), blurRadius: 5)];
+const kTextShadow = [
+  Shadow(color: Color(0xAA000000), offset: Offset(0, 3), blurRadius: 5),
+];
 
 Widget centerText(String text, TextStyle style) => Center(
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: Text(text, style: style, textAlign: TextAlign.center, maxLines: 1),
-      ),
-    );
+  child: FittedBox(
+    fit: BoxFit.scaleDown,
+    child: Text(text, style: style, textAlign: TextAlign.center, maxLines: 1),
+  ),
+);
 
 /// Kenarlıklı, yuvarlak köşeli bir kutu; isteğe bağlı arka plan bulanıklığı.
 class GlassBox extends StatelessWidget {
@@ -195,14 +257,21 @@ class GlassBox extends StatelessWidget {
         color: gradient == null ? color : null,
         gradient: gradient,
         borderRadius: BorderRadius.circular(radius),
-        border: borderWidth > 0 ? Border.all(color: borderColor, width: borderWidth) : null,
+        border: borderWidth > 0
+            ? Border.all(color: borderColor, width: borderWidth)
+            : null,
       ),
       child: child,
     );
-    if (blur > 0) {
+    // Web'de (özellikle telefon tarayıcısında) arka plan bulanıklığı her karede
+    // yeniden hesaplanır ve ekranı yavaşlatır; orada yalnızca yarı saydam renk kalır.
+    if (blur > 0 && !kIsWeb) {
       box = ClipRRect(
         borderRadius: BorderRadius.circular(radius),
-        child: BackdropFilter(filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur), child: box),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+          child: box,
+        ),
       );
     }
     return box;
@@ -211,7 +280,13 @@ class GlassBox extends StatelessWidget {
 
 /// Figma'daki "blur + border" ile yapılan parlama çerçevesi.
 class GlowFrame extends StatelessWidget {
-  const GlowFrame({super.key, required this.radius, required this.color, this.width = 5, this.blur = 9.5});
+  const GlowFrame({
+    super.key,
+    required this.radius,
+    required this.color,
+    this.width = 5,
+    this.blur = 9.5,
+  });
 
   final double radius;
   final Color color;
@@ -220,6 +295,25 @@ class GlowFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (kIsWeb) {
+      // Web'de bulanık çizgi yerine ucuz gölgeyle aynı parlama etkisi.
+      return DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(radius),
+          border: Border.all(
+            color: color.withValues(alpha: color.a * 0.75),
+            width: width * 0.6,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: color.a * 0.6),
+              blurRadius: blur,
+              blurStyle: BlurStyle.outer,
+            ),
+          ],
+        ),
+      );
+    }
     return RepaintBoundary(
       child: ImageFiltered(
         imageFilter: ImageFilter.blur(sigmaX: blur / 2, sigmaY: blur / 2),
@@ -236,7 +330,12 @@ class GlowFrame extends StatelessWidget {
 
 /// Basılınca hafifçe küçülen dokunma alanı.
 class Tap extends StatefulWidget {
-  const Tap({super.key, required this.child, this.onTap, this.playSound = true});
+  const Tap({
+    super.key,
+    required this.child,
+    this.onTap,
+    this.playSound = true,
+  });
 
   final Widget child;
   final VoidCallback? onTap;
@@ -298,7 +397,10 @@ const kCreamRing = LinearGradient(
   stops: [0.02128, 0.59667, 0.90968],
 );
 
-const kOrange = LinearGradient(colors: [Color(0xFFED7F42), Color(0xFFDF673E)], stops: [0, 0.43269]);
+const kOrange = LinearGradient(
+  colors: [Color(0xFFED7F42), Color(0xFFDF673E)],
+  stops: [0, 0.43269],
+);
 
 const kMint = LinearGradient(
   begin: Alignment.topCenter,
@@ -316,16 +418,22 @@ String formatNumber(int n) {
 void toast(BuildContext context, String message) {
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
-    ..showSnackBar(SnackBar(
-      content: Text(message, style: exo(16)),
-      behavior: SnackBarBehavior.floating,
-      backgroundColor: const Color(0xEE0D3329),
-      duration: const Duration(seconds: 2),
-    ));
+    ..showSnackBar(
+      SnackBar(
+        content: Text(message, style: exo(16)),
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: const Color(0xEE0D3329),
+        duration: const Duration(seconds: 2),
+      ),
+    );
 }
 
 /// Oyun ekranları arasında yumuşak ve hızlı geçiş (200ms fade + hafif ölçekleme).
-Future<T?> goStage<T>(BuildContext context, Widget screen, {bool replace = false}) {
+Future<T?> goStage<T>(
+  BuildContext context,
+  Widget screen, {
+  bool replace = false,
+}) {
   final route = PageRouteBuilder<T>(
     transitionDuration: const Duration(milliseconds: 200),
     reverseTransitionDuration: const Duration(milliseconds: 180),
@@ -333,7 +441,10 @@ Future<T?> goStage<T>(BuildContext context, Widget screen, {bool replace = false
     transitionsBuilder: (_, a, _, child) => FadeTransition(
       opacity: CurvedAnimation(parent: a, curve: Curves.easeOut),
       child: ScaleTransition(
-        scale: Tween(begin: 0.97, end: 1.0).animate(CurvedAnimation(parent: a, curve: Curves.easeOutCubic)),
+        scale: Tween(
+          begin: 0.97,
+          end: 1.0,
+        ).animate(CurvedAnimation(parent: a, curve: Curves.easeOutCubic)),
         child: child,
       ),
     ),

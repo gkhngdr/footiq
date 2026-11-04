@@ -14,9 +14,20 @@ final Map<String, int> _poolIndex = {};
 
 void preloadPlatformSounds() {
   const sounds = [
-    'click', 'tick', 'correct', 'wrong', 'timeout', 'match_found',
-    'coin', 'win', 'lose', 'trophy', 'energy_refill', 'gift_open',
-    'daily_reward', 'level_up'
+    'click',
+    'tick',
+    'correct',
+    'wrong',
+    'timeout',
+    'match_found',
+    'coin',
+    'win',
+    'lose',
+    'trophy',
+    'energy_refill',
+    'gift_open',
+    'daily_reward',
+    'level_up',
   ];
   for (final name in sounds) {
     _pool[name] = [

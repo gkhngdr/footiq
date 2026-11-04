@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../core/cloud.dart';
 import '../core/game_state.dart';
 import '../data/questions.dart';
 import 'chapter_map_screen.dart';
@@ -32,10 +33,14 @@ bool previewScreen(BuildContext context) {
   // Diyalog önizlemelerinde günlük ödül penceresi araya girmesin.
   if (name != 'daily' && state.canClaimDaily) state.claimDaily();
   final nav = Navigator.of(context);
-  void go(Widget w) => nav.pushReplacement(MaterialPageRoute(builder: (_) => w));
+  void go(Widget w) =>
+      nav.pushReplacement(MaterialPageRoute(builder: (_) => w));
   switch (name) {
     case 'login':
       go(const LoginScreen());
+    case 'newpass':
+      Cloud.pendingRecovery = true;
+      go(const MainScreen());
     case 'main':
       go(const MainScreen());
     case 'daily':
@@ -53,13 +58,35 @@ bool previewScreen(BuildContext context) {
     case 'settings':
       go(const _Host(dialog: showSettings));
     case 'result':
-      go(_Host(
-        dialog: (c) => showLevelResult(c, stars: 2, correct: 4, total: 5, coins: 60, trophies: 10, onReplay: () {}, onNext: () {}),
-      ));
+      go(
+        _Host(
+          dialog: (c) => showLevelResult(
+            c,
+            stars: 2,
+            correct: 4,
+            total: 5,
+            coins: 60,
+            trophies: 10,
+            onReplay: () {},
+            onNext: () {},
+          ),
+        ),
+      );
     case 'pvpresult':
-      go(_Host(
-        dialog: (c) => showPvpResult(c, outcome: 1, myScore: 1240, botScore: 860, botName: 'GolKralı34', trophies: 15, coins: 5000, onReplay: () {}),
-      ));
+      go(
+        _Host(
+          dialog: (c) => showPvpResult(
+            c,
+            outcome: 1,
+            myScore: 1240,
+            botScore: 860,
+            botName: 'GolKralı34',
+            trophies: 15,
+            coins: 5000,
+            onReplay: () {},
+          ),
+        ),
+      );
     case 'dailyonly':
       go(const _Host(dialog: showDailyReward));
     default:

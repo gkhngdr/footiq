@@ -9,7 +9,11 @@ import 'login_screen.dart';
 
 /// Figma'da ayarlar ekranı yok; mevcut tasarım diliyle (1080x1920 Stage) oluşturuldu.
 Future<void> showSettings(BuildContext context) {
-  return showStageDialog(context, (ctx) => [const _SettingsPanel()], keyboardShift: true);
+  return showStageDialog(
+    context,
+    (ctx) => [const _SettingsPanel()],
+    keyboardShift: true,
+  );
 }
 
 class _SettingsPanel extends StatefulWidget {
@@ -21,7 +25,9 @@ class _SettingsPanel extends StatefulWidget {
 
 class _SettingsPanelState extends State<_SettingsPanel> {
   final _state = GameState.instance;
-  late final TextEditingController _nameCtrl = TextEditingController(text: _state.playerName);
+  late final TextEditingController _nameCtrl = TextEditingController(
+    text: _state.playerName,
+  );
   bool _editingName = false;
 
   @override
@@ -41,104 +47,189 @@ class _SettingsPanelState extends State<_SettingsPanel> {
     toast(context, 'Oyuncu adı güncellendi!');
   }
 
-  Widget _button(double y, String label, VoidCallback onTap, {Gradient gradient = kMint}) {
-    return at(240, y, 600, 130, Tap(
-      onTap: onTap,
-      child: GlassBox(
-        radius: 34,
-        borderWidth: 5,
-        gradient: gradient,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
-          child: centerText(label, londrina(36, shadows: kTextShadow)),
+  Widget _button(
+    double y,
+    String label,
+    VoidCallback onTap, {
+    Gradient gradient = kMint,
+  }) {
+    return at(
+      240,
+      y,
+      600,
+      130,
+      Tap(
+        onTap: onTap,
+        child: GlassBox(
+          radius: 34,
+          borderWidth: 5,
+          gradient: gradient,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 28),
+            child: centerText(label, londrina(36, shadows: kTextShadow)),
+          ),
         ),
       ),
-    ));
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(clipBehavior: Clip.none, children: [
-      at(80, 360, 920, 1200, svg('daily_panel.svg')),
-      at(80, 440, 920, 100, centerText('Ayarlar', londrina(58, shadows: kTextShadow))),
-      if (_editingName)
-        at(200, 560, 680, 96, GlassBox(
-          radius: 48,
-          color: const Color(0xCC0D261F),
-          borderWidth: 3,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 28),
-            child: Row(children: [
-              Expanded(
-                child: TextField(
-                  controller: _nameCtrl,
-                  onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-                  maxLength: 20,
-                  autofocus: true,
-                  style: exo(30, weight: 700),
-                  cursorColor: Colors.white,
-                  onSubmitted: (_) => _saveName(),
-                  decoration: const InputDecoration(counterText: '', border: InputBorder.none),
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        at(80, 360, 920, 1200, svg('daily_panel.svg')),
+        at(
+          80,
+          440,
+          920,
+          100,
+          centerText('Ayarlar', londrina(58, shadows: kTextShadow)),
+        ),
+        if (_editingName)
+          at(
+            200,
+            560,
+            680,
+            96,
+            GlassBox(
+              radius: 48,
+              color: const Color(0xCC0D261F),
+              borderWidth: 3,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 28),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _nameCtrl,
+                        onTapOutside: (_) =>
+                            FocusManager.instance.primaryFocus?.unfocus(),
+                        maxLength: 20,
+                        autofocus: true,
+                        style: exo(30, weight: 700),
+                        cursorColor: Colors.white,
+                        onSubmitted: (_) => _saveName(),
+                        decoration: const InputDecoration(
+                          counterText: '',
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                    Tap(
+                      onTap: _saveName,
+                      child: const Icon(
+                        Icons.check_circle_rounded,
+                        color: Color(0xFF63D998),
+                        size: 56,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Tap(
-                onTap: _saveName,
-                child: const Icon(Icons.check_circle_rounded, color: Color(0xFF63D998), size: 56),
+            ),
+          )
+        else
+          at(
+            200,
+            565,
+            680,
+            80,
+            Tap(
+              onTap: () => setState(() {
+                _nameCtrl.text = _state.playerName;
+                _editingName = true;
+              }),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Text(
+                      _state.playerName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: exo(32, weight: 700, shadows: kTextShadow),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  const Icon(
+                    Icons.edit_rounded,
+                    color: Colors.white70,
+                    size: 38,
+                  ),
+                ],
               ),
-            ]),
+            ),
           ),
-        ))
-      else
-        at(200, 565, 680, 80, Tap(
-          onTap: () => setState(() {
-            _nameCtrl.text = _state.playerName;
-            _editingName = true;
-          }),
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Flexible(child: Text(_state.playerName, maxLines: 1, overflow: TextOverflow.ellipsis, style: exo(32, weight: 700, shadows: kTextShadow))),
-            const SizedBox(width: 14),
-            const Icon(Icons.edit_rounded, color: Colors.white70, size: 38),
-          ]),
-        )),
-      _button(720, _state.soundOn ? 'Ses: Açık' : 'Ses: Kapalı', () => setState(() => _state.toggleSound())),
-      _button(900, 'Çıkış Yap', () async {
-        final text = _state.isAccount
-            ? 'Hesabından çıkış yapılsın mı? İlerlemen bulutta saklı.'
-            : 'Giriş ekranına dönmek istiyor musun?';
-        final ok = await showStageConfirm(
-          context,
-          title: 'Çıkış Yap',
-          message: text,
-          confirmLabel: 'Çıkış Yap',
-        );
-        if (ok) {
-          _state.logout();
-          if (!context.mounted) return;
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const LoginScreen()), (_) => false);
-        }
-      }, gradient: kOrange),
-      if (_state.isAccount)
-        _button(1080, 'Hesabı Sil', () async {
+        _button(
+          720,
+          _state.soundOn ? 'Ses: Açık' : 'Ses: Kapalı',
+          () => setState(() => _state.toggleSound()),
+        ),
+        _button(900, 'Çıkış Yap', () async {
+          final text = _state.isAccount
+              ? 'Hesabından çıkış yapılsın mı? İlerlemen bulutta saklı.'
+              : 'Giriş ekranına dönmek istiyor musun?';
           final ok = await showStageConfirm(
             context,
-            title: 'Hesabı Sil',
-            message: 'Hesabın ve tüm bulut verilerin kalıcı olarak silinecek. Emin misin?',
-            confirmLabel: 'Kalıcı Sil',
+            title: 'Çıkış Yap',
+            message: text,
+            confirmLabel: 'Çıkış Yap',
           );
           if (ok) {
-            final deleted = await Cloud.deleteAccount();
-            if (!context.mounted) return;
-            if (!deleted) {
-              toast(context, 'Hesap silinemedi. Bağlantını kontrol et.');
-              return;
-            }
-            _state.resetProgress();
             _state.logout();
-            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const LoginScreen()), (_) => false);
+            if (!context.mounted) return;
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const LoginScreen()),
+              (_) => false,
+            );
           }
-        }, gradient: const LinearGradient(colors: [Color(0xFFEB5A3C), Color(0xFFB42A12)])),
-      at(80, _state.isAccount ? 1280 : 1120, 920, 60, centerText('FootIQ v1.0', exo(26, color: Colors.white70))),
-      at(905, 320, 116.715, 116.715, CloseBtn(onTap: () => Navigator.of(context).pop())),
-    ]);
+        }, gradient: kOrange),
+        if (_state.isAccount)
+          _button(
+            1080,
+            'Hesabı Sil',
+            () async {
+              final ok = await showStageConfirm(
+                context,
+                title: 'Hesabı Sil',
+                message: 'Hesabın ve tüm bulut verilerin kalıcı olarak silinecek. Emin misin?',
+                confirmLabel: 'Kalıcı Sil',
+              );
+              if (ok) {
+                final deleted = await Cloud.deleteAccount();
+                if (!context.mounted) return;
+                if (!deleted) {
+                  toast(context, 'Hesap silinemedi. Bağlantını kontrol et.');
+                  return;
+                }
+                _state.resetProgress();
+                _state.logout();
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  (_) => false,
+                );
+              }
+            },
+            gradient: const LinearGradient(
+              colors: [Color(0xFFEB5A3C), Color(0xFFB42A12)],
+            ),
+          ),
+        at(
+          80,
+          _state.isAccount ? 1280 : 1120,
+          920,
+          60,
+          centerText('FootIQ v1.0', exo(26, color: Colors.white70)),
+        ),
+        at(
+          905,
+          320,
+          116.715,
+          116.715,
+          CloseBtn(onTap: () => Navigator.of(context).pop()),
+        ),
+      ],
+    );
   }
 }

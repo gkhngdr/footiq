@@ -12,7 +12,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   Cloud.disabled = true;
 
-  testWidgets('misafir olarak giriş yapıp ilk seviyeyi 3 yıldızla geçer', (tester) async {
+  testWidgets('misafir olarak giriş yapıp ilk seviyeyi 3 yıldızla geçer', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     GameState.instance
       ..resetProgress()
@@ -21,7 +23,8 @@ void main() {
     tester.view.devicePixelRatio = 2;
     addTearDown(tester.view.reset);
 
-    Future<void> wait([int ms = 500]) => tester.pump(Duration(milliseconds: ms));
+    Future<void> wait([int ms = 500]) =>
+        tester.pump(Duration(milliseconds: ms));
 
     await tester.pumpWidget(const FootIQApp());
     for (var i = 0; i < 10; i++) {
@@ -60,7 +63,9 @@ void main() {
 
     // 5 soruyu doğru cevapla
     for (var i = 0; i < 5; i++) {
-      final question = chapter1.firstWhere((q) => find.text(q.text).evaluate().isNotEmpty);
+      final question = chapter1.firstWhere(
+        (q) => find.text(q.text).evaluate().isNotEmpty,
+      );
       await tester.tap(find.text(question.answer));
       await wait(1500);
       await wait(500);
@@ -80,7 +85,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('PVP maçında tüm soruları doğru cevaplayınca kazanır', (tester) async {
+  testWidgets('PVP maçında tüm soruları doğru cevaplayınca kazanır', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
     GameState.instance
       ..resetProgress()
@@ -89,7 +96,8 @@ void main() {
     tester.view.devicePixelRatio = 2;
     addTearDown(tester.view.reset);
 
-    Future<void> wait([int ms = 500]) => tester.pump(Duration(milliseconds: ms));
+    Future<void> wait([int ms = 500]) =>
+        tester.pump(Duration(milliseconds: ms));
 
     await tester.pumpWidget(const FootIQApp());
     for (var i = 0; i < 10; i++) {
@@ -114,7 +122,9 @@ void main() {
 
     final coinsBefore = GameState.instance.coins;
     for (var i = 0; i < 5; i++) {
-      final question = hangiTakim.firstWhere((q) => find.text(q.text).evaluate().isNotEmpty);
+      final question = hangiTakim.firstWhere(
+        (q) => find.text(q.text).evaluate().isNotEmpty,
+      );
       await tester.tap(find.text(question.answer));
       await wait(1500);
       await wait(500);
@@ -132,241 +142,326 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Sıralama, Davet Et Kazan, İzle Kazan ve Ayarlar pencereleri sorunsuz çalışır', (tester) async {
-    SharedPreferences.setMockInitialValues({});
-    GameState.instance
-      ..resetProgress()
-      ..logout();
-    tester.view.physicalSize = const Size(1080, 1920);
-    tester.view.devicePixelRatio = 2;
-    addTearDown(tester.view.reset);
+  testWidgets(
+    'Sıralama, Davet Et Kazan, İzle Kazan ve Ayarlar pencereleri sorunsuz çalışır',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      GameState.instance
+        ..resetProgress()
+        ..logout();
+      tester.view.physicalSize = const Size(1080, 1920);
+      tester.view.devicePixelRatio = 2;
+      addTearDown(tester.view.reset);
 
-    Future<void> wait([int ms = 500]) => tester.pump(Duration(milliseconds: ms));
+      Future<void> wait([int ms = 500]) =>
+          tester.pump(Duration(milliseconds: ms));
 
-    await tester.pumpWidget(const FootIQApp());
-    for (var i = 0; i < 10; i++) {
-      await wait(300);
-    }
-    await tester.tap(find.text('MİSAFİR OLARAK DEVAM ET'));
-    await wait(800);
-    await wait(800);
-    await tester.tap(find.text('Topla'));
-    await wait(1000);
-    await wait(1000);
-
-    // Sıralama penceresi (Rank etiketine tıkla)
-    expect(find.textContaining('Rank: #'), findsOneWidget);
-    await tester.tap(find.textContaining('Rank: #'));
-    await wait(600);
-    expect(find.text('Sezon Sıralaması'), findsOneWidget);
-    expect(find.textContaining('Senin sıran: #'), findsOneWidget);
-    // Kapat
-    await tester.tap(find.byType(CloseBtn));
-    await wait(600);
-
-    // Davet Et Kazan penceresi
-    await tester.tap(find.text('Davet Et Kazan'));
-    await wait(600);
-    expect(find.text('Kodu Kullan'), findsOneWidget);
-    await tester.enterText(find.byType(TextField), 'ABCD1234');
-    final coinsBeforeInvite = GameState.instance.coins;
-    await tester.tap(find.text('Kodu Kullan'));
-    await wait(400);
-    expect(GameState.instance.coins, coinsBeforeInvite + 500);
-    await tester.tap(find.byType(CloseBtn));
-    await wait(600);
-
-    // İzle Kazan (önce 1 enerji harca)
-    GameState.instance.useEnergy();
-    await wait(200);
-    expect(GameState.instance.energy, 5);
-    await tester.tap(find.textContaining('zle Kazan'));
-    await wait(400);
-    expect(find.text('Bonus Ödül'), findsOneWidget);
-    for (var i = 0; i < 6; i++) {
-      await wait(400);
-    }
-    expect(GameState.instance.energy, 6);
-
-    // Ayarlar penceresi
-    showSettings(tester.element(find.text('OYNA')));
-    await wait(600);
-    expect(find.text('Ayarlar'), findsOneWidget);
-    expect(find.text('Çıkış Yap'), findsOneWidget);
-    expect(find.text('İlerlemeyi Sıfırla'), findsNothing);
-    expect(find.text('Hesap Değiştir / Giriş'), findsNothing);
-    expect(find.text('Ses: Açık'), findsOneWidget);
-    await tester.tap(find.text('Ses: Açık'));
-    await wait(300);
-    expect(find.text('Ses: Kapalı'), findsOneWidget);
-    expect(GameState.instance.soundOn, isFalse);
-    await tester.tap(find.text('Ses: Kapalı'));
-    await wait(300);
-    expect(find.text('Ses: Açık'), findsOneWidget);
-    expect(GameState.instance.soundOn, isTrue);
-    await tester.tap(find.byType(CloseBtn));
-    await wait(300);
-    await wait(300);
-    await wait(300);
-    expect(find.text('Ayarlar'), findsNothing);
-
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('Tüm bölümler (Chapter 1..4) ve tüm PVP modları (Ben Kimim, Champions League, Hangi Takım) uçtan uca çalışır', (tester) async {
-    SharedPreferences.setMockInitialValues({});
-    final state = GameState.instance
-      ..resetProgress()
-      ..logout();
-    tester.view.physicalSize = const Size(1080, 1920);
-    tester.view.devicePixelRatio = 2;
-    addTearDown(tester.view.reset);
-
-    Future<void> wait([int ms = 500]) => tester.pump(Duration(milliseconds: ms));
-
-    await tester.pumpWidget(const FootIQApp());
-    for (var i = 0; i < 10; i++) {
-      await wait(300);
-    }
-    await tester.tap(find.text('MİSAFİR OLARAK DEVAM ET'));
-    await wait(800);
-    await wait(800);
-    await tester.tap(find.text('Topla'));
-    await wait(1000);
-    await wait(1000);
-
-    // Chapter 1..3'ü tamamla ki 4 bölümün tamamı açılsın
-    for (var ch = 1; ch <= 3; ch++) {
-      for (var lvl = 1; lvl <= 10; lvl++) {
-        state.completeLevel(ch, lvl, 3, 10);
+      await tester.pumpWidget(const FootIQApp());
+      for (var i = 0; i < 10; i++) {
+        await wait(300);
       }
-    }
-    await wait(200);
+      await tester.tap(find.text('MİSAFİR OLARAK DEVAM ET'));
+      await wait(800);
+      await wait(800);
+      await tester.tap(find.text('Topla'));
+      await wait(1000);
+      await wait(1000);
 
-    // OYNA → Chapter 1..4 kontrolü ve Chapter 4 Seviye 1 oynanışı
-    await tester.tap(find.text('OYNA'));
-    await wait(500);
-    await wait(500);
-    expect(find.text('Toplam Yıldız: 90 / 120'), findsOneWidget);
-    await tester.tap(find.text('Chapter 4'));
-    await wait(500);
-    await wait(500);
-    state.addEnergy(6);
-    // Chapter 4 haritasında 1. seviye düğmesine (453, 1400 -> logical 276, 760) dokun
-    await tester.tapAt(const Offset(276, 760));
-    await wait(500);
-    await wait(500);
-    expect(find.text('Chapter 4  •  Seviye 1'), findsOneWidget);
+      // Sıralama penceresi (Rank etiketine tıkla)
+      expect(find.textContaining('Rank: #'), findsOneWidget);
+      await tester.tap(find.textContaining('Rank: #'));
+      await wait(600);
+      expect(find.text('Sezon Sıralaması'), findsOneWidget);
+      expect(find.textContaining('Senin sıran: #'), findsOneWidget);
+      // Kapat
+      await tester.tap(find.byType(CloseBtn));
+      await wait(600);
 
-    for (var i = 0; i < 5; i++) {
-      final q = chapter4.firstWhere((q) => find.text(q.text).evaluate().isNotEmpty);
-      await tester.tap(find.text(q.answer));
-      await wait(1500);
-      await wait(500);
-    }
-    expect(find.text('Tebrikler!'), findsOneWidget);
-    await tester.tap(find.text('Haritaya Dön'));
-    await wait(500);
-    await wait(500);
-    // Chapter 4 haritasından ve bölüm seçim ekranından ana menüye dön
-    await tester.tap(find.byType(CloseBtn));
-    await wait(500);
-    await wait(500);
-    await tester.tap(find.byType(CloseBtn));
-    await wait(500);
-    await wait(500);
-
-    // PVP: Ben Kimim? ve Champions League modlarını da test et
-    await tester.tap(find.text('PVP OYNA'));
-    await wait(500);
-    await wait(500);
-    for (final (title, pool) in [
-      ('Ben Kimim?', benKimim),
-      ('Champions League', championsLeague),
-    ]) {
-      state.addEnergy(6);
-      await tester.tap(find.text(title));
-      await wait(200);
+      // Davet Et Kazan penceresi
+      await tester.tap(find.text('Davet Et\nKazan'));
+      await wait(600);
+      expect(find.text('Kodu Kullan'), findsOneWidget);
+      await tester.enterText(find.byType(TextField), 'ABCD1234');
+      final coinsBeforeInvite = GameState.instance.coins;
+      await tester.tap(find.text('Kodu Kullan'));
       await wait(400);
-      expect(find.text('Rakip aranıyor...'), findsOneWidget);
-      await wait(2000);
+      expect(GameState.instance.coins, coinsBeforeInvite + 500);
+      await tester.tap(find.byType(CloseBtn));
+      await wait(600);
+
+      // İzle Kazan (önce 1 enerji harca)
+      GameState.instance.useEnergy();
+      await wait(200);
+      expect(GameState.instance.energy, 5);
+      await tester.tap(find.text('İzle\nKazan'));
+      await wait(400);
+      expect(find.text('Bonus Ödül'), findsOneWidget);
+      for (var i = 0; i < 6; i++) {
+        await wait(400);
+      }
+      expect(GameState.instance.energy, 6);
+
+      // Ayarlar penceresi
+      showSettings(tester.element(find.text('OYNA')));
+      await wait(600);
+      expect(find.text('Ayarlar'), findsOneWidget);
+      expect(find.text('Çıkış Yap'), findsOneWidget);
+      expect(find.text('İlerlemeyi Sıfırla'), findsNothing);
+      expect(find.text('Hesap Değiştir / Giriş'), findsNothing);
+      expect(find.text('Ses: Açık'), findsOneWidget);
+      await tester.tap(find.text('Ses: Açık'));
+      await wait(300);
+      expect(find.text('Ses: Kapalı'), findsOneWidget);
+      expect(GameState.instance.soundOn, isFalse);
+      await tester.tap(find.text('Ses: Kapalı'));
+      await wait(300);
+      expect(find.text('Ses: Açık'), findsOneWidget);
+      expect(GameState.instance.soundOn, isTrue);
+      await tester.tap(find.byType(CloseBtn));
+      await wait(300);
+      await wait(300);
+      await wait(300);
+      expect(find.text('Ayarlar'), findsNothing);
+
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'Tüm bölümler (Chapter 1..4) ve tüm PVP modları (Ben Kimim, Champions League, Hangi Takım) uçtan uca çalışır',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final state = GameState.instance
+        ..resetProgress()
+        ..logout();
+      tester.view.physicalSize = const Size(1080, 1920);
+      tester.view.devicePixelRatio = 2;
+      addTearDown(tester.view.reset);
+
+      Future<void> wait([int ms = 500]) =>
+          tester.pump(Duration(milliseconds: ms));
+
+      await tester.pumpWidget(const FootIQApp());
+      for (var i = 0; i < 10; i++) {
+        await wait(300);
+      }
+      await tester.tap(find.text('MİSAFİR OLARAK DEVAM ET'));
+      await wait(800);
+      await wait(800);
+      await tester.tap(find.text('Topla'));
+      await wait(1000);
+      await wait(1000);
+
+      // Chapter 1..3'ü tamamla ki 4 bölümün tamamı açılsın
+      for (var ch = 1; ch <= 3; ch++) {
+        for (var lvl = 1; lvl <= 10; lvl++) {
+          state.completeLevel(ch, lvl, 3, 10);
+        }
+      }
+      await wait(200);
+
+      // OYNA → Chapter 1..4 kontrolü ve Chapter 4 Seviye 1 oynanışı
+      await tester.tap(find.text('OYNA'));
       await wait(500);
+      await wait(500);
+      expect(find.text('Toplam Yıldız: 90 / 120'), findsOneWidget);
+      await tester.tap(find.text('Chapter 4'));
+      await wait(500);
+      await wait(500);
+      state.addEnergy(6);
+      // Chapter 4 haritasında 1. seviye düğmesine (453, 1400 -> logical 276, 760) dokun
+      await tester.tapAt(const Offset(276, 760));
+      await wait(500);
+      await wait(500);
+      expect(find.text('Chapter 4  •  Seviye 1'), findsOneWidget);
+
       for (var i = 0; i < 5; i++) {
-        final q = pool.firstWhere((q) => find.text(q.text).evaluate().isNotEmpty);
+        final q = chapter4.firstWhere(
+          (q) => find.text(q.text).evaluate().isNotEmpty,
+        );
         await tester.tap(find.text(q.answer));
         await wait(1500);
         await wait(500);
       }
-      expect(find.text('Kazandın!'), findsOneWidget);
-      await tester.tap(find.text('Ana Menü'));
+      expect(find.text('Tebrikler!'), findsOneWidget);
+      await tester.tap(find.text('Haritaya Dön'));
       await wait(500);
       await wait(500);
-    }
-    expect(tester.takeException(), isNull);
-  });
+      // Chapter 4 haritasından ve bölüm seçim ekranından ana menüye dön
+      await tester.tap(find.byType(CloseBtn));
+      await wait(500);
+      await wait(500);
+      await tester.tap(find.byType(CloseBtn));
+      await wait(500);
+      await wait(500);
 
-  testWidgets('Hesaptan çıkış yapılıp misafir olarak devam edildiğinde hesap verileri yerine temiz misafir profili gelir', (tester) async {
-    SharedPreferences.setMockInitialValues({});
-    final state = GameState.instance;
-    state.setAccount('Ahmet1905');
-    state.trophies = 150;
-    state.coins = 5000;
-    expect(state.playerName, 'Ahmet1905');
-    expect(state.isAccount, isTrue);
+      // PVP: Ben Kimim? ve Champions League modlarını da test et
+      await tester.tap(find.text('PVP OYNA'));
+      await wait(500);
+      await wait(500);
+      for (final (title, pool) in [
+        ('Ben Kimim?', benKimim),
+        ('Champions League', championsLeague),
+      ]) {
+        state.addEnergy(6);
+        await tester.tap(find.text(title));
+        await wait(200);
+        await wait(400);
+        expect(find.text('Rakip aranıyor...'), findsOneWidget);
+        await wait(2000);
+        await wait(500);
+        for (var i = 0; i < 5; i++) {
+          final q = pool.firstWhere(
+            (q) => find.text(q.text).evaluate().isNotEmpty,
+          );
+          await tester.tap(find.text(q.answer));
+          await wait(1500);
+          await wait(500);
+        }
+        expect(find.text('Kazandın!'), findsOneWidget);
+        await tester.tap(find.text('Ana Menü'));
+        await wait(500);
+        await wait(500);
+      }
+      expect(tester.takeException(), isNull);
+    },
+  );
 
-    // Çıkış yap
-    state.logout();
-    expect(state.loggedIn, isFalse);
-    expect(state.isAccount, isFalse);
-    expect(state.trophies, 0);
-    expect(state.playerName.startsWith('Misafir'), isTrue);
+  testWidgets(
+    'Hesaptan çıkış yapılıp misafir olarak devam edildiğinde hesap verileri yerine temiz misafir profili gelir',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final state = GameState.instance;
+      state.setAccount('Ahmet1905');
+      state.trophies = 150;
+      state.coins = 5000;
+      expect(state.playerName, 'Ahmet1905');
+      expect(state.isAccount, isTrue);
 
-    // Misafir olarak devam et
-    state.loginAsGuest();
-    expect(state.loggedIn, isTrue);
-    expect(state.isAccount, isFalse);
-    expect(state.playerName.startsWith('Misafir'), isTrue);
-    expect(state.playerName, isNot('Ahmet1905'));
-    expect(state.trophies, 0);
-    expect(state.coins, 500);
-  });
+      // Çıkış yap
+      state.logout();
+      expect(state.loggedIn, isFalse);
+      expect(state.isAccount, isFalse);
+      expect(state.trophies, 0);
+      expect(state.playerName.startsWith('Misafir'), isTrue);
 
-  testWidgets('Giriş ekranında TextField tıklandığında klavye açılsa bile odak kaybolmaz ve dışarı tıklayınca kapanır', (tester) async {
-    SharedPreferences.setMockInitialValues({});
-    GameState.instance
-      ..resetProgress()
-      ..logout();
-    tester.view.physicalSize = const Size(1080, 1920);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.reset);
+      // Misafir olarak devam et
+      state.loginAsGuest();
+      expect(state.loggedIn, isTrue);
+      expect(state.isAccount, isFalse);
+      expect(state.playerName.startsWith('Misafir'), isTrue);
+      expect(state.playerName, isNot('Ahmet1905'));
+      expect(state.trophies, 0);
+      expect(state.coins, 500);
+    },
+  );
 
-    await tester.pumpWidget(const FootIQApp());
-    for (var i = 0; i < 10; i++) {
-      await tester.pump(const Duration(milliseconds: 300));
-    }
+  testWidgets(
+    'Giriş ekranında TextField tıklandığında klavye açılsa bile odak kaybolmaz ve dışarı tıklayınca kapanır',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      GameState.instance
+        ..resetProgress()
+        ..logout();
+      tester.view.physicalSize = const Size(1080, 1920);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
 
-    final field = find.byType(TextField).first;
-    expect(field, findsOneWidget);
+      await tester.pumpWidget(const FootIQApp());
+      for (var i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 300));
+      }
 
-    // Tıkla ve odaklan
-    await tester.tap(field);
-    await tester.pump();
+      final field = find.byType(TextField).first;
+      expect(field, findsOneWidget);
 
-    final primaryBefore = FocusManager.instance.primaryFocus;
-    expect(primaryBefore?.context?.findAncestorWidgetOfExactType<TextField>() != null, isTrue);
+      // Tıkla ve odaklan
+      await tester.tap(field);
+      await tester.pump();
 
-    // Sanal klavyenin açıldığını simüle et (bottom insets = 300)
-    tester.view.viewInsets = const FakeViewPadding(bottom: 300);
-    await tester.pump();
+      final primaryBefore = FocusManager.instance.primaryFocus;
+      expect(
+        primaryBefore?.context?.findAncestorWidgetOfExactType<TextField>() !=
+            null,
+        isTrue,
+      );
 
-    // Klavye açılınca ve ekran yukarı kayınca odağın bozulmadığını doğrula
-    final primaryAfter = FocusManager.instance.primaryFocus;
-    expect(primaryAfter?.context?.findAncestorWidgetOfExactType<TextField>() != null, isTrue, reason: 'Klavye açıldığında odak kaybolmamalı');
+      // Sanal klavyenin açıldığını simüle et (bottom insets = 300)
+      tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+      await tester.pump();
 
-    // Dışarıya (boş arka plana) tıklandığında klavyenin ve odağın kapandığını doğrula
-    await tester.tapAt(const Offset(100, 100));
-    await tester.pump();
-    final primaryAfterTapOutside = FocusManager.instance.primaryFocus;
-    expect(primaryAfterTapOutside?.context?.findAncestorWidgetOfExactType<TextField>(), isNull, reason: 'Dışarı tıklandığında odak kapanmalı');
-  });
+      // Klavye açılınca ve ekran yukarı kayınca odağın bozulmadığını doğrula
+      final primaryAfter = FocusManager.instance.primaryFocus;
+      expect(
+        primaryAfter?.context?.findAncestorWidgetOfExactType<TextField>() !=
+            null,
+        isTrue,
+        reason: 'Klavye açıldığında odak kaybolmamalı',
+      );
+
+      // Dışarıya (boş arka plana) tıklandığında klavyenin ve odağın kapandığını doğrula
+      await tester.tapAt(const Offset(100, 100));
+      await tester.pump();
+      final primaryAfterTapOutside = FocusManager.instance.primaryFocus;
+      expect(
+        primaryAfterTapOutside?.context
+            ?.findAncestorWidgetOfExactType<TextField>(),
+        isNull,
+        reason: 'Dışarı tıklandığında odak kapanmalı',
+      );
+    },
+  );
+
+  testWidgets(
+    'Şifremi unuttum penceresi e-postayı taşır, geçersiz e-postayı reddeder ve kapanır',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      GameState.instance
+        ..resetProgress()
+        ..logout();
+      tester.view.physicalSize = const Size(1080, 1920);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(const FootIQApp());
+      for (var i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 300));
+      }
+
+      await tester.enterText(find.byType(TextField).first, 'oyuncu@ornek.com');
+      await tester.tap(find.text('Şifremi unuttum'));
+      await tester.pumpAndSettle();
+
+      // Pencere açılır ve girilen e-posta hazır gelir
+      expect(find.text('Şifreni Sıfırla'), findsOneWidget);
+      expect(find.text('KOD GÖNDER'), findsOneWidget);
+      // (biri giriş ekranındaki alan, diğeri pencerenin alanı)
+      expect(
+        find.widgetWithText(TextField, 'oyuncu@ornek.com'),
+        findsNWidgets(2),
+      );
+      final emailField = find.byType(TextField).last;
+
+      // Geçersiz e-posta: kod gönderilmez, uyarı çıkar
+      await tester.enterText(emailField, 'gecersiz');
+      await tester.tap(find.text('KOD GÖNDER'));
+      await tester.pump();
+      expect(find.text('Geçerli bir e-posta gir.'), findsOneWidget);
+      expect(find.text('ŞİFREYİ DEĞİŞTİR'), findsNothing);
+
+      // Sunucu yokken (test) geçerli e-posta: hata gösterilir, adım ilerlemez
+      await tester.enterText(find.byType(TextField).last, 'oyuncu@ornek.com');
+      await tester.tap(find.text('KOD GÖNDER'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(find.text('Sunucuya bağlanılamadı.'), findsOneWidget);
+      expect(find.text('ŞİFREYİ DEĞİŞTİR'), findsNothing);
+
+      // Vazgeç ile giriş ekranına dönülür
+      await tester.tap(find.text('Vazgeç'));
+      await tester.pumpAndSettle();
+      expect(find.text('Şifreni Sıfırla'), findsNothing);
+      expect(find.text('GİRİŞ YAP'), findsOneWidget);
+    },
+  );
 }

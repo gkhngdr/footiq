@@ -97,18 +97,28 @@ class GameState extends ChangeNotifier with WidgetsBindingObserver {
       if (savedId != null && savedId.length >= 8) playerId = savedId;
       // Hesaplı oturum yalnızca Supabase oturumu hâlâ geçerliyse sürer.
       isAccount = loggedIn && Cloud.signedIn;
-      if (loggedIn && !isAccount && !(m['playerName'] as String? ?? '').startsWith('Misafir')) loggedIn = false;
+      if (loggedIn &&
+          !isAccount &&
+          !(m['playerName'] as String? ?? '').startsWith('Misafir')) {
+        loggedIn = false;
+      }
       playerName = m['playerName'] as String? ?? 'Misafir';
       trophies = (m['trophies'] as int? ?? 0).clamp(0, 1000000);
       coins = (m['coins'] as int? ?? 500).clamp(0, 100000000);
       soundOn = m['soundOn'] as bool? ?? true;
       _energy = (m['energy'] as int? ?? maxEnergy).clamp(0, maxEnergy);
-      _energyStamp = DateTime.tryParse(m['energyStamp'] as String? ?? '') ?? DateTime.now();
+      _energyStamp =
+          DateTime.tryParse(m['energyStamp'] as String? ?? '') ??
+          DateTime.now();
       _stars
         ..clear()
-        ..addAll((m['stars'] as Map<String, dynamic>? ?? {})
-            .map((k, v) => MapEntry(k, v is int ? v.clamp(0, 3) : 0))
-          ..removeWhere((k, v) => v == 0 || !RegExp(r'^[1-4]-([1-9]|10)$').hasMatch(k)));
+        ..addAll(
+          (m['stars'] as Map<String, dynamic>? ?? {}).map(
+            (k, v) => MapEntry(k, v is int ? v.clamp(0, 3) : 0),
+          )..removeWhere(
+            (k, v) => v == 0 || !RegExp(r'^[1-4]-([1-9]|10)$').hasMatch(k),
+          ),
+        );
       _dailyStreak = (m['dailyStreak'] as int? ?? 0).clamp(0, 3650);
       _lastDailyClaim = m['lastDailyClaim'] as String?;
       _giftProgress = (m['giftProgress'] as int? ?? 0).clamp(0, giftGoal);
@@ -120,20 +130,20 @@ class GameState extends ChangeNotifier with WidgetsBindingObserver {
 
   /// Cihaza ve buluta yazılan oyun verisi.
   Map<String, dynamic> toMap() => {
-        'loggedIn': loggedIn,
-        'playerId': playerId,
-        'playerName': playerName,
-        'trophies': trophies,
-        'coins': coins,
-        'soundOn': soundOn,
-        'energy': _energy,
-        'energyStamp': _energyStamp.toIso8601String(),
-        'stars': _stars,
-        'dailyStreak': _dailyStreak,
-        'lastDailyClaim': _lastDailyClaim,
-        'giftProgress': _giftProgress,
-        'guestInviteUsed': _guestInviteUsed,
-      };
+    'loggedIn': loggedIn,
+    'playerId': playerId,
+    'playerName': playerName,
+    'trophies': trophies,
+    'coins': coins,
+    'soundOn': soundOn,
+    'energy': _energy,
+    'energyStamp': _energyStamp.toIso8601String(),
+    'stars': _stars,
+    'dailyStreak': _dailyStreak,
+    'lastDailyClaim': _lastDailyClaim,
+    'giftProgress': _giftProgress,
+    'guestInviteUsed': _guestInviteUsed,
+  };
 
   Timer? _cloudTimer;
 
@@ -207,17 +217,23 @@ class GameState extends ChangeNotifier with WidgetsBindingObserver {
     coins = max(coins, row['coins'] as int? ?? coins);
     soundOn = p['soundOn'] as bool? ?? soundOn;
     _energy = (p['energy'] as int? ?? _energy).clamp(0, maxEnergy);
-    _energyStamp = DateTime.tryParse(p['energyStamp'] as String? ?? '') ?? _energyStamp;
+    _energyStamp =
+        DateTime.tryParse(p['energyStamp'] as String? ?? '') ?? _energyStamp;
     final cloudStars = (p['stars'] as Map?)?.cast<String, dynamic>() ?? {};
     cloudStars.forEach((k, v) {
-      if (v is int && RegExp(r'^[1-4]-([1-9]|10)$').hasMatch(k) && v.clamp(1, 3) > (_stars[k] ?? 0)) {
+      if (v is int &&
+          RegExp(r'^[1-4]-([1-9]|10)$').hasMatch(k) &&
+          v.clamp(1, 3) > (_stars[k] ?? 0)) {
         _stars[k] = v.clamp(1, 3);
       }
     });
     _dailyStreak = max(_dailyStreak, p['dailyStreak'] as int? ?? 0);
     final cloudClaim = p['lastDailyClaim'] as String?;
     if (cloudClaim != null) _lastDailyClaim = cloudClaim;
-    _giftProgress = (p['giftProgress'] as int? ?? _giftProgress).clamp(0, giftGoal);
+    _giftProgress = (p['giftProgress'] as int? ?? _giftProgress).clamp(
+      0,
+      giftGoal,
+    );
     _prefs?.setString(_key, jsonEncode(toMap()));
     notifyListeners();
   }
@@ -277,7 +293,9 @@ class GameState extends ChangeNotifier with WidgetsBindingObserver {
       _energyStamp = DateTime.now();
       return;
     }
-    final gained = DateTime.now().difference(_energyStamp).inSeconds ~/ energyRegen.inSeconds;
+    final gained =
+        DateTime.now().difference(_energyStamp).inSeconds ~/
+        energyRegen.inSeconds;
     if (gained > 0) {
       _energy = min(maxEnergy, _energy + gained);
       _energyStamp = _energyStamp.add(energyRegen * gained);
@@ -328,18 +346,24 @@ class GameState extends ChangeNotifier with WidgetsBindingObserver {
 
   int stars(int chapter, int level) => _stars['$chapter-$level'] ?? 0;
 
-  int chapterStars(int chapter) =>
-      List.generate(levelsPerChapter, (i) => stars(chapter, i + 1)).fold(0, (a, b) => a + b);
+  int chapterStars(int chapter) => List.generate(
+    levelsPerChapter,
+    (i) => stars(chapter, i + 1),
+  ).fold(0, (a, b) => a + b);
 
   bool isLevelPassed(int chapter, int level) => stars(chapter, level) > 0;
 
-  bool isChapterCompleted(int chapter) =>
-      List.generate(levelsPerChapter, (i) => isLevelPassed(chapter, i + 1)).every((p) => p);
+  bool isChapterCompleted(int chapter) => List.generate(
+    levelsPerChapter,
+    (i) => isLevelPassed(chapter, i + 1),
+  ).every((p) => p);
 
-  bool isChapterUnlocked(int chapter) => chapter == 1 || isChapterCompleted(chapter - 1);
+  bool isChapterUnlocked(int chapter) =>
+      chapter == 1 || isChapterCompleted(chapter - 1);
 
   bool isLevelUnlocked(int chapter, int level) =>
-      isChapterUnlocked(chapter) && (level == 1 || isLevelPassed(chapter, level - 1));
+      isChapterUnlocked(chapter) &&
+      (level == 1 || isLevelPassed(chapter, level - 1));
 
   /// Seviye sonucunu kaydeder; yalnızca yeni kazanılan yıldızlar kupa verir.
   /// Dönen değer: kazanılan kupa sayısı.

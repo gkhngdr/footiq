@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../core/cloud.dart';
 import '../core/game_state.dart';
 import '../core/ui.dart';
+import 'forgot_password_dialog.dart';
 import 'main_screen.dart';
 
 /// Figma: "GİRİŞ YAP" (25:2). E-posta/şifre ile giriş, kayıt ve misafir girişi
@@ -47,7 +49,9 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_register && !_nameRe.hasMatch(_username.text.trim())) {
       return 'Kullanıcı adı 3-20 karakter olmalı (harf, rakam, _).';
     }
-    if (!_emailRe.hasMatch(_email.text.trim())) return 'Geçerli bir e-posta gir.';
+    if (!_emailRe.hasMatch(_email.text.trim())) {
+      return 'Geçerli bir e-posta gir.';
+    }
     if (_password.text.length < 6) return 'Şifre en az 6 karakter olmalı.';
     return null;
   }
@@ -62,7 +66,11 @@ class _LoginScreenState extends State<LoginScreen> {
     }
     setState(() => _busy = true);
     if (_register) {
-      final (err, needsConfirm) = await Cloud.signUp(_email.text, _password.text, _username.text.trim());
+      final (err, needsConfirm) = await Cloud.signUp(
+        _email.text,
+        _password.text,
+        _username.text.trim(),
+      );
       if (!mounted) return;
       setState(() => _busy = false);
       if (err != null) {
@@ -88,13 +96,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _forgot() async {
-    if (!_emailRe.hasMatch(_email.text.trim())) {
-      toast(context, 'Önce e-posta adresini yaz.');
-      return;
-    }
-    final err = await Cloud.resetPassword(_email.text);
-    if (!mounted) return;
-    toast(context, err ?? 'Şifre sıfırlama bağlantısı e-postana gönderildi.');
+    FocusManager.instance.primaryFocus?.unfocus();
+    final ok = await showForgotPassword(context, email: _email.text);
+    if (ok && mounted) _enter();
   }
 
   Widget _field(
@@ -108,59 +112,125 @@ class _LoginScreenState extends State<LoginScreen> {
     List<TextInputFormatter>? formatters,
   }) {
     final style = poppins(32, weight: FontWeight.w500, color: Colors.white);
-    return at(170, y, 720, 80, GlassBox(
-      radius: 50,
-      color: const Color(0x66102A22),
-      borderWidth: 2.5,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 38, right: 24),
-        child: Center(
-          child: Row(children: [
-            Expanded(
-              child: TextField(
-                controller: c,
-                onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-                obscureText: password && _hidePass,
-                keyboardType: type ?? (password ? TextInputType.visiblePassword : TextInputType.text),
-                textInputAction: action ?? (password ? TextInputAction.done : TextInputAction.next),
-                onSubmitted: onSubmitted ?? (password ? (_) => _submit() : null),
-                autocorrect: false,
-                enableSuggestions: !password,
-                maxLength: password ? 72 : 64,
-                inputFormatters: formatters,
-                style: style,
-                cursorColor: Colors.white,
-                decoration: InputDecoration(
-                  isCollapsed: true,
-                  counterText: '',
-                  border: InputBorder.none,
-                  hintText: label,
-                  hintStyle: poppins(28, weight: FontWeight.w300, color: Colors.white70),
+    return at(
+      170,
+      y,
+      720,
+      80,
+      GlassBox(
+        radius: 50,
+        color: const Color(0x66102A22),
+        borderWidth: 2.5,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 38, right: 8),
+          child: Center(
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: c,
+                    // Telefon tarayıcısında alana dokunmak bazen "dışarı
+                    // dokunma" sayılıp klavyeyi hemen kapatıyordu; web'de
+                    // klavye arka plana dokununca kapanır.
+                    onTapOutside: kIsWeb
+                        ? null
+                        : (_) => FocusManager.instance.primaryFocus?.unfocus(),
+                    obscureText: password && _hidePass,
+                    keyboardType:
+                        type ??
+                        (password
+                            ? TextInputType.visiblePassword
+                            : TextInputType.text),
+                    textInputAction:
+                        action ??
+                        (password
+                            ? TextInputAction.done
+                            : TextInputAction.next),
+                    onSubmitted:
+                        onSubmitted ?? (password ? (_) => _submit() : null),
+                    autocorrect: false,
+                    enableSuggestions: !password,
+                    maxLength: password ? 72 : 64,
+                    inputFormatters: formatters,
+                    style: style,
+                    cursorColor: Colors.white,
+                    decoration: InputDecoration(
+                      isCollapsed: true,
+                      counterText: '',
+                      border: InputBorder.none,
+                      hintText: label,
+                      hintStyle: poppins(
+                        28,
+                        weight: FontWeight.w300,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                if (password)
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => setState(() => _hidePass = !_hidePass),
+                    // Dokunma alanı simgeden büyük: parmakla rahat basılsın.
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      child: Icon(
+                        _hidePass
+                            ? Icons.visibility_off_rounded
+                            : Icons.visibility_rounded,
+                        color: Colors.white70,
+                        size: 44,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-            if (password)
-              GestureDetector(
-                onTap: () => setState(() => _hidePass = !_hidePass),
-                child: Icon(_hidePass ? Icons.visibility_off_rounded : Icons.visibility_rounded, color: Colors.white70, size: 44),
-              ),
-          ]),
+          ),
         ),
       ),
-    ));
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Stage(
-      background: 'bg_splash.png',
+      background: 'bg_splash.webp',
       keyboardShift: true,
       children: [
         // Cam panel
-        at(120, 464, 840, 860, const GlassBox(radius: 35, blur: 8.8, borderWidth: 4)),
-        at(120, 464, 840, 860, const GlowFrame(radius: 35, color: Colors.white, width: 7, blur: 11.45)),
-        at(411.2, 504, 257.528, 268.8, png('logo.png')),
-        at(120, 805, 840, 86, centerText(_register ? 'Hesap oluştur' : 'Hesabına giriş yap', londrina(48, shadows: kTextShadow))),
+        at(
+          120,
+          464,
+          840,
+          860,
+          const GlassBox(radius: 35, blur: 8.8, borderWidth: 4),
+        ),
+        at(
+          120,
+          464,
+          840,
+          860,
+          const GlowFrame(
+            radius: 35,
+            color: Colors.white,
+            width: 7,
+            blur: 11.45,
+          ),
+        ),
+        at(411.2, 504, 257.528, 268.8, png('logo.webp')),
+        at(
+          120,
+          805,
+          840,
+          86,
+          centerText(
+            _register ? 'Hesap oluştur' : 'Hesabına giriş yap',
+            londrina(48, shadows: kTextShadow),
+          ),
+        ),
         if (_register) ...[
           _field(905, 'KULLANICI ADI', _username),
           _field(995, 'E-POSTA', _email, type: TextInputType.emailAddress),
@@ -168,60 +238,126 @@ class _LoginScreenState extends State<LoginScreen> {
         ] else ...[
           _field(931, 'E-POSTA', _email, type: TextInputType.emailAddress),
           _field(1051, 'ŞİFRE', _password, password: true),
-          at(560, 1135, 330, 44, Tap(
-            onTap: _forgot,
-            child: Align(alignment: Alignment.centerRight, child: Text('Şifremi unuttum', style: poppins(24, weight: FontWeight.w500))),
-          )),
-        ],
-        // GİRİŞ YAP / KAYIT OL (ortalanmış, 3D derinliğiyle birlikte basılan düğme)
-        at(290, 1187, 500, 96, Tap(
-          onTap: _submit,
-          child: Stack(clipBehavior: Clip.none, children: [
-            const Positioned(
-              left: 0,
-              top: 6,
-              width: 500,
-              height: 90,
-              child: GlassBox(radius: 15, color: Color(0xFFAC594E)),
-            ),
-            Positioned(
-              left: 2.4,
-              top: 0,
-              width: 495.2,
-              height: 90,
-              child: GlassBox(
-                radius: 10,
-                gradient: kOrange,
-                borderWidth: 3,
-                borderColor: const Color(0xFFFEC665),
-                child: _busy
-                    ? const Center(child: SizedBox(width: 44, height: 44, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 5)))
-                    : centerText(_register ? 'KAYIT OL' : 'GİRİŞ YAP', londrina(36, shadows: kTextShadow)),
+          at(
+            520,
+            1131,
+            370,
+            56,
+            Tap(
+              onTap: _forgot,
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  'Şifremi unuttum',
+                  style: poppins(24, weight: FontWeight.w500),
+                ),
               ),
             ),
-          ]),
-        )),
+          ),
+        ],
+        // GİRİŞ YAP / KAYIT OL (ortalanmış, 3D derinliğiyle birlikte basılan düğme)
+        at(
+          290,
+          1187,
+          500,
+          96,
+          Tap(
+            onTap: _submit,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                const Positioned(
+                  left: 0,
+                  top: 6,
+                  width: 500,
+                  height: 90,
+                  child: GlassBox(radius: 15, color: Color(0xFFAC594E)),
+                ),
+                Positioned(
+                  left: 2.4,
+                  top: 0,
+                  width: 495.2,
+                  height: 90,
+                  child: GlassBox(
+                    radius: 10,
+                    gradient: kOrange,
+                    borderWidth: 3,
+                    borderColor: const Color(0xFFFEC665),
+                    child: _busy
+                        ? const Center(
+                            child: SizedBox(
+                              width: 44,
+                              height: 44,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 5,
+                              ),
+                            ),
+                          )
+                        : centerText(
+                            _register ? 'KAYIT OL' : 'GİRİŞ YAP',
+                            londrina(36, shadows: kTextShadow),
+                          ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
         // Alt düğmeler
-        at(120, 1384, 384, 72, Tap(
-          onTap: () => setState(() => _register = !_register),
-          child: GlassBox(radius: 50, color: const Color(0x66102A22), borderWidth: 2, child: centerText(_register ? 'GİRİŞE DÖN' : 'KAYIT OL', poppins(24, weight: FontWeight.w600))),
-        )),
-        at(552, 1384, 408, 72, Tap(
-          onTap: _guest,
-          child: GlassBox(
-            radius: 50,
-            color: const Color(0x66102A22),
-            borderWidth: 2,
-            child: centerText('MİSAFİR OLARAK DEVAM ET', poppins(22, weight: FontWeight.w600)),
+        at(
+          120,
+          1384,
+          384,
+          72,
+          Tap(
+            onTap: () => setState(() => _register = !_register),
+            child: GlassBox(
+              radius: 50,
+              color: const Color(0x66102A22),
+              borderWidth: 2,
+              child: centerText(
+                _register ? 'GİRİŞE DÖN' : 'KAYIT OL',
+                poppins(24, weight: FontWeight.w600),
+              ),
+            ),
           ),
-        )),
-        at(120, 1480, 840, 90, Center(
-          child: Text(
-            'Misafir ilerlemesi bu cihazda saklanır.\nHesap açarsan her cihazda devam edersin.',
-            textAlign: TextAlign.center,
-            style: poppins(24, weight: FontWeight.w400, color: Colors.white70),
+        ),
+        at(
+          552,
+          1384,
+          408,
+          72,
+          Tap(
+            onTap: _guest,
+            child: GlassBox(
+              radius: 50,
+              color: const Color(0x66102A22),
+              borderWidth: 2,
+              child: centerText(
+                'MİSAFİR OLARAK DEVAM ET',
+                poppins(22, weight: FontWeight.w600),
+              ),
+            ),
           ),
-        )),
+        ),
+        at(
+          120,
+          1480,
+          840,
+          90,
+          Center(
+            child: Text(
+              'Misafir ilerlemesi bu cihazda saklanır.\nHesap açarsan her cihazda devam edersin.',
+              textAlign: TextAlign.center,
+              style: poppins(
+                24,
+                weight: FontWeight.w400,
+                color: Colors.white70,
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

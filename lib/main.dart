@@ -20,7 +20,10 @@ class FootIQApp extends StatelessWidget {
       theme: ThemeData(
         brightness: Brightness.dark,
         fontFamily: 'Exo2',
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF63D998), brightness: Brightness.dark),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF63D998),
+          brightness: Brightness.dark,
+        ),
       ),
       home: const LoadingScreen(),
     );
