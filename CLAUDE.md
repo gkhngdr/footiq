@@ -54,6 +54,12 @@ Hedef: hataları gidermek, yeni özellikler eklemek ve uygulamayı mağazalarda 
      → ana ekranda `showSetNewPassword`. PKCE yüzünden bağlantı, isteğin yapıldığı tarayıcıda açılmalı. Telefon uygulaması için derin bağlantı yok.
   Supabase varsayılan e-posta servisi yalnızca proje ekibindeki adreslere ve saatte çok az e-posta gönderir; yayından önce özel SMTP şart.
   Supabase URL ayarları: Site URL `https://gkhngdr.github.io/footiq/` olmalı (eskiden `localhost:3000` idi), Redirect URLs'te oyun adresi.
+- **Arkadaşınla Oyna** (`friend_room_screen.dart`, `supabase/friend_rooms.sql`): 4 haneli kodlu özel PVP odası (FQ-1234),
+  paylaşım `share_plus` + web bağlantısı `?oda=1234`. Dostluk maçı enerji harcamaz, kupa vermez (iki hesapla kupa kasılmasın), +500 coin.
+  Rastgele eşleşme özel odalara girmez. "Davet Et Kazan" (davet kodu ödülü) bu ekranın altına taşındı.
+- **3-2-1 modu (yapım aşamasında):** veri `tool/three21/` (Wikidata → `out/` → Supabase `t21_*`), sunucu fonksiyonları `supabase/three21.sql`.
+  Cevap kontrolü sunucuda (`t21_judge`, ses benzerliği ≥0,85); bir maçta kulüp tekrarı yok (`t21_pick_pairs`); doğru cevap listesi istemciye gitmez.
+  İsim kuralları `names.py` ile SQL'de birebir aynı olmalı.
 - `lib/screens/`: Ekranlar. `preview.dart` yalnızca `--dart-define=PREVIEW=true` ile derlenince `?screen=main` gibi parametrelerle ekran açar.
 - `lib/widgets/common.dart`: `TopHud` (enerji çubuğu genişliği enerjiye göre değişir), `Tap`, `CloseBtn` vb.
 
