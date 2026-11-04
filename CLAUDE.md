@@ -1,39 +1,92 @@
 # FootIQ — Futbol bilgi yarışması (Flutter)
 
 Kullanıcıyla Türkçe konuş. Kullanıcı yazılımcı değil; adımları sade anlat.
+Hedef: hataları gidermek, yeni özellikler eklemek ve uygulamayı mağazalarda yayınlamak.
 
-## Durum (25.10.2026 — Nihai Sürüm + DeepSeek-V4-Pro UX Denetimi)
-- **Aşama 1, Aşama 2 ve UX İyileştirmeleri tamamlandı:**
-  - Detaylı teknik günce ve güvenlik raporu için `GEMINI.md` dosyasına bakın.
-  - 500 soruluk genişletilmiş soru bankası (`lib/data/questions.dart`), seviyeler arası soru tekrarı engelleme ve seviye içi kombinasyon çeşitliliği (`pickLevelQuestions`).
-  - Supabase (`lib/core/cloud.dart` ve `supabase/schema.sql`) ile e-posta kayıt/giriş, bulut profil senkronizasyonu (`WidgetsBindingObserver` ile uygulama arka plana atıldığında anında senkronizasyon dahil), Sezon Sıralaması (`leaderboard_dialog.dart`), Davet Et Kazan (`invite_dialog.dart`) ve eşzamanlı Online PVP (`pvp_rooms` + deterministik soru/şık `seed` senkronizasyonu + akıllı bot fallback) aktif.
-  - Tüm onay ve ödül pencereleri `1080x1920` `Stage` tasarım diline (`showStageConfirm`, `_RewardedVideoPanel`) geçirildi; çalışmayan Faz 2 yer tutucuları temizlendi.
-  - Ana ekrandaki hediye çubuğu (`3/7`) okunurluğu koyu kapsül ve güçlendirilmiş gölgeyle iyileştirildi; soru ekranında (`QuizScreen`) seçenek yerleşimi, soru geçiş animasyonu (`AnimatedSwitcher`), tekil ses geri bildirimi ve eşleşme ekranında geri çıkış onayı (`PopScope` + `CloseBtn`) eklendi.
+> Bu dosya projenin tek bilgi kaynağıdır. Önceki `CLAUDE.md` ve `GEMINI.md` (04.11.2026'da) burada birleştirildi.
+> Eski hâlleri git geçmişinde duruyor.
+
+## Durum (04.11.2026)
+- Çalışan özellikler: 500 soruluk banka, bölüm haritası (4 bölüm), Supabase ile e-posta kayıt/giriş, misafir modu,
+  bulut profil kaydı, Sezon Sıralaması, Davet Et Kazan, online PVP (bot yedekli), günlük ödül, enerji, ses.
+- Henüz yayınlanmadı. Sürüm: `pubspec.yaml` → `1.0.0+1`.
+
+### Bilinen açık konular (yayından önce)
+- **iOS'ta oyun sesi yok:** `lib/core/sound_stub.dart` `footiq/sound` kanalını çağırıyor ama yalnızca Android
+  (`MainActivity.kt`) bu kanalı karşılıyor. iOS tarafında (`ios/Runner/AppDelegate.swift`) karşılığı yok; sistem "klik" sesine düşüyor.
+- Derleme hatları üç ayrı yerde: `.github/workflows/build.yml`, `.github/workflows/ios-ipa.yml`, `codemagic.yaml`. Sadeleştirilebilir.
+- Yayın için eksikler: uygulama simgesi/adı kontrolü, Android imzalama anahtarı, gizlilik politikası, mağaza görselleri.
 
 ## Tasarım kaynağı
 - Figma: https://www.figma.com/design/5zVuPhXbJwTIG9ENIYOmzQ/FootIQ (ekranlar 1080x1920).
-- Kullanıcının Figma hesabı **Starter plan**; MCP çağrı limiti çabuk doluyor. Görseller zaten `assets/figma/` içine indirildi; Figma'yı yalnızca gerektiğinde çağır.
+- Kullanıcının Figma hesabı **Starter plan**; MCP çağrı limiti çabuk doluyor. Görseller zaten `assets/figma/` içinde; Figma'yı yalnızca gerektiğinde çağır.
 - Figma'da **olmayan**, mevcut tarza göre tasarlanmış ekranlar: soru ekranı, seviye/PVP sonuç, PVP rakip arama, ayarlar.
-- `chapter2-4.png` görsellerinde seviye düğmeleri ve üst çubuk hazır çizili (Figma'da düz harita alınamadı). Harita ekranı bu görselleri tuvale birebir hizalar ve üstüne dokunma, kilit ve yıldız ekler. Bölüm 1 ise `bg_map.png` üzerine SVG katmanlı düğmelerle çizilir.
+- `chapter2-4.webp` görsellerinde seviye düğmeleri ve üst çubuk hazır çizili. Harita ekranı bu görselleri tuvale birebir hizalar,
+  üstüne dokunma, kilit ve yıldız ekler. Bölüm 1 ise `bg_map.webp` üzerine SVG katmanlı düğmelerle çizilir.
 
 ## Kod yapısı
-- `lib/core/ui.dart`: `Stage` (1080x1920 sanal tuval, FittedBox ile ölçeklenir, `keyboardShift` ile klavye açılınca küçülmeden yukarı kayar), `at(x,y,w,h)` Figma koordinatı kısayolu, %100 Türkçe destekli fontlar (`Fredoka`, `Nunito`, `Rubik`).
-- `lib/core/sound.dart`: Oyun ses sistemi (`assets/sounds/` içindeki 14 ses efektini Web'de HTML5 Audio, Android'de `MainActivity.kt` `SoundPool` üzerinden çalar; `.mp3` öncelikli, `.wav` yedekli).
-- `lib/core/game_state.dart`: Tüm oyuncu durumu (coin, kupa, enerji 6/20dk, yıldızlar, günlük ödül serisi), SharedPreferences ile saklanır ve uygulama arka plana alındığında bekleyen bulut kaydı anında gönderilir.
-- `lib/data/questions.dart`: 500 soruluk kademeli soru bankası (`difficulty: 1..10`, `difficultyLabel`). Her sorunun ilk seçeneği doğru cevaptır, oyunda karıştırılır ve her turda kolaydan zora doğru sıralanır.
-- `lib/screens/`: Ekranlar. `preview.dart` yalnızca `--dart-define=PREVIEW=true` ile derlenince `?screen=main` gibi parametrelerle ekran açar (tasarım kontrolü için).
-- Oyun kuralları: 5 soru, 15 sn, 5/4/3 doğru = 3/2/1 yıldız, <3 başarısız. PVP gerçek oyuncu veya bot fallback ile oynanır, kazanınca +15 kupa +5000 coin.
+- `lib/core/ui.dart`: `Stage` (1080x1920 sanal tuval, `FittedBox(fit: BoxFit.contain)` ile ölçeklenir), `at(x,y,w,h)` Figma koordinatı kısayolu,
+  `showStageDialog` / `showStageConfirm` (tüm pencereler bu tasarım dilinde; standart `AlertDialog` kullanılmaz).
+  - Klavye: `resizeToAvoidBottomInset: false` + `MediaQuery.removeViewInsets`; `keyboardShift: true` olan ekranlar (`LoginScreen`, `showStageDialog`)
+    küçülmeden yukarı kayar. `Transform.translate` sabit tutulur (koşullu yeniden yerleştirme odak kaybına yol açıyordu, yapma).
+  - Arka plan dokunma algılayıcısı `opaque` ve en altta; tam ekran `translucent` `GestureDetector` ekleme (alanların tıklamasını çalıyordu).
+- **Fontlar:** Başlık/metin/form stilleri `Montserrat` (yedek: `Outfit`, `Rubik`). Uygulama varsayılanı `main.dart` içinde `Exo2`.
+  `londrina()` / `poppins()` yalnızca eski isimli yardımcılar; ikisi de Montserrat çizer.
+  Ölçüler: başlıklar 56-60px, butonlar 36-40px, soru metinleri 36-42px. (Fredoka'daki ş/ç sorunu nedeniyle Montserrat'a geçildi.)
+- `lib/core/sound.dart`: 14 ses efekti (`assets/sounds/`, ElevenLabs ile üretildi, sessizliği kırpılmış ve -3.5 dB tavanlı).
+  Web: `sound_web.dart` açılışta ses havuzu kurar (gecikmesiz). Android: `MainActivity.kt` `SoundPool` (`MethodChannel('footiq/sound')`).
+  `.mp3` öncelikli, `.wav` yedek. Ses, dokunmanın başında (`onTapDown`) çalar. `GameState.instance.soundOn` ile kapatılır.
+- `lib/core/game_state.dart`: `GameState.instance` (`ChangeNotifier` + `WidgetsBindingObserver`). Coin, kupa, enerji (6 adet, 20 dk'da bir dolar),
+  yıldızlar, günlük ödül serisi, hediye ilerlemesi. `SharedPreferences` (`footiq_state_v1`) ile saklanır; hesaplı oyuncuda 3 sn gecikmeli Supabase'e yazılır,
+  uygulama arka plana alınınca bekleyen kayıt hemen gönderilir. Misafir girişi önceki hesabın verisini taşımaz (`loginAsGuest`).
+- `lib/core/cloud.dart`: Supabase istemcisi (adres ve anahtar dosyada). Şema ve güvenlik kuralları: `supabase/schema.sql`.
+- `lib/data/questions.dart`: 500 soru, `difficulty: 1..10`, `difficultyLabel` (Kolay/Orta/Zor/Uzman/Efsane). Her sorunun **ilk seçeneği doğru cevaptır**,
+  oyunda karıştırılır. Dağılım: Bölüm 1-4 her biri 80 soru (seviye başına 8; zorluk 1-4, 3-6, 5-8, 7-10), PVP kategorileri
+  (Ben Kimim?, Champions League, Hangi Takım?) her biri 60 soru. `pickLevelQuestions` seviyeler arası tekrarı önler ve turu kolaydan zora sıralar.
+- **Görseller:** Büyük görseller `.webp` (24 MB → 2 MB). Yeni büyük görsel eklerken `cwebp -q 86 -alpha_q 100` ile çevir;
+  1 MB'lık SVG gibi ağır vektörleri PNG'ye çevir (flutter_svg'de yavaş ve filtreleri desteklemiyor).
+- **Web performansı:** Web'de (telefon tarayıcısı) her karede yeniden hesaplanan bulanıklıklar kapalı: `GlassBox` blur atlanır,
+  `GlowFrame` gölgeyle çizilir, pencere perdesi düz koyu renk. Stage arka plan bulanıklığı tüm platformlarda düşük çözünürlüklü görselle yapılır.
+  Web'de `TextField.onTapOutside` kullanma (telefonda alana dokunmayı "dışarı" sayıp klavyeyi kapatıyordu).
+- **Şifremi unuttum** (`forgot_password_dialog.dart`): iki yol da çalışır.
+  1) Kod: e-postadaki kod → `verifyOTP(recovery)` → `updateUser`. Şablonda `{{ .Token }}` gerekir; şablon ancak özel SMTP ile düzenlenebiliyor.
+  2) Bağlantı (web): `resetPasswordForEmail(redirectTo: oyunun adresi)` → bağlantı `?code=` ile oyunu açar → `Cloud.awaitRecoverySession`
+     → ana ekranda `showSetNewPassword`. PKCE yüzünden bağlantı, isteğin yapıldığı tarayıcıda açılmalı. Telefon uygulaması için derin bağlantı yok.
+  Supabase varsayılan e-posta servisi yalnızca proje ekibindeki adreslere ve saatte çok az e-posta gönderir; yayından önce özel SMTP şart.
+  Supabase URL ayarları: Site URL `https://gkhngdr.github.io/footiq/` olmalı (eskiden `localhost:3000` idi), Redirect URLs'te oyun adresi.
+- `lib/screens/`: Ekranlar. `preview.dart` yalnızca `--dart-define=PREVIEW=true` ile derlenince `?screen=main` gibi parametrelerle ekran açar.
+- `lib/widgets/common.dart`: `TopHud` (enerji çubuğu genişliği enerjiye göre değişir), `Tap`, `CloseBtn` vb.
 
-## Çalıştırma
-- Flutter SDK: `C:\Users\PC\dev\flutter` (PATH'te). JDK 21: `C:\Program Files\Microsoft\jdk-21.0.12.101-hotspot`. Android SDK: `%LOCALAPPDATA%\Android\Sdk`.
+## Oyun kuralları
+- Seviye: 5 soru, soru başına 15 sn. 5/4/3 doğru = 3/2/1 yıldız, 3'ten az doğru = başarısız.
+- PVP: gerçek oyuncu ya da bot. İki oyuncu aynı `seed` ile aynı soruları ve aynı şık sırasını görür (`pickSeededPvpQuestions`,
+  `Random(seed * 31 + index + 7)`). Kazanınca +15 kupa +5000 coin; kupa 0'ın altına düşmez.
+- Supabase tarafı: `pvp_rooms` + `join_or_create_pvp`, `poll_pvp_room`, `update_pvp_progress` RPC'leri.
+
+## Güvenlik (supabase/schema.sql)
+- Kayıt olan e-posta kullanıcıları otomatik onaylanır (`on_auth_user_autoconfirm`).
+- `profiles`: RLS açık, `anon` erişimi kapalı, kullanıcı yalnızca kendi satırını yazar. `invite_code` / `invited_by` dışarıdan okunamaz (`my_invite_code()`).
+- Negatif ya da aşırı coin/kupa `CHECK` ile engelli; `limit_profile_growth` artış hızını sınırlar (`updated_at` sunucuda yazılır).
+- `pvp_rooms` yalnızca sınır kontrollü RPC'lerle; `questions` tablosu salt okunur.
+- Android: `INTERNET` izni, `allowBackup="false"`, `usesCleartextTraffic="false"`. `.gitignore` gizli anahtar dosyalarını dışlar.
+
+## Çalıştırma (Mac)
+- Proje yolu: `/Users/gg/Projeler/footiq`. Yolda Türkçe karakter OLMAMALI (`flutter analyze` aksi halde `FormatException` ile çöküyor).
+- Flutter SDK: Homebrew cask (`/opt/homebrew/bin/flutter`). Güncelleme: `brew upgrade --cask flutter`.
 - Web: `flutter run -d chrome`
-- Android emülatörü: `emulator -avd FootIQ_Pixel -gpu host`, sonra `flutter run`.
-  - `-gpu host` şart: NVIDIA sürücüsü (531.79) eski olduğu için emülatör aksi halde yazılımla çizip çok kasıyor. Kullanıcıya sürücü güncellemesi önerildi.
-- Testler: `flutter test` (soru bankası doğrulaması + tam oyun akışı testleri). Değişiklikten sonra `flutter analyze` ve `flutter test` çalıştır.
-- Windows'ta `sdkmanager` paket adlarını `/` ile ister (ör. `platforms/android-36`). `;` cmd tarafından bölünüyor.
-- Windows masaüstü derlemesi kurulu değil (Developer Mode + VS C++ gerekli); gerek de yok.
+- iOS: Xcode kurulu, lisans kabul edildi. Simülatör için iOS platformu henüz indirilmedi (`xcodebuild -downloadPlatform iOS`). CocoaPods gerekirse `brew install cocoapods`. Bundle ID: `com.footiq.footiq`.
+- Android: Android Studio + JDK kurulu değil; APK GitHub Actions ile üretiliyor.
+- Telefon boyutunda ekran görüntüsü: `flutter build web --dart-define=PREVIEW=true` + yerel sunucu + Playwright (sistem Chrome'u).
+- Değişiklikten sonra mutlaka `flutter analyze` ve `flutter test` çalıştır (soru bankası doğrulaması + tam oyun akışı testleri).
 
-## iPhone'da test (Mac yok)
-- Hızlı: web sürümü (`flutter build web`) → aynı Wi-Fi'de yerel sunucu ya da Netlify/Firebase Hosting → iPhone Safari, "Ana Ekrana Ekle".
-- Gerçek uygulama: Apple Developer hesabı (99 USD/yıl) + Codemagic bulut derleme (GitHub reposu gerekir) + TestFlight. Bundle ID: `com.footiq.footiq`.
-- Kullanıcıya iki seçenek de anlatıldı; henüz bir tercih yapmadı.
+## Claude çalışma düzeni
+- Varsayılan: tek ana oturum. Yardımcı agent yalnızca paralel/bağımsız iş veya taze göz gerekince; her zaman göreve yeten en ucuz model (`haiku` mekanik işler, `sonnet` içerik/doğrulama).
+- Hook'lar (`.claude/settings.json`): `.dart` düzenlenince `dart format`; tur biterken Dart dosyası değiştiyse `flutter analyze` (hata varsa iş bitmez).
+- MCP: `dart mcp-server` (çalışan uygulamanın hataları, widget ağacı, hot reload).
+
+## GitHub ve derleme
+- Depo: `gkhngdr/footiq`. `main`'e her push:
+  - `build.yml` → Android APK (Actions artifact)
+  - `ios-ipa.yml` → web sürümü (gh-pages, `/footiq/`) ve imzasız iOS derlemesi
+- `codemagic.yaml` → Sideloadly/AltStore için imzasız `.ipa` (Codemagic'te elle).
+- Commit/push yalnızca kullanıcı isteyince.
