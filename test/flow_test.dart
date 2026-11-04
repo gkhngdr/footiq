@@ -582,4 +582,42 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  testWidgets(
+    'PVP ekranındaki 3-2-1 düğmesi maç ekranını açar; sunucu yoksa düzgün hata gösterir',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      GameState.instance
+        ..resetProgress()
+        ..logout();
+      tester.view.physicalSize = const Size(1080, 1920);
+      tester.view.devicePixelRatio = 2;
+      addTearDown(tester.view.reset);
+      Future<void> wait([int ms = 500]) =>
+          tester.pump(Duration(milliseconds: ms));
+
+      await tester.pumpWidget(const FootIQApp());
+      for (var i = 0; i < 10; i++) {
+        await wait(300);
+      }
+      await tester.tap(find.text('MİSAFİR OLARAK DEVAM ET'));
+      await wait(800);
+      await wait(800);
+      await tester.tap(find.text('Topla'));
+      await wait(1000);
+      await wait(1000);
+      await tester.tap(find.text('PVP OYNA'));
+      await wait(800);
+      await wait(800);
+      await tester.tap(find.textContaining('Ortak futbolcuyu söyle'));
+      await wait(800);
+      await wait(800);
+      expect(find.textContaining('Sorular yüklenemedi'), findsOneWidget);
+      await tester.tap(find.byType(CloseBtn));
+      await wait(800);
+      await wait(800);
+      expect(find.text('Ben Kimim?'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }
