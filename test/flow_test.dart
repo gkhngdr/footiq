@@ -178,16 +178,41 @@ void main() {
       await tester.tap(find.byType(CloseBtn));
       await wait(600);
 
-      // Davet Et Kazan penceresi
-      await tester.tap(find.text('Davet Et\nKazan'));
+      // Arkadaşınla Oyna ekranı: oda kur / koda katıl; Davet Et Kazan buraya taşındı
+      await tester.tap(find.text('ARKADAŞINLA OYNA'));
+      await wait(600);
+      await wait(600);
+      expect(find.text('ODAYI AÇ'), findsOneWidget);
+      // Sunucu yok (test): oda açılamaz, uyarı çıkar
+      await tester.tap(find.text('ODAYI AÇ'));
+      await wait(1000);
+      await wait(500);
+      expect(find.text('Oda açılamadı. İnternetini kontrol et.'), findsOneWidget);
+      await wait(2200);
+      // Koda katıl: eksik kod uyarısı
+      await tester.tap(find.text('KODA KATIL'));
+      await wait(300);
+      await tester.enterText(find.byType(TextField), '12');
+      await tester.tap(find.text('KATIL'));
+      await wait(1000);
+      await wait(500);
+      expect(find.text('Oda kodu 4 haneli olmalı (ör. FQ-4032).'), findsOneWidget);
+      await wait(2200);
+      await tester.tap(find.textContaining('Davet kodunla arkadaşını getir'));
       await wait(600);
       expect(find.text('Kodu Kullan'), findsOneWidget);
-      await tester.enterText(find.byType(TextField), 'ABCD1234');
+      await tester.enterText(find.byType(TextField).last, 'ABCD1234');
       final coinsBeforeInvite = GameState.instance.coins;
       await tester.tap(find.text('Kodu Kullan'));
       await wait(400);
       expect(GameState.instance.coins, coinsBeforeInvite + 500);
+      await tester.tap(find.byType(CloseBtn).last);
+      await wait(600);
+      await wait(600);
+      // Arkadaş ekranını kapat, ana ekrana dön
+      expect(find.byType(CloseBtn), findsOneWidget);
       await tester.tap(find.byType(CloseBtn));
+      await wait(600);
       await wait(600);
 
       // İzle Kazan (önce 1 enerji harca)

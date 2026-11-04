@@ -12,6 +12,9 @@ import 'pvp_mode_screen.dart';
 import 'quiz_screen.dart';
 import 'result_dialog.dart';
 import 'settings_dialog.dart';
+import 'friend_room_screen.dart';
+import 'invite_dialog.dart';
+import 'leaderboard_dialog.dart';
 
 /// Yalnızca `--dart-define=PREVIEW=true` ile derlenince açılır.
 /// Web adresine `?screen=main` gibi bir parametre ekleyerek ekranları
@@ -57,6 +60,12 @@ bool previewScreen(BuildContext context) {
       go(const QuizScreen.pvp(category: PvpCategory.benKimim));
     case 'settings':
       go(const _Host(dialog: showSettings));
+    case 'friend':
+      go(const FriendRoomScreen());
+    case 'leaderboard':
+      go(const _Host(dialog: showLeaderboard));
+    case 'invite':
+      go(const _Host(dialog: showInvite));
     case 'result':
       go(
         _Host(

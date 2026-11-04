@@ -20,6 +20,8 @@ class PvpRoomState {
     required this.guestScore,
     required this.guestStep,
     required this.status,
+    this.category,
+    this.code,
   });
 
   factory PvpRoomState.fromMap(Map<String, dynamic> m) => PvpRoomState(
@@ -34,6 +36,8 @@ class PvpRoomState {
     guestScore: (m['guest_score'] as num? ?? 0).toInt(),
     guestStep: (m['guest_step'] as num? ?? 0).toInt(),
     status: m['status'] as String? ?? 'open',
+    category: m['category'] as String?,
+    code: m['code'] as String?,
   );
 
   final String id;
@@ -47,6 +51,12 @@ class PvpRoomState {
   final int guestScore;
   final int guestStep;
   final String status;
+
+  /// Oda kategorisi (`PvpCategory.name`).
+  final String? category;
+
+  /// Arkadaş odası kodu (4 hane); rastgele eşleşmede null.
+  final String? code;
 
   bool get isMatched =>
       status == 'playing' || status == 'done' || guestId != null;
@@ -434,6 +444,74 @@ class Cloud {
       debugPrint('PVP odaya katılınamadı: $e');
       return null;
     }
+  }
+
+  // ------------------------------------------------------- Arkadaşınla Oyna
+
+  /// Kodlu özel oda açar. Hata/çevrimdışı durumda null.
+  static Future<PvpRoomState?> createPrivatePvp({
+    required PvpCategory category,
+    required String playerId,
+    required String playerName,
+    required int seed,
+  }) async {
+    if (_db == null) return null;
+    try {
+      final res = await _db!.rpc(
+        'create_private_pvp',
+        params: {
+          'p_category': category.name,
+          'p_player_id': playerId,
+          'p_name': playerName,
+          'p_seed': seed,
+        },
+      );
+      if (res is Map && res['id'] is String) {
+        return PvpRoomState.fromMap(res.cast<String, dynamic>());
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Özel oda açılamadı: $e');
+      return null;
+    }
+  }
+
+  /// Kodla odaya katılır. Dönüş: (oda, hata mesajı).
+  static Future<(PvpRoomState?, String?)> joinPrivatePvp({
+    required String code,
+    required String playerId,
+    required String playerName,
+  }) async {
+    if (_db == null) return (null, 'Sunucuya bağlanılamadı.');
+    try {
+      final res = await _db!.rpc(
+        'join_private_pvp',
+        params: {'p_code': code, 'p_player_id': playerId, 'p_name': playerName},
+      );
+      if (res is Map && res['id'] is String) {
+        return (PvpRoomState.fromMap(res.cast<String, dynamic>()), null);
+      }
+      return (
+        null,
+        'Oda bulunamadı. Kodu kontrol et ya da arkadaşından yeni kod iste.',
+      );
+    } catch (_) {
+      return (null, 'Bağlantı hatası. İnternetini kontrol et.');
+    }
+  }
+
+  /// Bekleyen özel odayı kapatır (oda sahibi vazgeçince).
+  static Future<void> cancelPvpRoom({
+    required String roomId,
+    required String playerId,
+  }) async {
+    if (_db == null) return;
+    try {
+      await _db!.rpc(
+        'cancel_pvp_room',
+        params: {'p_room_id': roomId, 'p_player_id': playerId},
+      );
+    } catch (_) {}
   }
 
   static Future<PvpRoomState?> pollPvpRoom({

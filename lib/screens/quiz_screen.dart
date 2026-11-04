@@ -21,15 +21,25 @@ class QuizScreen extends StatefulWidget {
     super.key,
     required int this.chapter,
     required int this.level,
-  }) : category = null;
+  }) : category = null,
+       friendRoom = null;
 
-  const QuizScreen.pvp({super.key, required PvpCategory this.category})
-    : chapter = null,
-      level = null;
+  const QuizScreen.pvp({
+    super.key,
+    required PvpCategory this.category,
+    this.friendRoom,
+  }) : chapter = null,
+       level = null;
 
   final int? chapter;
   final int? level;
   final PvpCategory? category;
+
+  /// Arkadaş odası: eşleşme hazır gelir (rastgele eşleşme ve bot yok).
+  /// Dostluk maçı: enerji harcamaz, kupa vermez, küçük coin ödülü verir.
+  final PvpRoomState? friendRoom;
+
+  bool get isFriendly => friendRoom != null;
 
   bool get isPvp => category != null;
 
@@ -93,9 +103,27 @@ class _QuizScreenState extends State<QuizScreen> {
   void initState() {
     super.initState();
     // Dinleyen ekranlar build sırasında yenilenmesin diye ilk kareden sonra düş.
-    WidgetsBinding.instance.addPostFrameCallback((_) => _state.useEnergy());
+    if (!widget.isFriendly) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _state.useEnergy());
+    }
     _matchSeed = _rng.nextInt(1 << 30);
-    if (widget.isPvp) {
+    final friend = widget.friendRoom;
+    if (friend != null) {
+      _roomId = friend.id;
+      _matchSeed = friend.seed;
+      _onlineOpponent = true;
+      _opponentName = friend.opponentName(_state.playerId);
+      _questions = pickSeededPvpQuestions(
+        widget.category!,
+        _questionCount,
+        _matchSeed,
+      );
+      _pvpPollTimer = Timer.periodic(
+        const Duration(milliseconds: 600),
+        (_) => _pollOnlineOpponent(),
+      );
+      _startQuestion();
+    } else if (widget.isPvp) {
       _questions = pickSeededPvpQuestions(
         widget.category!,
         _questionCount,
@@ -314,12 +342,17 @@ class _QuizScreenState extends State<QuizScreen> {
     _pvpPollTimer?.cancel();
     if (widget.isPvp) {
       final outcome = _myScore.compareTo(_opponentScore);
-      final rawTrophies = outcome > 0 ? 15 : (outcome == 0 ? 5 : -5);
+      // Dostluk maçı sıralamayı etkilemez (iki hesapla kupa kasılmasın).
+      final rawTrophies = widget.isFriendly
+          ? 0
+          : (outcome > 0 ? 15 : (outcome == 0 ? 5 : -5));
       final beforeTrophies = _state.trophies;
       _state.addTrophies(rawTrophies);
       // Oyuncunun kupası 0 iken kaybettiğinde -5 yerine gerçek değişimi (0) göster.
       final actualTrophies = _state.trophies - beforeTrophies;
-      final coins = outcome > 0 ? 5000 : (outcome == 0 ? 1000 : 0);
+      final coins = widget.isFriendly
+          ? (outcome > 0 ? 500 : (outcome == 0 ? 250 : 100))
+          : (outcome > 0 ? 5000 : (outcome == 0 ? 1000 : 0));
       _state.addCoins(coins);
       _state.countGame();
       if (outcome >= 0) {

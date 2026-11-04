@@ -10,7 +10,7 @@ import '../widgets/common.dart';
 import 'chapter_select_screen.dart';
 import 'daily_reward_dialog.dart';
 import 'forgot_password_dialog.dart';
-import 'invite_dialog.dart';
+import 'friend_room_screen.dart';
 import 'leaderboard_dialog.dart';
 import 'pvp_mode_screen.dart';
 import 'settings_dialog.dart';
@@ -21,6 +21,15 @@ class MainScreen extends StatefulWidget {
 
   @override
   State<MainScreen> createState() => _MainScreenState();
+}
+
+/// Paylaşılan davet bağlantısındaki oda kodu (yalnızca bir kez kullanılır).
+bool _sharedRoomTaken = false;
+String? _takeSharedRoomCode() {
+  if (_sharedRoomTaken) return null;
+  _sharedRoomTaken = true;
+  final code = Uri.base.queryParameters['oda'];
+  return (code != null && RegExp(r'^\d{4}$').hasMatch(code)) ? code : null;
 }
 
 class _MainScreenState extends State<MainScreen> {
@@ -37,6 +46,11 @@ class _MainScreenState extends State<MainScreen> {
       if (Cloud.pendingRecovery) {
         await showSetNewPassword(context);
         if (!mounted) return;
+      }
+      final roomCode = _takeSharedRoomCode();
+      if (roomCode != null) {
+        _open(FriendRoomScreen(initialCode: roomCode));
+        return;
       }
       if (_state.canClaimDaily) showDailyReward(context);
     });
@@ -102,10 +116,6 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final totalStars = List.generate(
-      GameState.chapterCount,
-      (i) => _state.chapterStars(i + 1),
-    ).fold(0, (a, b) => a + b);
     return Stage(
       background: 'bg_main.webp',
       children: [
@@ -211,86 +221,39 @@ class _MainScreenState extends State<MainScreen> {
           icon: const _WatchIcon(),
           onTap: _watchAd,
         ),
-        _SideButton(
-          top: 520,
-          label: 'Davet Et\nKazan',
-          icon: const _PlusBadge(),
-          onTap: () => showInvite(context),
-        ),
-        // Alt bilgi & hızlı durum şeridi (boşluğu dengeler, yıldız ve sezon durumunu gösterir)
+        // Arkadaşınla Oyna (eski alt bilgi şeridinin yerine; Sezon Ligi
+        // bilgisi zaten ortadaki sezon çubuğunda)
         at(
-          110,
-          1615,
-          860,
-          96,
-          RepaintBoundary(
+          150,
+          1600,
+          780,
+          130,
+          Tap(
+            onTap: () => _open(const FriendRoomScreen()),
             child: GlassBox(
-              radius: 48,
-              color: const Color(0x990D261F),
-              borderWidth: 3,
-              borderColor: const Color(0x9963D998),
+              radius: 65,
+              gradient: kOrange,
+              borderWidth: 4,
+              borderColor: const Color(0xFFFEC665),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 28),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Tap(
-                        onTap: () => _open(const ChapterSelectScreen()),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const StarIcon(filled: true, size: 44),
-                              const SizedBox(width: 10),
-                              Text(
-                                'Yıldız: $totalStars / 120',
-                                style: exo(
-                                  28,
-                                  weight: 700,
-                                  shadows: kTextShadow,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.group_add_rounded,
+                        color: Colors.white,
+                        size: 64,
                       ),
-                    ),
-                    Container(
-                      width: 2,
-                      height: 44,
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
-                      color: Colors.white24,
-                    ),
-                    Expanded(
-                      child: Tap(
-                        onTap: () => showLeaderboard(context),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                width: 42,
-                                height: 42,
-                                child: png('trophy.png'),
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                'Sezon Ligi: #${_state.displayRank}',
-                                style: exo(
-                                  28,
-                                  weight: 700,
-                                  color: const Color(0xFFFFE27A),
-                                  shadows: kTextShadow,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                      const SizedBox(width: 20),
+                      Text(
+                        'ARKADAŞINLA OYNA',
+                        style: londrina(46, shadows: kTextShadow),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -471,7 +434,6 @@ class _SeasonBar extends StatelessWidget {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              // Arka plan vurgu kapsülü
               at(
                 30,
                 16,
@@ -479,48 +441,58 @@ class _SeasonBar extends StatelessWidget {
                 148,
                 const GlassBox(
                   radius: 44,
-                  color: Color(0x880D261F),
+                  color: Color(0xB30D261F),
                   borderWidth: 3,
                   borderColor: Color(0x99FFE27A),
                 ),
               ),
-              at(98, 42, 463.5, 46.5, flipX(svg('season_bar.svg'))),
-              at(203, 45, 48, 39.75, flipX(svg('season_r128.svg'))),
-              at(152, 45, 48, 39.75, flipX(svg('season_r130.svg'))),
-              at(102.5, 45, 46.5, 39.75, flipX(svg('season_r132.svg'))),
-              at(203, 64.5, 48, 20.25, flipX(svg('season_r129.svg'))),
-              at(152, 64.5, 48, 20.25, flipX(svg('season_r129.svg'))),
-              at(102.5, 64.5, 46.5, 20.25, flipX(svg('season_r133.svg'))),
+              at(14, 14, 132, 132, png('trophy.png')),
+              // Başlık ve sıra
               at(
-                260,
-                44,
-                290,
-                42,
-                centerText(
-                  'SEZON LİGİ  •  #$rank',
-                  londrina(
-                    24,
-                    color: const Color(0xFFFFE27A),
-                    shadows: kTextShadow,
+                160,
+                30,
+                300,
+                50,
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'SEZON LİGİ',
+                    style: londrina(
+                      30,
+                      color: const Color(0xFFFFE27A),
+                      shadows: kTextShadow,
+                    ),
                   ),
                 ),
               ),
-              at(18, 16, 132, 132, png('trophy.png')),
               at(
-                150,
-                102,
                 400,
-                42,
-                const GlassBox(radius: 18, color: Color(0x80111111)),
+                24,
+                160,
+                60,
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: FittedBox(
+                    child: Text(
+                      '#$rank',
+                      style: londrina(48, shadows: kTextShadow),
+                    ),
+                  ),
+                ),
               ),
+              // Kupa ve kalan süre
               at(
-                150,
-                102,
+                160,
+                92,
                 400,
-                42,
-                centerText(
-                  'Sezonun bitmesine ${left.inDays}g ${left.inHours % 24}s  •  Ödülleri Gör',
-                  exo(20, weight: 700, shadows: kTextShadow),
+                56,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '$trophies kupa  •  ${left.inDays}g ${left.inHours % 24}s kaldı  ›',
+                    style: exo(26, weight: 700, shadows: kTextShadow),
+                  ),
                 ),
               ),
             ],
@@ -895,78 +867,6 @@ class _WatchIcon extends StatelessWidget {
         ),
         at(203.14, 35.86, 80, 11.429, svg('watch_stripe.svg')),
         at(234, 59.86, 19.28, 21.371, svg('watch_play.svg')),
-      ],
-    );
-  }
-}
-
-/// "Davet Et Kazan" sarı artı rozeti (Figma 25:10943).
-class _PlusBadge extends StatelessWidget {
-  const _PlusBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        at(
-          181.72,
-          9,
-          123.285,
-          123.285,
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: kCreamRing,
-            ),
-          ),
-        ),
-        at(
-          187.64,
-          10.73,
-          113.422,
-          113.422,
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xFFFECB56),
-            ),
-          ),
-        ),
-        at(189.64, 58, 111.673, 66.002, svg('plus_sub.svg')),
-        at(
-          194.76,
-          8,
-          96.332,
-          30.555,
-          Transform.rotate(angle: 3.14159, child: svg('plus_sub1.svg')),
-        ),
-        at(
-          215.62,
-          57.17,
-          55.478,
-          12.329,
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(5),
-            ),
-          ),
-        ),
-        at(
-          237.19,
-          35.59,
-          12.329,
-          55.478,
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(5),
-            ),
-          ),
-        ),
-        at(203, 29, 10, 8, svg('plus_e129.svg')),
-        at(212.8, 11, 56.838, 19.233, flipX(svg('plus_e130.svg'))),
       ],
     );
   }
