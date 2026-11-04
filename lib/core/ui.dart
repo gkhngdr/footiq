@@ -59,12 +59,17 @@ class Stage extends StatelessWidget {
                   // Bulanık arka plan: her karede blur filtresi hesaplamak yerine
                   // görsel çok küçük çözülüp büyütülür (aynı yumuşak görünüm,
                   // özellikle web/telefonda çok daha ucuz).
-                  child: backgroundBlur > 0
+                  // Hazır çizili (exactBackground) görsellerde kenar boşluğu
+                  // bulanık doldurulur; yoksa görseldeki düğmeler/üst çubuk
+                  // tuvalin dışında ikinci kez görünüyordu.
+                  child: backgroundBlur > 0 || exactBackground
                       ? Image.asset(
                           fig(background),
                           fit: BoxFit.cover,
                           gaplessPlayback: true,
-                          cacheWidth: (720 / backgroundBlur).round(),
+                          cacheWidth: backgroundBlur > 0
+                              ? (720 / backgroundBlur).round()
+                              : 48,
                           filterQuality: FilterQuality.high,
                         )
                       : Image.asset(
@@ -429,26 +434,30 @@ void toast(BuildContext context, String message) {
 }
 
 /// Oyun ekranları arasında yumuşak ve hızlı geçiş (200ms fade + hafif ölçekleme).
+/// Rota adı ekranın tür adıdır (ör. `ChapterMapScreen`); yığında arama için.
+PageRoute<T> stageRoute<T>(Widget screen) => PageRouteBuilder<T>(
+  settings: RouteSettings(name: '${screen.runtimeType}'),
+  transitionDuration: const Duration(milliseconds: 200),
+  reverseTransitionDuration: const Duration(milliseconds: 180),
+  pageBuilder: (_, _, _) => screen,
+  transitionsBuilder: (_, a, _, child) => FadeTransition(
+    opacity: CurvedAnimation(parent: a, curve: Curves.easeOut),
+    child: ScaleTransition(
+      scale: Tween(
+        begin: 0.97,
+        end: 1.0,
+      ).animate(CurvedAnimation(parent: a, curve: Curves.easeOutCubic)),
+      child: child,
+    ),
+  ),
+);
+
 Future<T?> goStage<T>(
   BuildContext context,
   Widget screen, {
   bool replace = false,
 }) {
-  final route = PageRouteBuilder<T>(
-    transitionDuration: const Duration(milliseconds: 200),
-    reverseTransitionDuration: const Duration(milliseconds: 180),
-    pageBuilder: (_, _, _) => screen,
-    transitionsBuilder: (_, a, _, child) => FadeTransition(
-      opacity: CurvedAnimation(parent: a, curve: Curves.easeOut),
-      child: ScaleTransition(
-        scale: Tween(
-          begin: 0.97,
-          end: 1.0,
-        ).animate(CurvedAnimation(parent: a, curve: Curves.easeOutCubic)),
-        child: child,
-      ),
-    ),
-  );
   final nav = Navigator.of(context);
+  final route = stageRoute<T>(screen);
   return replace ? nav.pushReplacement(route) : nav.push(route);
 }

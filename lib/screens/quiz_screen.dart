@@ -9,6 +9,7 @@ import '../core/sound.dart';
 import '../core/ui.dart';
 import '../data/questions.dart';
 import '../widgets/common.dart';
+import 'chapter_map_screen.dart';
 import 'daily_reward_dialog.dart';
 import 'result_dialog.dart';
 
@@ -371,17 +372,54 @@ class _QuizScreenState extends State<QuizScreen> {
           QuizScreen.single(chapter: widget.chapter!, level: widget.level!),
         ),
         onNext: stars > 0 && (hasNextLevel || hasNextChapter)
-            ? () => _replace(
-                hasNextLevel
-                    ? QuizScreen.single(
+            ? () => hasNextLevel
+                  ? _replace(
+                      QuizScreen.single(
                         chapter: widget.chapter!,
                         level: widget.level! + 1,
-                      )
-                    : QuizScreen.single(chapter: widget.chapter! + 1, level: 1),
-              )
+                      ),
+                    )
+                  : _goNextChapter(widget.chapter! + 1)
             : null,
       );
     }
+  }
+
+  /// Bölümün son seviyesinden sonraki bölüme geçiş: alttaki eski bölüm
+  /// haritası yeni bölümün haritasıyla değiştirilir, oyun onun üstünde açılır
+  /// (yoksa yeni bölüm eski haritanın üstünde oynanıyor, çıkınca eski haritaya
+  /// dönülüyordu).
+  void _goNextChapter(int chapter) {
+    void go() {
+      final nav = Navigator.of(context);
+      // Bu oyun ekranını kapat ve altındaki ekranın bölüm haritası olup
+      // olmadığına bak.
+      var closedQuiz = false;
+      var belowIsMap = false;
+      nav.popUntil((r) {
+        if (!closedQuiz) {
+          closedQuiz = true;
+          return false;
+        }
+        belowIsMap = r.settings.name == '$ChapterMapScreen';
+        return true;
+      });
+      if (belowIsMap) {
+        nav.pushReplacement(stageRoute(ChapterMapScreen(chapter: chapter)));
+      }
+      nav.push(stageRoute(QuizScreen.single(chapter: chapter, level: 1)));
+    }
+
+    if (_state.energy <= 0) {
+      promptRefillEnergy(
+        context,
+        onRefilled: () {
+          if (mounted) go();
+        },
+      );
+      return;
+    }
+    go();
   }
 
   void _replace(Widget next) {

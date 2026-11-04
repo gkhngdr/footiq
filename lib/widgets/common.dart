@@ -144,11 +144,9 @@ class _TopHudState extends State<TopHud> {
               1028,
               129,
               widget.coverBaked
-                  ? const GlassBox(
-                      radius: 100,
-                      color: Color(0xB3111111),
-                      blur: 18,
-                    )
+                  // Hazır çizili harita görsellerindeki eski üst çubuğu
+                  // tamamen örter (yarı saydamken alttaki yazılar görünüyordu).
+                  ? const GlassBox(radius: 100, color: Color(0xFF141A1F))
                   : const GlassBox(
                       radius: 100,
                       color: Color(0x66111111),

@@ -57,3 +57,6 @@ app.*.map.json
 *.jks
 *.keystore
 key.properties
+
+# Claude Code kişisel ayarları
+.claude/settings.local.json

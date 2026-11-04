@@ -4,6 +4,7 @@ import 'package:footiq/core/cloud.dart';
 import 'package:footiq/core/game_state.dart';
 import 'package:footiq/data/questions.dart';
 import 'package:footiq/main.dart';
+import 'package:footiq/screens/chapter_map_screen.dart';
 import 'package:footiq/screens/settings_dialog.dart';
 import 'package:footiq/widgets/common.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -462,6 +463,89 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Şifreni Sıfırla'), findsNothing);
       expect(find.text('GİRİŞ YAP'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'Bölüm 1 son seviyesinden "Sonraki Bölüm" ile Bölüm 2 oynanır ve Bölüm 2 haritasına dönülür',
+    (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final state = GameState.instance
+        ..resetProgress()
+        ..logout();
+      tester.view.physicalSize = const Size(1080, 1920);
+      tester.view.devicePixelRatio = 2;
+      addTearDown(tester.view.reset);
+
+      Future<void> wait([int ms = 500]) =>
+          tester.pump(Duration(milliseconds: ms));
+      Future<void> answerAll(List<Question> pool) async {
+        for (var i = 0; i < 5; i++) {
+          final q = pool.firstWhere(
+            (q) => find.text(q.text).evaluate().isNotEmpty,
+          );
+          await tester.tap(find.text(q.answer));
+          await wait(1500);
+          await wait(500);
+        }
+      }
+
+      Finder mapOf(int chapter) => find.byWidgetPredicate(
+        (w) => w is ChapterMapScreen && w.chapter == chapter,
+        skipOffstage: false,
+      );
+
+      await tester.pumpWidget(const FootIQApp());
+      for (var i = 0; i < 10; i++) {
+        await wait(300);
+      }
+      await tester.tap(find.text('MİSAFİR OLARAK DEVAM ET'));
+      await wait(800);
+      await wait(800);
+      await tester.tap(find.text('Topla'));
+      await wait(1000);
+      await wait(1000);
+      for (var lvl = 1; lvl <= 9; lvl++) {
+        state.completeLevel(1, lvl, 3, 10);
+      }
+      state.addEnergy(6);
+
+      await tester.tap(find.text('OYNA'));
+      await wait(800);
+      await wait(800);
+      await tester.tap(find.text('Chapter 1'));
+      await wait(800);
+      await wait(800);
+      await tester.tap(
+        find.byWidgetPredicate((w) => w is LevelButton && w.number == 10),
+      );
+      await wait(800);
+      await wait(800);
+      expect(find.text('Chapter 1  •  Seviye 10'), findsOneWidget);
+      await answerAll(chapter1);
+
+      await tester.tap(find.text('Sonraki Bölüm'));
+      await wait(800);
+      await wait(800);
+      expect(find.text('Chapter 2  •  Seviye 1'), findsOneWidget);
+      // Alttaki harita artık Bölüm 2 haritası (Bölüm 1 haritası yığından çıktı)
+      expect(mapOf(1), findsNothing);
+      expect(
+        find.byWidgetPredicate(
+          (w) => w is ChapterMapScreen,
+          skipOffstage: false,
+        ),
+        findsOneWidget,
+      );
+
+      await answerAll(chapter2);
+      await tester.tap(find.text('Haritaya Dön'));
+      await wait(800);
+      await wait(800);
+      expect(mapOf(2), findsOneWidget);
+      expect(find.text('Chapter 2  •  Seviye 1'), findsNothing);
+      expect(state.stars(2, 1), 3);
+      expect(tester.takeException(), isNull);
     },
   );
 }
