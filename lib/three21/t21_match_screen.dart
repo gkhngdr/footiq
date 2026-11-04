@@ -36,6 +36,10 @@ class T21MatchScreen extends StatefulWidget {
 class _T21MatchScreenState extends State<T21MatchScreen> {
   late T21Match _m;
   final _input = TextEditingController();
+
+  /// Yazı kutusu maç boyunca aynı kalır: telefonda klavye her soruda kapanıp
+  /// açılmasın (her açılış/kapanış tüm ekranı yeniden boyutlandırıp kasıyordu).
+  final _focus = FocusNode();
   bool _keyboard = kIsWeb; // web'de klavye varsayılan
   bool _listening = false;
   String _heard = '';
@@ -73,6 +77,7 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
           Sound.tick();
         case T21Phase.answering:
           Sound.click();
+          if (_keyboard && !_focus.hasFocus) _focus.requestFocus();
         case T21Phase.questionResult:
           if (_m.questionWinner == T21Side.me) {
             Sound.correct();
@@ -103,6 +108,7 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
     _m.removeListener(_onMatch);
     _m.dispose();
     _input.dispose();
+    _focus.dispose();
     super.dispose();
   }
 
@@ -110,7 +116,6 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
 
   Future<void> _send(List<String> said) async {
     if (said.isEmpty) return;
-    FocusManager.instance.primaryFocus?.unfocus();
     final fb = await _m.submit(said);
     if (!mounted || fb == null) return;
     switch (fb.verdict) {
@@ -142,37 +147,56 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
     });
   }
 
-  Future<void> _micDown() async {
-    if (!_m.isAnswering || _m.myLocked) return;
-    final ok = await T21Voice.instance.ensureReady();
-    if (!mounted) return;
-    if (!ok) {
-      toast(context, 'Mikrofon kullanılamıyor. Klavye ile yazabilirsin.');
-      setState(() => _keyboard = true);
+  DateTime? _pressedAt;
+
+  /// Mikrofona dokunuldu: dinlemiyorsa başla, dinliyorsa bitir (dokun-konuş).
+  Future<void> _micPressed() async {
+    if (_listening) {
+      await T21Voice.instance.stop();
       return;
     }
+    if (!_m.isAnswering || _m.myLocked) return;
+    _pressedAt = DateTime.now();
     setState(() {
       _listening = true;
       _heard = '';
       _heardAlternatives = const [];
     });
-    await T21Voice.instance.start(
+    final ok = await T21Voice.instance.start(
       onPartial: (t) {
         if (mounted) setState(() => _heard = t);
       },
+      onFinal: _voiceDone,
     );
+    if (!mounted) return;
+    if (!ok) {
+      setState(() => _listening = false);
+      toast(context, 'Mikrofon kullanılamıyor. Klavye ile yazabilirsin.');
+      setState(() => _keyboard = true);
+    }
   }
 
-  Future<void> _micUp() async {
-    if (!_listening) return;
-    final alts = await T21Voice.instance.stop();
+  /// Parmak kalktı: uzun basılı tutulduysa (basılı tut-konuş) dinlemeyi bitir;
+  /// kısa dokunuşsa dinleme sessizlik olunca kendiliğinden biter.
+  void _micReleased() {
+    final at = _pressedAt;
+    _pressedAt = null;
+    if (!_listening || at == null) return;
+    if (DateTime.now().difference(at) >= const Duration(milliseconds: 700)) {
+      T21Voice.instance.stop();
+    }
+  }
+
+  void _voiceDone(List<String> alts) {
     if (!mounted) return;
     setState(() {
       _listening = false;
       _heardAlternatives = alts;
       if (alts.isNotEmpty) _heard = alts.first;
     });
-    if (alts.isEmpty) toast(context, 'Duyamadım, tekrar dene.');
+    if (alts.isEmpty && _m.isAnswering) {
+      toast(context, 'Duyamadım, tekrar dene.');
+    }
   }
 
   Future<void> _quit() async {
@@ -263,7 +287,7 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
           _scoreboard(),
           _countdownRow(),
           _questionCard(),
-          if (_m.phase == T21Phase.answering) ..._answerArea(),
+          ..._answerArea(),
           if (_m.phase == T21Phase.questionResult) _questionResult(),
         ];
     }
@@ -586,7 +610,8 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
 
   List<Widget> _answerArea() {
     final fb = _m.myFeedback;
-    final locked = _m.myLocked;
+    final answering = _m.isAnswering;
+    final active = answering && !_m.myLocked;
     final feedbackText = switch (fb?.verdict) {
       T21Verdict.wrong =>
         '${fb!.name ?? 'Bu isim'} bu iki takımda birlikte oynamadı',
@@ -595,7 +620,7 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
       _ => null,
     };
     final widgets = <Widget>[
-      if (feedbackText != null)
+      if (answering && feedbackText != null)
         at(
           80,
           1250,
@@ -615,11 +640,10 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
           ),
         ),
     ];
-    if (locked) return widgets;
 
     if (_keyboard) {
       widgets.addAll([
-        if (_suggestions.isNotEmpty)
+        if (active && _suggestions.isNotEmpty)
           at(
             110,
             1340,
@@ -662,7 +686,8 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
               child: Center(
                 child: TextField(
                   controller: _input,
-                  autofocus: true,
+                  focusNode: _focus,
+                  readOnly: !active,
                   onTapOutside: kIsWeb
                       ? null
                       : (_) => FocusManager.instance.primaryFocus?.unfocus(),
@@ -689,7 +714,7 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
           180,
           110,
           Tap(
-            onTap: () => _send([_input.text]),
+            onTap: active ? () => _send([_input.text]) : null,
             child: const GlassBox(
               radius: 55,
               gradient: LinearGradient(
@@ -797,10 +822,12 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
         1500,
         300,
         300,
-        GestureDetector(
-          onTapDown: (_) => _micDown(),
-          onTapUp: (_) => _micUp(),
-          onTapCancel: _micUp,
+        // Ham dokunuş olayları: hareket/izin penceresi hareketi iptal etmesin.
+        Listener(
+          behavior: HitTestBehavior.opaque,
+          onPointerDown: (_) => active || _listening ? _micPressed() : null,
+          onPointerUp: (_) => _micReleased(),
+          onPointerCancel: (_) => _micReleased(),
           child: AnimatedScale(
             scale: _listening ? 1.08 : 1,
             duration: const Duration(milliseconds: 150),
@@ -812,8 +839,8 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
                   BoxShadow(
                     color: const Color(0xFFC6F24E)
                         .withValues(alpha: _listening ? 0.8 : 0.4),
-                    blurRadius: _listening ? 60 : 30,
-                    spreadRadius: _listening ? 12 : 4,
+                    blurRadius: 24,
+                    spreadRadius: _listening ? 10 : 2,
                   ),
                 ],
               ),
@@ -826,7 +853,9 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
                     color: Color(0xFF0B1E18),
                   ),
                   Text(
-                    'BASILI TUT\nVE SÖYLE',
+                    _listening
+                        ? 'DİNLİYORUM\n(bitirmek için dokun)'
+                        : 'DOKUN\nVE SÖYLE',
                     textAlign: TextAlign.center,
                     style: londrina(28, color: const Color(0xFF0B1E18)),
                   ),
