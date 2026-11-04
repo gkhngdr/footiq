@@ -61,3 +61,4 @@ key.properties
 # Claude Code kişisel ayarları
 .claude/settings.local.json
 tool/three21/cache/
+tool/three21/out/

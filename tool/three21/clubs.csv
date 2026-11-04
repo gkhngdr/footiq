@@ -1,0 +1,115 @@
+code,league,name_tr,short,enwiki
+gs,TR,Galatasaray,GS,Galatasaray S.K. (football)
+fb,TR,Fenerbahçe,FB,Fenerbahçe S.K. (football)
+bjk,TR,Beşiktaş,BJK,Beşiktaş J.K.
+ts,TR,Trabzonspor,TS,Trabzonspor
+ibfk,TR,Başakşehir,İBFK,İstanbul Başakşehir F.K.
+bursa,TR,Bursaspor,BUR,Bursaspor
+kayseri,TR,Kayserispor,KAY,Kayserispor
+sivas,TR,Sivasspor,SİV,Sivasspor
+antalya,TR,Antalyaspor,ANT,Antalyaspor
+konya,TR,Konyaspor,KON,Konyaspor
+kasimpasa,TR,Kasımpaşa,KAS,Kasımpaşa S.K.
+genclerbirligi,TR,Gençlerbirliği,GB,Gençlerbirliği S.K.
+ankaragucu,TR,Ankaragücü,ANK,MKE Ankaragücü
+denizli,TR,Denizlispor,DEN,Denizlispor
+gaziantepspor,TR,Gaziantepspor,GAZ,Gaziantepspor
+samsun,TR,Samsunspor,SAM,Samsunspor
+rize,TR,Çaykur Rizespor,RİZ,Çaykur Rizespor
+alanya,TR,Alanyaspor,ALN,Alanyaspor
+goztepe,TR,Göztepe,GÖZ,Göztepe S.K.
+karagumruk,TR,Fatih Karagümrük,FKG,Fatih Karagümrük S.K.
+kocaeli,TR,Kocaelispor,KOC,Kocaelispor
+karabuk,TR,Karabükspor,KRB,Kardemir Karabükspor
+eskisehir,TR,Eskişehirspor,ESK,Eskişehirspor
+manisa,TR,Manisaspor,MAN,Manisaspor
+malatya,TR,Yeni Malatyaspor,YMS,Yeni Malatyaspor
+hatay,TR,Hatayspor,HAT,Hatayspor
+akhisar,TR,Akhisarspor,AKH,Akhisarspor
+altay,TR,Altay,ALT,Altay S.K.
+adana,TR,Adana Demirspor,ADS,Adana Demirspor
+eyup,TR,Eyüpspor,EYÜ,Eyüpspor
+manutd,EN,Manchester United,MUN,Manchester United F.C.
+liverpool,EN,Liverpool,LIV,Liverpool F.C.
+chelsea,EN,Chelsea,CHE,Chelsea F.C.
+arsenal,EN,Arsenal,ARS,Arsenal F.C.
+mancity,EN,Manchester City,MCI,Manchester City F.C.
+tottenham,EN,Tottenham,TOT,Tottenham Hotspur F.C.
+everton,EN,Everton,EVE,Everton F.C.
+villa,EN,Aston Villa,AVL,Aston Villa F.C.
+newcastle,EN,Newcastle United,NEW,Newcastle United F.C.
+westham,EN,West Ham United,WHU,West Ham United F.C.
+leeds,EN,Leeds United,LEE,Leeds United F.C.
+leicester,EN,Leicester City,LEI,Leicester City F.C.
+southampton,EN,Southampton,SOU,Southampton F.C.
+fulham,EN,Fulham,FUL,Fulham F.C.
+palace,EN,Crystal Palace,CRY,Crystal Palace F.C.
+wolves,EN,Wolverhampton,WOL,Wolverhampton Wanderers F.C.
+blackburn,EN,Blackburn Rovers,BLB,Blackburn Rovers F.C.
+boro,EN,Middlesbrough,MID,Middlesbrough F.C.
+sunderland,EN,Sunderland,SUN,Sunderland A.F.C.
+bolton,EN,Bolton Wanderers,BOL,Bolton Wanderers F.C.
+barcelona,ES,Barcelona,BAR,FC Barcelona
+realmadrid,ES,Real Madrid,RM,Real Madrid CF
+atletico,ES,Atlético Madrid,ATM,Atlético Madrid
+valencia,ES,Valencia,VAL,Valencia CF
+sevilla,ES,Sevilla,SEV,Sevilla FC
+villarreal,ES,Villarreal,VIL,Villarreal CF
+athletic,ES,Athletic Bilbao,ATH,Athletic Bilbao
+sociedad,ES,Real Sociedad,RSO,Real Sociedad
+betis,ES,Real Betis,BET,Real Betis
+espanyol,ES,Espanyol,ESP,RCD Espanyol
+celta,ES,Celta Vigo,CEL,RC Celta de Vigo
+deportivo,ES,Deportivo La Coruña,DEP,Deportivo de A Coruña
+mallorca,ES,Mallorca,MLL,RCD Mallorca
+zaragoza,ES,Real Zaragoza,ZAR,Real Zaragoza
+malaga,ES,Málaga,MAL,Málaga CF
+getafe,ES,Getafe,GET,Getafe CF
+juventus,IT,Juventus,JUV,Juventus FC
+milan,IT,Milan,MİL,AC Milan
+inter,IT,Inter,İNT,Inter Milan
+napoli,IT,Napoli,NAP,SSC Napoli
+roma,IT,Roma,ROM,AS Roma
+lazio,IT,Lazio,LAZ,SS Lazio
+fiorentina,IT,Fiorentina,FİO,ACF Fiorentina
+atalanta,IT,Atalanta,ATA,Atalanta BC
+bologna,IT,Bologna,BOL,Bologna FC 1909
+genoa,IT,Genoa,GEN,Genoa CFC
+sampdoria,IT,Sampdoria,SAM,UC Sampdoria
+parma,IT,Parma,PAR,Parma Calcio 1913
+torino,IT,Torino,TOR,Torino FC
+udinese,IT,Udinese,UDİ,Udinese Calcio
+cagliari,IT,Cagliari,CAG,Cagliari Calcio
+palermo,IT,Palermo,PAL,Palermo FC
+verona,IT,Hellas Verona,VER,Hellas Verona FC
+lecce,IT,Lecce,LEC,US Lecce
+bayern,DE,Bayern Münih,FCB,FC Bayern Munich
+dortmund,DE,Borussia Dortmund,BVB,Borussia Dortmund
+leverkusen,DE,Bayer Leverkusen,B04,Bayer 04 Leverkusen
+schalke,DE,Schalke 04,S04,FC Schalke 04
+stuttgart,DE,Stuttgart,VFB,VfB Stuttgart
+gladbach,DE,Mönchengladbach,BMG,Borussia Mönchengladbach
+werder,DE,Werder Bremen,SVW,SV Werder Bremen
+hamburg,DE,Hamburger SV,HSV,Hamburger SV
+koln,DE,Köln,KÖL,1. FC Köln
+frankfurt,DE,Eintracht Frankfurt,SGE,Eintracht Frankfurt
+wolfsburg,DE,Wolfsburg,WOB,VfL Wolfsburg
+hertha,DE,Hertha Berlin,BSC,Hertha BSC
+hoffenheim,DE,Hoffenheim,TSG,TSG 1899 Hoffenheim
+leipzig,DE,RB Leipzig,RBL,RB Leipzig
+freiburg,DE,Freiburg,SCF,SC Freiburg
+mainz,DE,Mainz 05,M05,1. FSV Mainz 05
+psg,FR,Paris Saint-Germain,PSG,Paris Saint-Germain FC
+marseille,FR,Marsilya,OM,Olympique de Marseille
+monaco,FR,Monaco,ASM,AS Monaco FC
+lyon,FR,Lyon,OL,Olympique Lyonnais
+lille,FR,Lille,LOSC,Lille OSC
+nice,FR,Nice,OGCN,OGC Nice
+rennes,FR,Rennes,SRFC,Stade Rennais FC
+lens,FR,Lens,RCL,RC Lens
+bordeaux,FR,Bordeaux,FCGB,FC Girondins de Bordeaux
+nantes,FR,Nantes,FCN,FC Nantes
+saintetienne,FR,Saint-Étienne,ASSE,AS Saint-Étienne
+montpellier,FR,Montpellier,MHSC,Montpellier HSC
+strasbourg,FR,Strasbourg,RCSA,RC Strasbourg Alsace
+toulouse,FR,Toulouse,TFC,Toulouse FC

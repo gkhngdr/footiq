@@ -1,0 +1,1371 @@
+[
+ {
+  "code": "gs",
+  "league": "TR",
+  "name_tr": "Galatasaray",
+  "short": "GS",
+  "enwiki": "Galatasaray S.K. (football)",
+  "qids": [
+   "Q495299"
+  ],
+  "sitelinks": 92,
+  "color": "#FFFF00"
+ },
+ {
+  "code": "fb",
+  "league": "TR",
+  "name_tr": "Fenerbahçe",
+  "short": "FB",
+  "enwiki": "Fenerbahçe S.K. (football)",
+  "qids": [
+   "Q6601875",
+   "Q19648"
+  ],
+  "sitelinks": 92,
+  "color": "#FFFF00"
+ },
+ {
+  "code": "bjk",
+  "league": "TR",
+  "name_tr": "Beşiktaş",
+  "short": "BJK",
+  "enwiki": "Beşiktaş J.K.",
+  "qids": [
+   "Q172567"
+  ],
+  "sitelinks": 86,
+  "color": "#000000"
+ },
+ {
+  "code": "ts",
+  "league": "TR",
+  "name_tr": "Trabzonspor",
+  "short": "TS",
+  "enwiki": "Trabzonspor",
+  "qids": [
+   "Q192641"
+  ],
+  "sitelinks": 62,
+  "color": "#B2FFFF"
+ },
+ {
+  "code": "ibfk",
+  "league": "TR",
+  "name_tr": "Başakşehir",
+  "short": "İBFK",
+  "enwiki": "İstanbul Başakşehir F.K.",
+  "qids": [
+   "Q857938"
+  ],
+  "sitelinks": 57,
+  "color": "#FFA500"
+ },
+ {
+  "code": "bursa",
+  "league": "TR",
+  "name_tr": "Bursaspor",
+  "short": "BUR",
+  "enwiki": "Bursaspor",
+  "qids": [
+   "Q203573"
+  ],
+  "sitelinks": 53,
+  "color": null
+ },
+ {
+  "code": "kayseri",
+  "league": "TR",
+  "name_tr": "Kayserispor",
+  "short": "KAY",
+  "enwiki": "Kayserispor",
+  "qids": [
+   "Q608122"
+  ],
+  "sitelinks": 45,
+  "color": "#FF0000"
+ },
+ {
+  "code": "sivas",
+  "league": "TR",
+  "name_tr": "Sivasspor",
+  "short": "SİV",
+  "enwiki": "Sivasspor",
+  "qids": [
+   "Q372599"
+  ],
+  "sitelinks": 48,
+  "color": null
+ },
+ {
+  "code": "antalya",
+  "league": "TR",
+  "name_tr": "Antalyaspor",
+  "short": "ANT",
+  "enwiki": "Antalyaspor",
+  "qids": [
+   "Q43710"
+  ],
+  "sitelinks": 44,
+  "color": null
+ },
+ {
+  "code": "konya",
+  "league": "TR",
+  "name_tr": "Konyaspor",
+  "short": "KON",
+  "enwiki": "Konyaspor",
+  "qids": [
+   "Q513840"
+  ],
+  "sitelinks": 48,
+  "color": null
+ },
+ {
+  "code": "kasimpasa",
+  "league": "TR",
+  "name_tr": "Kasımpaşa",
+  "short": "KAS",
+  "enwiki": "Kasımpaşa S.K.",
+  "qids": [
+   "Q138230"
+  ],
+  "sitelinks": 43,
+  "color": null
+ },
+ {
+  "code": "genclerbirligi",
+  "league": "TR",
+  "name_tr": "Gençlerbirliği",
+  "short": "GB",
+  "enwiki": "Gençlerbirliği S.K.",
+  "qids": [
+   "Q641373"
+  ],
+  "sitelinks": 42,
+  "color": null
+ },
+ {
+  "code": "ankaragucu",
+  "league": "TR",
+  "name_tr": "Ankaragücü",
+  "short": "ANK",
+  "enwiki": "MKE Ankaragücü",
+  "qids": [
+   "Q492826"
+  ],
+  "sitelinks": 43,
+  "color": null
+ },
+ {
+  "code": "denizli",
+  "league": "TR",
+  "name_tr": "Denizlispor",
+  "short": "DEN",
+  "enwiki": "Denizlispor",
+  "qids": [
+   "Q643107"
+  ],
+  "sitelinks": 37,
+  "color": null
+ },
+ {
+  "code": "gaziantepspor",
+  "league": "TR",
+  "name_tr": "Gaziantepspor",
+  "short": "GAZ",
+  "enwiki": "Gaziantepspor",
+  "qids": [
+   "Q285722"
+  ],
+  "sitelinks": 36,
+  "color": null
+ },
+ {
+  "code": "samsun",
+  "league": "TR",
+  "name_tr": "Samsunspor",
+  "short": "SAM",
+  "enwiki": "Samsunspor",
+  "qids": [
+   "Q430107"
+  ],
+  "sitelinks": 42,
+  "color": "#FF0000"
+ },
+ {
+  "code": "rize",
+  "league": "TR",
+  "name_tr": "Çaykur Rizespor",
+  "short": "RİZ",
+  "enwiki": "Çaykur Rizespor",
+  "qids": [
+   "Q272712"
+  ],
+  "sitelinks": 41,
+  "color": null
+ },
+ {
+  "code": "alanya",
+  "league": "TR",
+  "name_tr": "Alanyaspor",
+  "short": "ALN",
+  "enwiki": "Alanyaspor",
+  "qids": [
+   "Q1636019"
+  ],
+  "sitelinks": 39,
+  "color": null
+ },
+ {
+  "code": "goztepe",
+  "league": "TR",
+  "name_tr": "Göztepe",
+  "short": "GÖZ",
+  "enwiki": "Göztepe S.K.",
+  "qids": [
+   "Q1423118"
+  ],
+  "sitelinks": 38,
+  "color": null
+ },
+ {
+  "code": "karagumruk",
+  "league": "TR",
+  "name_tr": "Fatih Karagümrük",
+  "short": "FKG",
+  "enwiki": "Fatih Karagümrük S.K.",
+  "qids": [
+   "Q1398111"
+  ],
+  "sitelinks": 34,
+  "color": null
+ },
+ {
+  "code": "kocaeli",
+  "league": "TR",
+  "name_tr": "Kocaelispor",
+  "short": "KOC",
+  "enwiki": "Kocaelispor",
+  "qids": [
+   "Q513237"
+  ],
+  "sitelinks": 30,
+  "color": null
+ },
+ {
+  "code": "karabuk",
+  "league": "TR",
+  "name_tr": "Karabükspor",
+  "short": "KRB",
+  "enwiki": "Kardemir Karabükspor",
+  "qids": [
+   "Q301332"
+  ],
+  "sitelinks": 30,
+  "color": null
+ },
+ {
+  "code": "eskisehir",
+  "league": "TR",
+  "name_tr": "Eskişehirspor",
+  "short": "ESK",
+  "enwiki": "Eskişehirspor",
+  "qids": [
+   "Q748445"
+  ],
+  "sitelinks": 39,
+  "color": null
+ },
+ {
+  "code": "manisa",
+  "league": "TR",
+  "name_tr": "Manisaspor",
+  "short": "MAN",
+  "enwiki": "Manisaspor",
+  "qids": [
+   "Q128148"
+  ],
+  "sitelinks": 27,
+  "color": null
+ },
+ {
+  "code": "malatya",
+  "league": "TR",
+  "name_tr": "Yeni Malatyaspor",
+  "short": "YMS",
+  "enwiki": "Yeni Malatyaspor",
+  "qids": [
+   "Q303121"
+  ],
+  "sitelinks": 37,
+  "color": null
+ },
+ {
+  "code": "hatay",
+  "league": "TR",
+  "name_tr": "Hatayspor",
+  "short": "HAT",
+  "enwiki": "Hatayspor",
+  "qids": [
+   "Q1110567"
+  ],
+  "sitelinks": 31,
+  "color": null
+ },
+ {
+  "code": "akhisar",
+  "league": "TR",
+  "name_tr": "Akhisarspor",
+  "short": "AKH",
+  "enwiki": "Akhisarspor",
+  "qids": [
+   "Q417685"
+  ],
+  "sitelinks": 35,
+  "color": null
+ },
+ {
+  "code": "altay",
+  "league": "TR",
+  "name_tr": "Altay",
+  "short": "ALT",
+  "enwiki": "Altay S.K.",
+  "qids": [
+   "Q434929"
+  ],
+  "sitelinks": 30,
+  "color": null
+ },
+ {
+  "code": "adana",
+  "league": "TR",
+  "name_tr": "Adana Demirspor",
+  "short": "ADS",
+  "enwiki": "Adana Demirspor",
+  "qids": [
+   "Q352251"
+  ],
+  "sitelinks": 34,
+  "color": null
+ },
+ {
+  "code": "eyup",
+  "league": "TR",
+  "name_tr": "Eyüpspor",
+  "short": "EYÜ",
+  "enwiki": "Eyüpspor",
+  "qids": [
+   "Q118919"
+  ],
+  "sitelinks": 24,
+  "color": null
+ },
+ {
+  "code": "manutd",
+  "league": "EN",
+  "name_tr": "Manchester United",
+  "short": "MUN",
+  "enwiki": "Manchester United F.C.",
+  "qids": [
+   "Q18656"
+  ],
+  "sitelinks": 148,
+  "color": "#FF0000"
+ },
+ {
+  "code": "liverpool",
+  "league": "EN",
+  "name_tr": "Liverpool",
+  "short": "LIV",
+  "enwiki": "Liverpool F.C.",
+  "qids": [
+   "Q1130849"
+  ],
+  "sitelinks": 134,
+  "color": "#FF0000"
+ },
+ {
+  "code": "chelsea",
+  "league": "EN",
+  "name_tr": "Chelsea",
+  "short": "CHE",
+  "enwiki": "Chelsea F.C.",
+  "qids": [
+   "Q9616"
+  ],
+  "sitelinks": 127,
+  "color": "#002366"
+ },
+ {
+  "code": "arsenal",
+  "league": "EN",
+  "name_tr": "Arsenal",
+  "short": "ARS",
+  "enwiki": "Arsenal F.C.",
+  "qids": [
+   "Q9617"
+  ],
+  "sitelinks": 125,
+  "color": "#FF0000"
+ },
+ {
+  "code": "mancity",
+  "league": "EN",
+  "name_tr": "Manchester City",
+  "short": "MCI",
+  "enwiki": "Manchester City F.C.",
+  "qids": [
+   "Q50602"
+  ],
+  "sitelinks": 118,
+  "color": "#B2FFFF"
+ },
+ {
+  "code": "tottenham",
+  "league": "EN",
+  "name_tr": "Tottenham",
+  "short": "TOT",
+  "enwiki": "Tottenham Hotspur F.C.",
+  "qids": [
+   "Q18741"
+  ],
+  "sitelinks": 102,
+  "color": "#0000FF"
+ },
+ {
+  "code": "everton",
+  "league": "EN",
+  "name_tr": "Everton",
+  "short": "EVE",
+  "enwiki": "Everton F.C.",
+  "qids": [
+   "Q5794"
+  ],
+  "sitelinks": 103,
+  "color": "#002366"
+ },
+ {
+  "code": "villa",
+  "league": "EN",
+  "name_tr": "Aston Villa",
+  "short": "AVL",
+  "enwiki": "Aston Villa F.C.",
+  "qids": [
+   "Q18711"
+  ],
+  "sitelinks": 103,
+  "color": "#800032"
+ },
+ {
+  "code": "newcastle",
+  "league": "EN",
+  "name_tr": "Newcastle United",
+  "short": "NEW",
+  "enwiki": "Newcastle United F.C.",
+  "qids": [
+   "Q18716"
+  ],
+  "sitelinks": 97,
+  "color": "#000000"
+ },
+ {
+  "code": "westham",
+  "league": "EN",
+  "name_tr": "West Ham United",
+  "short": "WHU",
+  "enwiki": "West Ham United F.C.",
+  "qids": [
+   "Q18747"
+  ],
+  "sitelinks": 86,
+  "color": "#800032"
+ },
+ {
+  "code": "leeds",
+  "league": "EN",
+  "name_tr": "Leeds United",
+  "short": "LEE",
+  "enwiki": "Leeds United F.C.",
+  "qids": [
+   "Q1128631"
+  ],
+  "sitelinks": 86,
+  "color": "#0000FF"
+ },
+ {
+  "code": "leicester",
+  "league": "EN",
+  "name_tr": "Leicester City",
+  "short": "LEI",
+  "enwiki": "Leicester City F.C.",
+  "qids": [
+   "Q19481"
+  ],
+  "sitelinks": 96,
+  "color": "#002366"
+ },
+ {
+  "code": "southampton",
+  "league": "EN",
+  "name_tr": "Southampton",
+  "short": "SOU",
+  "enwiki": "Southampton F.C.",
+  "qids": [
+   "Q18732"
+  ],
+  "sitelinks": 84,
+  "color": "#FF0000"
+ },
+ {
+  "code": "fulham",
+  "league": "EN",
+  "name_tr": "Fulham",
+  "short": "FUL",
+  "enwiki": "Fulham F.C.",
+  "qids": [
+   "Q18708"
+  ],
+  "sitelinks": 84,
+  "color": "#000000"
+ },
+ {
+  "code": "palace",
+  "league": "EN",
+  "name_tr": "Crystal Palace",
+  "short": "CRY",
+  "enwiki": "Crystal Palace F.C.",
+  "qids": [
+   "Q19467"
+  ],
+  "sitelinks": 84,
+  "color": "#FF0000"
+ },
+ {
+  "code": "wolves",
+  "league": "EN",
+  "name_tr": "Wolverhampton",
+  "short": "WOL",
+  "enwiki": "Wolverhampton Wanderers F.C.",
+  "qids": [
+   "Q19500"
+  ],
+  "sitelinks": 85,
+  "color": "#FFD700"
+ },
+ {
+  "code": "blackburn",
+  "league": "EN",
+  "name_tr": "Blackburn Rovers",
+  "short": "BLB",
+  "enwiki": "Blackburn Rovers F.C.",
+  "qids": [
+   "Q19446"
+  ],
+  "sitelinks": 78,
+  "color": "#FF0000"
+ },
+ {
+  "code": "boro",
+  "league": "EN",
+  "name_tr": "Middlesbrough",
+  "short": "MID",
+  "enwiki": "Middlesbrough F.C.",
+  "qids": [
+   "Q18661"
+  ],
+  "sitelinks": 70,
+  "color": "#FF0000"
+ },
+ {
+  "code": "sunderland",
+  "league": "EN",
+  "name_tr": "Sunderland",
+  "short": "SUN",
+  "enwiki": "Sunderland A.F.C.",
+  "qids": [
+   "Q18739"
+  ],
+  "sitelinks": 81,
+  "color": "#FF0000"
+ },
+ {
+  "code": "bolton",
+  "league": "EN",
+  "name_tr": "Bolton Wanderers",
+  "short": "BOL",
+  "enwiki": "Bolton Wanderers F.C.",
+  "qids": [
+   "Q19451"
+  ],
+  "sitelinks": 71,
+  "color": "#FF0000"
+ },
+ {
+  "code": "barcelona",
+  "league": "ES",
+  "name_tr": "Barcelona",
+  "short": "BAR",
+  "enwiki": "FC Barcelona",
+  "qids": [
+   "Q7156"
+  ],
+  "sitelinks": 155,
+  "color": "#FF0000"
+ },
+ {
+  "code": "realmadrid",
+  "league": "ES",
+  "name_tr": "Real Madrid",
+  "short": "RM",
+  "enwiki": "Real Madrid CF",
+  "qids": [
+   "Q8682"
+  ],
+  "sitelinks": 153,
+  "color": "#800080"
+ },
+ {
+  "code": "atletico",
+  "league": "ES",
+  "name_tr": "Atlético Madrid",
+  "short": "ATM",
+  "enwiki": "Atlético Madrid",
+  "qids": [
+   "Q8701"
+  ],
+  "sitelinks": 109,
+  "color": "#FF0000"
+ },
+ {
+  "code": "valencia",
+  "league": "ES",
+  "name_tr": "Valencia",
+  "short": "VAL",
+  "enwiki": "Valencia CF",
+  "qids": [
+   "Q10333"
+  ],
+  "sitelinks": 93,
+  "color": "#000000"
+ },
+ {
+  "code": "sevilla",
+  "league": "ES",
+  "name_tr": "Sevilla",
+  "short": "SEV",
+  "enwiki": "Sevilla FC",
+  "qids": [
+   "Q10329"
+  ],
+  "sitelinks": 87,
+  "color": "#FF0000"
+ },
+ {
+  "code": "villarreal",
+  "league": "ES",
+  "name_tr": "Villarreal",
+  "short": "VIL",
+  "enwiki": "Villarreal CF",
+  "qids": [
+   "Q12297"
+  ],
+  "sitelinks": 81,
+  "color": "#FFFF00"
+ },
+ {
+  "code": "athletic",
+  "league": "ES",
+  "name_tr": "Athletic Bilbao",
+  "short": "ATH",
+  "enwiki": "Athletic Bilbao",
+  "qids": [
+   "Q8687"
+  ],
+  "sitelinks": 88,
+  "color": "#FF0000"
+ },
+ {
+  "code": "sociedad",
+  "league": "ES",
+  "name_tr": "Real Sociedad",
+  "short": "RSO",
+  "enwiki": "Real Sociedad",
+  "qids": [
+   "Q10315"
+  ],
+  "sitelinks": 80,
+  "color": "#0000FF"
+ },
+ {
+  "code": "betis",
+  "league": "ES",
+  "name_tr": "Real Betis",
+  "short": "BET",
+  "enwiki": "Real Betis",
+  "qids": [
+   "Q8723"
+  ],
+  "sitelinks": 77,
+  "color": null
+ },
+ {
+  "code": "espanyol",
+  "league": "ES",
+  "name_tr": "Espanyol",
+  "short": "ESP",
+  "enwiki": "RCD Espanyol",
+  "qids": [
+   "Q8780"
+  ],
+  "sitelinks": 82,
+  "color": "#0000FF"
+ },
+ {
+  "code": "celta",
+  "league": "ES",
+  "name_tr": "Celta Vigo",
+  "short": "CEL",
+  "enwiki": "RC Celta de Vigo",
+  "qids": [
+   "Q8749"
+  ],
+  "sitelinks": 72,
+  "color": null
+ },
+ {
+  "code": "deportivo",
+  "league": "ES",
+  "name_tr": "Deportivo La Coruña",
+  "short": "DEP",
+  "enwiki": "Deportivo de A Coruña",
+  "qids": [
+   "Q8760"
+  ],
+  "sitelinks": 70,
+  "color": null
+ },
+ {
+  "code": "mallorca",
+  "league": "ES",
+  "name_tr": "Mallorca",
+  "short": "MLL",
+  "enwiki": "RCD Mallorca",
+  "qids": [
+   "Q8835"
+  ],
+  "sitelinks": 70,
+  "color": "#FF0000"
+ },
+ {
+  "code": "zaragoza",
+  "league": "ES",
+  "name_tr": "Real Zaragoza",
+  "short": "ZAR",
+  "enwiki": "Real Zaragoza",
+  "qids": [
+   "Q10308"
+  ],
+  "sitelinks": 66,
+  "color": "#0000FF"
+ },
+ {
+  "code": "malaga",
+  "league": "ES",
+  "name_tr": "Málaga",
+  "short": "MAL",
+  "enwiki": "Málaga CF",
+  "qids": [
+   "Q8857"
+  ],
+  "sitelinks": 66,
+  "color": "#B2FFFF"
+ },
+ {
+  "code": "getafe",
+  "league": "ES",
+  "name_tr": "Getafe",
+  "short": "GET",
+  "enwiki": "Getafe CF",
+  "qids": [
+   "Q8806"
+  ],
+  "sitelinks": 67,
+  "color": "#0000FF"
+ },
+ {
+  "code": "juventus",
+  "league": "IT",
+  "name_tr": "Juventus",
+  "short": "JUV",
+  "enwiki": "Juventus FC",
+  "qids": [
+   "Q1422"
+  ],
+  "sitelinks": 132,
+  "color": "#000000"
+ },
+ {
+  "code": "milan",
+  "league": "IT",
+  "name_tr": "Milan",
+  "short": "MİL",
+  "enwiki": "AC Milan",
+  "qids": [
+   "Q1543"
+  ],
+  "sitelinks": 127,
+  "color": "#FF0000"
+ },
+ {
+  "code": "inter",
+  "league": "IT",
+  "name_tr": "Inter",
+  "short": "İNT",
+  "enwiki": "Inter Milan",
+  "qids": [
+   "Q631"
+  ],
+  "sitelinks": 124,
+  "color": "#0000FF"
+ },
+ {
+  "code": "napoli",
+  "league": "IT",
+  "name_tr": "Napoli",
+  "short": "NAP",
+  "enwiki": "SSC Napoli",
+  "qids": [
+   "Q2641"
+  ],
+  "sitelinks": 118,
+  "color": "#B2FFFF"
+ },
+ {
+  "code": "roma",
+  "league": "IT",
+  "name_tr": "Roma",
+  "short": "ROM",
+  "enwiki": "AS Roma",
+  "qids": [
+   "Q2739"
+  ],
+  "sitelinks": 105,
+  "color": "#FF0000"
+ },
+ {
+  "code": "lazio",
+  "league": "IT",
+  "name_tr": "Lazio",
+  "short": "LAZ",
+  "enwiki": "SS Lazio",
+  "qids": [
+   "Q2609"
+  ],
+  "sitelinks": 100,
+  "color": "#000080"
+ },
+ {
+  "code": "fiorentina",
+  "league": "IT",
+  "name_tr": "Fiorentina",
+  "short": "FİO",
+  "enwiki": "ACF Fiorentina",
+  "qids": [
+   "Q2052"
+  ],
+  "sitelinks": 97,
+  "color": "#800080"
+ },
+ {
+  "code": "atalanta",
+  "league": "IT",
+  "name_tr": "Atalanta",
+  "short": "ATA",
+  "enwiki": "Atalanta BC",
+  "qids": [
+   "Q1886"
+  ],
+  "sitelinks": 89,
+  "color": null
+ },
+ {
+  "code": "bologna",
+  "league": "IT",
+  "name_tr": "Bologna",
+  "short": "BOL",
+  "enwiki": "Bologna FC 1909",
+  "qids": [
+   "Q1893"
+  ],
+  "sitelinks": 88,
+  "color": "#0000FF"
+ },
+ {
+  "code": "genoa",
+  "league": "IT",
+  "name_tr": "Genoa",
+  "short": "GEN",
+  "enwiki": "Genoa CFC",
+  "qids": [
+   "Q2074"
+  ],
+  "sitelinks": 87,
+  "color": "#0000FF"
+ },
+ {
+  "code": "sampdoria",
+  "league": "IT",
+  "name_tr": "Sampdoria",
+  "short": "SAM",
+  "enwiki": "UC Sampdoria",
+  "qids": [
+   "Q1457"
+  ],
+  "sitelinks": 85,
+  "color": "#FF0000"
+ },
+ {
+  "code": "parma",
+  "league": "IT",
+  "name_tr": "Parma",
+  "short": "PAR",
+  "enwiki": "Parma Calcio 1913",
+  "qids": [
+   "Q2693"
+  ],
+  "sitelinks": 84,
+  "color": null
+ },
+ {
+  "code": "torino",
+  "league": "IT",
+  "name_tr": "Torino",
+  "short": "TOR",
+  "enwiki": "Torino FC",
+  "qids": [
+   "Q2768"
+  ],
+  "sitelinks": 84,
+  "color": null
+ },
+ {
+  "code": "udinese",
+  "league": "IT",
+  "name_tr": "Udinese",
+  "short": "UDİ",
+  "enwiki": "Udinese Calcio",
+  "qids": [
+   "Q2798"
+  ],
+  "sitelinks": 80,
+  "color": null
+ },
+ {
+  "code": "cagliari",
+  "league": "IT",
+  "name_tr": "Cagliari",
+  "short": "CAG",
+  "enwiki": "Cagliari Calcio",
+  "qids": [
+   "Q1900"
+  ],
+  "sitelinks": 78,
+  "color": "#FF0000"
+ },
+ {
+  "code": "palermo",
+  "league": "IT",
+  "name_tr": "Palermo",
+  "short": "PAL",
+  "enwiki": "Palermo FC",
+  "qids": [
+   "Q2674"
+  ],
+  "sitelinks": 106,
+  "color": "#000000"
+ },
+ {
+  "code": "verona",
+  "league": "IT",
+  "name_tr": "Hellas Verona",
+  "short": "VER",
+  "enwiki": "Hellas Verona FC",
+  "qids": [
+   "Q8639"
+  ],
+  "sitelinks": 69,
+  "color": "#FFFF00"
+ },
+ {
+  "code": "lecce",
+  "league": "IT",
+  "name_tr": "Lecce",
+  "short": "LEC",
+  "enwiki": "US Lecce",
+  "qids": [
+   "Q13391"
+  ],
+  "sitelinks": 60,
+  "color": "#000080"
+ },
+ {
+  "code": "bayern",
+  "league": "DE",
+  "name_tr": "Bayern Münih",
+  "short": "FCB",
+  "enwiki": "FC Bayern Munich",
+  "qids": [
+   "Q15789"
+  ],
+  "sitelinks": 125,
+  "color": null
+ },
+ {
+  "code": "dortmund",
+  "league": "DE",
+  "name_tr": "Borussia Dortmund",
+  "short": "BVB",
+  "enwiki": "Borussia Dortmund",
+  "qids": [
+   "Q41420"
+  ],
+  "sitelinks": 99,
+  "color": "#FFFF00"
+ },
+ {
+  "code": "leverkusen",
+  "league": "DE",
+  "name_tr": "Bayer Leverkusen",
+  "short": "B04",
+  "enwiki": "Bayer 04 Leverkusen",
+  "qids": [
+   "Q104761"
+  ],
+  "sitelinks": 89,
+  "color": null
+ },
+ {
+  "code": "schalke",
+  "league": "DE",
+  "name_tr": "Schalke 04",
+  "short": "S04",
+  "enwiki": "FC Schalke 04",
+  "qids": [
+   "Q32494"
+  ],
+  "sitelinks": 88,
+  "color": "#0000FF"
+ },
+ {
+  "code": "stuttgart",
+  "league": "DE",
+  "name_tr": "Stuttgart",
+  "short": "VFB",
+  "enwiki": "VfB Stuttgart",
+  "qids": [
+   "Q4512"
+  ],
+  "sitelinks": 87,
+  "color": "#FF0000"
+ },
+ {
+  "code": "gladbach",
+  "league": "DE",
+  "name_tr": "Mönchengladbach",
+  "short": "BMG",
+  "enwiki": "Borussia Mönchengladbach",
+  "qids": [
+   "Q101959"
+  ],
+  "sitelinks": 85,
+  "color": null
+ },
+ {
+  "code": "werder",
+  "league": "DE",
+  "name_tr": "Werder Bremen",
+  "short": "SVW",
+  "enwiki": "SV Werder Bremen",
+  "qids": [
+   "Q51976"
+  ],
+  "sitelinks": 83,
+  "color": null
+ },
+ {
+  "code": "hamburg",
+  "league": "DE",
+  "name_tr": "Hamburger SV",
+  "short": "HSV",
+  "enwiki": "Hamburger SV",
+  "qids": [
+   "Q51974"
+  ],
+  "sitelinks": 77,
+  "color": "#0000FF"
+ },
+ {
+  "code": "koln",
+  "league": "DE",
+  "name_tr": "Köln",
+  "short": "KÖL",
+  "enwiki": "1. FC Köln",
+  "qids": [
+   "Q104770"
+  ],
+  "sitelinks": 76,
+  "color": "#FF0000"
+ },
+ {
+  "code": "frankfurt",
+  "league": "DE",
+  "name_tr": "Eintracht Frankfurt",
+  "short": "SGE",
+  "enwiki": "Eintracht Frankfurt",
+  "qids": [
+   "Q38245"
+  ],
+  "sitelinks": 103,
+  "color": "#FF0000"
+ },
+ {
+  "code": "wolfsburg",
+  "league": "DE",
+  "name_tr": "Wolfsburg",
+  "short": "WOB",
+  "enwiki": "VfL Wolfsburg",
+  "qids": [
+   "Q101859"
+  ],
+  "sitelinks": 81,
+  "color": "#00FF00"
+ },
+ {
+  "code": "hertha",
+  "league": "DE",
+  "name_tr": "Hertha Berlin",
+  "short": "BSC",
+  "enwiki": "Hertha BSC",
+  "qids": [
+   "Q102720"
+  ],
+  "sitelinks": 73,
+  "color": null
+ },
+ {
+  "code": "hoffenheim",
+  "league": "DE",
+  "name_tr": "Hoffenheim",
+  "short": "TSG",
+  "enwiki": "TSG 1899 Hoffenheim",
+  "qids": [
+   "Q22707"
+  ],
+  "sitelinks": 75,
+  "color": null
+ },
+ {
+  "code": "leipzig",
+  "league": "DE",
+  "name_tr": "RB Leipzig",
+  "short": "RBL",
+  "enwiki": "RB Leipzig",
+  "qids": [
+   "Q702455"
+  ],
+  "sitelinks": 73,
+  "color": null
+ },
+ {
+  "code": "freiburg",
+  "league": "DE",
+  "name_tr": "Freiburg",
+  "short": "SCF",
+  "enwiki": "SC Freiburg",
+  "qids": [
+   "Q106394"
+  ],
+  "sitelinks": 73,
+  "color": null
+ },
+ {
+  "code": "mainz",
+  "league": "DE",
+  "name_tr": "Mainz 05",
+  "short": "M05",
+  "enwiki": "1. FSV Mainz 05",
+  "qids": [
+   "Q105254"
+  ],
+  "sitelinks": 67,
+  "color": "#FF0000"
+ },
+ {
+  "code": "psg",
+  "league": "FR",
+  "name_tr": "Paris Saint-Germain",
+  "short": "PSG",
+  "enwiki": "Paris Saint-Germain FC",
+  "qids": [
+   "Q483020"
+  ],
+  "sitelinks": 103,
+  "color": "#FF0000"
+ },
+ {
+  "code": "marseille",
+  "league": "FR",
+  "name_tr": "Marsilya",
+  "short": "OM",
+  "enwiki": "Olympique de Marseille",
+  "qids": [
+   "Q132885"
+  ],
+  "sitelinks": 85,
+  "color": "#B2FFFF"
+ },
+ {
+  "code": "monaco",
+  "league": "FR",
+  "name_tr": "Monaco",
+  "short": "ASM",
+  "enwiki": "AS Monaco FC",
+  "qids": [
+   "Q180305"
+  ],
+  "sitelinks": 84,
+  "color": "#FF0000"
+ },
+ {
+  "code": "lyon",
+  "league": "FR",
+  "name_tr": "Lyon",
+  "short": "OL",
+  "enwiki": "Olympique Lyonnais",
+  "qids": [
+   "Q704"
+  ],
+  "sitelinks": 81,
+  "color": "#0000FF"
+ },
+ {
+  "code": "lille",
+  "league": "FR",
+  "name_tr": "Lille",
+  "short": "LOSC",
+  "enwiki": "Lille OSC",
+  "qids": [
+   "Q19516"
+  ],
+  "sitelinks": 73,
+  "color": null
+ },
+ {
+  "code": "nice",
+  "league": "FR",
+  "name_tr": "Nice",
+  "short": "OGCN",
+  "enwiki": "OGC Nice",
+  "qids": [
+   "Q185163"
+  ],
+  "sitelinks": 67,
+  "color": "#FF0000"
+ },
+ {
+  "code": "rennes",
+  "league": "FR",
+  "name_tr": "Rennes",
+  "short": "SRFC",
+  "enwiki": "Stade Rennais FC",
+  "qids": [
+   "Q19509"
+  ],
+  "sitelinks": 61,
+  "color": null
+ },
+ {
+  "code": "lens",
+  "league": "FR",
+  "name_tr": "Lens",
+  "short": "RCL",
+  "enwiki": "RC Lens",
+  "qids": [
+   "Q191843"
+  ],
+  "sitelinks": 60,
+  "color": null
+ },
+ {
+  "code": "bordeaux",
+  "league": "FR",
+  "name_tr": "Bordeaux",
+  "short": "FCGB",
+  "enwiki": "FC Girondins de Bordeaux",
+  "qids": [
+   "Q172476"
+  ],
+  "sitelinks": 73,
+  "color": "#000080"
+ },
+ {
+  "code": "nantes",
+  "league": "FR",
+  "name_tr": "Nantes",
+  "short": "FCN",
+  "enwiki": "FC Nantes",
+  "qids": [
+   "Q192071"
+  ],
+  "sitelinks": 64,
+  "color": "#FFFF00"
+ },
+ {
+  "code": "saintetienne",
+  "league": "FR",
+  "name_tr": "Saint-Étienne",
+  "short": "ASSE",
+  "enwiki": "AS Saint-Étienne",
+  "qids": [
+   "Q19521"
+  ],
+  "sitelinks": 67,
+  "color": "#00FF00"
+ },
+ {
+  "code": "montpellier",
+  "league": "FR",
+  "name_tr": "Montpellier",
+  "short": "MHSC",
+  "enwiki": "Montpellier HSC",
+  "qids": [
+   "Q19513"
+  ],
+  "sitelinks": 57,
+  "color": "#0000FF"
+ },
+ {
+  "code": "strasbourg",
+  "league": "FR",
+  "name_tr": "Strasbourg",
+  "short": "RCSA",
+  "enwiki": "RC Strasbourg Alsace",
+  "qids": [
+   "Q126334"
+  ],
+  "sitelinks": 59,
+  "color": null
+ },
+ {
+  "code": "toulouse",
+  "league": "FR",
+  "name_tr": "Toulouse",
+  "short": "TFC",
+  "enwiki": "Toulouse FC",
+  "qids": [
+   "Q19518"
+  ],
+  "sitelinks": 56,
+  "color": "#7F00FF"
+ }
+]
