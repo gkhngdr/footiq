@@ -6,6 +6,7 @@ import '../data/questions.dart';
 import '../widgets/common.dart';
 import 'daily_reward_dialog.dart';
 import 'quiz_screen.dart';
+import '../three21/t21_match_screen.dart';
 
 /// Figma: "Pvp Mode Change" (25:12502) — Hızlı açılış için RepaintBoundary ile optimize edildi.
 class PvpModeScreen extends StatelessWidget {
@@ -184,33 +185,39 @@ class PvpModeScreen extends StatelessWidget {
             ),
           ),
         ),
+        // 3-2-1 modu girişi (şimdilik bot rakiple pratik maçı)
         at(
           140,
-          1725,
+          1700,
           800,
-          92,
-          GlassBox(
-            radius: 46,
-            borderWidth: 3,
-            color: const Color(0xBB0D261F),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.bolt_rounded,
-                      color: Color(0xFF63D998),
-                      size: 42,
+          130,
+          Tap(
+            onTap: () => goStage(context, const T21MatchScreen()),
+            child: GlassBox(
+              radius: 65,
+              gradient: const LinearGradient(
+                colors: [Color(0xFF0B1E18), Color(0xFF1E4D2B)],
+              ),
+              borderWidth: 4,
+              borderColor: const Color(0xFFC6F24E),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '3-2-1 ',
+                          style: londrina(52, color: const Color(0xFFC6F24E)),
+                        ),
+                        TextSpan(
+                          text: ' Ortak futbolcuyu söyle!',
+                          style: londrina(38, shadows: kTextShadow),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Canlı Eşzamanlı PVP  •  5 Soru  •  15 sn',
-                      style: exo(30, weight: 700, shadows: kTextShadow),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),

@@ -12,6 +12,7 @@ import 'pvp_mode_screen.dart';
 import 'quiz_screen.dart';
 import 'result_dialog.dart';
 import 'settings_dialog.dart';
+import '../three21/t21_match_screen.dart';
 import 'friend_room_screen.dart';
 import 'invite_dialog.dart';
 import 'leaderboard_dialog.dart';
@@ -60,6 +61,8 @@ bool previewScreen(BuildContext context) {
       go(const QuizScreen.pvp(category: PvpCategory.benKimim));
     case 'settings':
       go(const _Host(dialog: showSettings));
+    case 't21':
+      go(const T21MatchScreen());
     case 'friend':
       go(const FriendRoomScreen());
     case 'leaderboard':
