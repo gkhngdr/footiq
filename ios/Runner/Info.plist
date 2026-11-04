@@ -62,5 +62,9 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>3-2-1 modunda futbolcu adını sesle söyleyebilmen için mikrofon kullanılır.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Söylediğin futbolcu adını yazıya çevirip cevabını kontrol etmek için konuşma tanıma kullanılır.</string>
 </dict>
 </plist>

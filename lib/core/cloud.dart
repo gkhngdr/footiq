@@ -94,6 +94,9 @@ class Cloud {
 
   static bool get signedIn => _db?.auth.currentUser != null;
 
+  /// Diğer modüllerin (ör. 3-2-1) sunucu fonksiyonlarını çağırması için.
+  static SupabaseClient? get client => _db;
+
   /// Oyuncu e-postadaki "şifreyi sıfırla" bağlantısıyla geldiyse true:
   /// oturum açılmıştır, yeni şifre penceresi gösterilmelidir.
   static bool pendingRecovery = false;
