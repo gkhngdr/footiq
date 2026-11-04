@@ -1,0 +1,41 @@
+name: Web (gh-pages)
+
+# main'e her gönderimde web sürümü derlenir ve GitHub Pages'e yayınlanır.
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Arka arkaya gönderimde eski derleme iptal edilir; yalnızca en son sürüm yayınlanır.
+concurrency:
+  group: web-deploy
+  cancel-in-progress: true
+
+jobs:
+  build-web:
+    name: FootIQ Web (gh-pages)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Build Web
+        run: |
+          flutter pub get
+          flutter build web --release --base-href "/footiq/"
+          touch build/web/.nojekyll
+
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web

@@ -91,8 +91,8 @@ Hedef: hataları gidermek, yeni özellikler eklemek ve uygulamayı mağazalarda 
 - MCP: `dart mcp-server` (çalışan uygulamanın hataları, widget ağacı, hot reload).
 
 ## GitHub ve derleme
-- Depo: `gkhngdr/footiq`. `main`'e her push:
-  - `build.yml` → Android APK (Actions artifact)
-  - `ios-ipa.yml` → web sürümü (gh-pages, `/footiq/`) ve imzasız iOS derlemesi
+- Depo: `gkhngdr/footiq`. `main`'e her push yalnızca **web** derler ve yayınlar (`.github/workflows/web.yml` → gh-pages, `/footiq/`,
+  ~5-10 dk; arka arkaya push'ta eskisi iptal). Yayında olduğunu doğrulamadan "web'de hazır" deme.
+- Android APK / imzasız iOS: yalnızca elle (`mobile.yml`, Actions → "Mobil derleme (elle)" → Run workflow). Kullanıcı şimdilik istemiyor.
 - `codemagic.yaml` → Sideloadly/AltStore için imzasız `.ipa` (Codemagic'te elle).
-- Commit/push yalnızca kullanıcı isteyince.
+- Commit/push: kullanıcı kalıcı izin verdi (`.claude/settings.local.json`); önce `flutter analyze` + `flutter test`.
