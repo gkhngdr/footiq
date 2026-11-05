@@ -1,6 +1,9 @@
 package com.footiq.footiq
 
+import android.content.Intent
 import android.media.AudioAttributes
+import android.net.Uri
+import android.provider.Settings
 import android.media.SoundPool
 import io.flutter.FlutterInjector
 import io.flutter.embedding.android.FlutterActivity
@@ -35,6 +38,25 @@ class MainActivity : FlutterActivity() {
                     val name = call.argument<String>("name") ?: "click"
                     playAssetSound(name)
                     result.success(null)
+                } else {
+                    result.notImplemented()
+                }
+            }
+
+        // Mikrofon izni reddedildiyse oyuncuyu uygulamanın Ayarlar sayfasına götürür.
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "footiq/system")
+            .setMethodCallHandler { call, result ->
+                if (call.method == "openAppSettings") {
+                    try {
+                        val intent = Intent(
+                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.fromParts("package", packageName, null),
+                        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(intent)
+                        result.success(true)
+                    } catch (_: Exception) {
+                        result.success(false)
+                    }
                 } else {
                     result.notImplemented()
                 }

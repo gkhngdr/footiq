@@ -75,6 +75,16 @@ class T21Voice {
 
   bool get isListening => !_finished;
 
+  /// İzin verilmiş mi? Soru sormadan bakar (izin penceresi açmaz).
+  Future<bool> get hasPermission async {
+    if (_ready) return true;
+    try {
+      return await _stt.hasPermission;
+    } catch (_) {
+      return false;
+    }
+  }
+
   List<String> _alternatives() {
     final r = _last;
     if (r == null) return const [];

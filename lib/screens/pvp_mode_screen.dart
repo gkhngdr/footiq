@@ -7,6 +7,7 @@ import '../widgets/common.dart';
 import 'daily_reward_dialog.dart';
 import 'quiz_screen.dart';
 import '../three21/t21_match_screen.dart';
+import '../three21/t21_mic_permission.dart';
 
 /// Figma: "Pvp Mode Change" (25:12502) — Hızlı açılış için RepaintBoundary ile optimize edildi.
 class PvpModeScreen extends StatelessWidget {
@@ -192,7 +193,12 @@ class PvpModeScreen extends StatelessWidget {
           800,
           130,
           Tap(
-            onTap: () => goStage(context, const T21MatchScreen()),
+            onTap: () async {
+              final voice = await t21PrepareMic(context);
+              if (context.mounted) {
+                goStage(context, T21MatchScreen(voice: voice));
+              }
+            },
             child: GlassBox(
               radius: 65,
               gradient: const LinearGradient(

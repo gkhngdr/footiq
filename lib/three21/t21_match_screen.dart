@@ -11,6 +11,7 @@ import '../screens/daily_reward_dialog.dart';
 import '../widgets/common.dart';
 import 't21_api.dart';
 import 't21_match.dart';
+import 't21_mic_permission.dart';
 import 't21_voice.dart';
 
 const _botNames = [
@@ -24,7 +25,11 @@ const _botNames = [
 /// 3-2-1 maç ekranı. Şimdilik bot rakiple "pratik maçı"; turnuvada aynı ekran
 /// farklı rakip ve etiketle kullanılır.
 class T21MatchScreen extends StatefulWidget {
-  const T21MatchScreen({super.key, this.match});
+  const T21MatchScreen({super.key, this.match, this.voice = !kIsWeb});
+
+  /// Ses modu ile mi başlasın? Giriş düğmesi izin akışına göre belirler
+  /// (bkz. `t21PrepareMic`); izin yoksa klavye ile başlar.
+  final bool voice;
 
   /// Dışarıdan hazırlanmış maç (turnuva/test). Yoksa bot rakiple pratik maçı kurulur.
   final T21Match? match;
@@ -40,7 +45,7 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
   /// Yazı kutusu maç boyunca aynı kalır: telefonda klavye her soruda kapanıp
   /// açılmasın (her açılış/kapanış tüm ekranı yeniden boyutlandırıp kasıyordu).
   final _focus = FocusNode();
-  bool _keyboard = kIsWeb; // web'de klavye varsayılan
+  late bool _keyboard = !widget.voice;
   bool _listening = false;
   String _heard = '';
   List<String> _heardAlternatives = const [];
@@ -61,9 +66,6 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
         );
     _m.addListener(_onMatch);
     _m.start();
-    // Mikrofon iznini/tanıyıcıyı maç başlarken hazırla; ilk soruda izin
-    // penceresi beklenip konuşmanın başı kaçmasın.
-    T21Voice.instance.ensureReady();
   }
 
   void _onMatch() {
@@ -173,9 +175,11 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
     );
     if (!mounted) return;
     if (!ok) {
-      setState(() => _listening = false);
-      toast(context, 'Mikrofon kullanılamıyor. Klavye ile yazabilirsin.');
-      setState(() => _keyboard = true);
+      setState(() {
+        _listening = false;
+        _keyboard = true;
+      });
+      await t21MicUnavailable(context);
     }
   }
 
@@ -981,7 +985,11 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
               height: 120,
               child: Tap(
                 onTap: () =>
-                    goStage(context, const T21MatchScreen(), replace: true),
+                    goStage(
+                  context,
+                  T21MatchScreen(voice: !_keyboard),
+                  replace: true,
+                ),
                 child: GlassBox(
                   radius: 30,
                   gradient: kOrange,
