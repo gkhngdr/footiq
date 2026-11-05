@@ -60,6 +60,12 @@ Hedef: hataları gidermek, yeni özellikler eklemek ve uygulamayı mağazalarda 
 - **3-2-1 modu (yapım aşamasında):** veri `tool/three21/` (Wikidata → `out/` → Supabase `t21_*`), sunucu fonksiyonları `supabase/three21.sql`.
   Cevap kontrolü sunucuda (`t21_judge`, ses benzerliği ≥0,85); bir maçta kulüp tekrarı yok (`t21_pick_pairs`); doğru cevap listesi istemciye gitmez.
   İsim kuralları `names.py` ile SQL'de birebir aynı olmalı.
+  - Ses (`t21_voice.dart`, `speech_to_text`): konuşma öncesi 4 sn beklenir, ilk kelimeden sonra 1,5 sn sessizlik biter.
+    Web'de dil kodu `tr-TR` (tr_TR tarayıcıda çalışmıyor). Yalnızca `done` durumunda bitir; `notListening` sonuçtan önce gelebilir.
+  - Mikrofon izni (`t21_mic_permission.dart`): açılışta değil, 3-2-1'e ilk girişte önce oyunun penceresi, sonra telefonun izni.
+    Seçim `t21_mic_choice` ile saklanır. Reddedilince Ayarlar'a yönlendirme: `footiq/system` kanalı (`MainActivity.kt`, `AppDelegate.swift`).
+    Web'de bu pencere yok; klavye varsayılan, tarayıcı izni kendisi sorar.
+  - Testte platform kanalları cevapsız kalır (beklenen Future hiç bitmez): eklenti çağrılarına zaman aşımı koy, testte kanalı taklit et.
 - `lib/screens/`: Ekranlar. `preview.dart` yalnızca `--dart-define=PREVIEW=true` ile derlenince `?screen=main` gibi parametrelerle ekran açar.
 - `lib/widgets/common.dart`: `TopHud` (enerji çubuğu genişliği enerjiye göre değişir), `Tap`, `CloseBtn` vb.
 
