@@ -612,6 +612,11 @@ void main() {
       await tester.tap(find.textContaining('Ortak futbolcuyu söyle'));
       await wait(800);
       await wait(800);
+      // Önce oyunun kendi mikrofon penceresi çıkar (telefonun izin penceresi değil).
+      expect(find.text('Mikrofonu Aç'), findsOneWidget);
+      await tester.tap(find.text('Klavyeyle'));
+      await wait(800);
+      await wait(800);
       expect(find.textContaining('Sorular yüklenemedi'), findsOneWidget);
       await tester.tap(find.byType(CloseBtn));
       await wait(800);
