@@ -61,6 +61,9 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
         );
     _m.addListener(_onMatch);
     _m.start();
+    // Mikrofon iznini/tanıyıcıyı maç başlarken hazırla; ilk soruda izin
+    // penceresi beklenip konuşmanın başı kaçmasın.
+    T21Voice.instance.ensureReady();
   }
 
   void _onMatch() {
