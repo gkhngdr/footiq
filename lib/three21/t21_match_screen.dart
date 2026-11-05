@@ -82,7 +82,9 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
           Sound.tick();
         case T21Phase.answering:
           Sound.click();
-          if (_keyboard && !_focus.hasFocus) _focus.requestFocus();
+          // Telefon tarayıcısı dokunuş olmadan klavye açmaz; kodla odak vermek
+          // ise sonraki dokunuşta da klavyenin açılmasını engelliyordu.
+          if (!kIsWeb && _keyboard && !_focus.hasFocus) _focus.requestFocus();
         case T21Phase.questionResult:
           if (_m.questionWinner == T21Side.me) {
             Sound.correct();
@@ -694,7 +696,9 @@ class _T21MatchScreenState extends State<T21MatchScreen> {
                 child: TextField(
                   controller: _input,
                   focusNode: _focus,
-                  readOnly: !active,
+                  // Web'de salt okunur/yazılabilir geçişi klavyeyi kapatıp bir
+                  // daha açtırmıyordu; orada gönderim zaten maç durumuna bakar.
+                  readOnly: !kIsWeb && !active,
                   onTapOutside: kIsWeb
                       ? null
                       : (_) => FocusManager.instance.primaryFocus?.unfocus(),
