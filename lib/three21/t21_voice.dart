@@ -79,7 +79,11 @@ class T21Voice {
   Future<bool> get hasPermission async {
     if (_ready) return true;
     try {
-      return await _stt.hasPermission;
+      // Cevap gelmezse (bozuk eklenti, test ortamı) giriş düğmesi takılmasın.
+      return await _stt.hasPermission.timeout(
+        const Duration(milliseconds: 700),
+        onTimeout: () => false,
+      );
     } catch (_) {
       return false;
     }

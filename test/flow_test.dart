@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:footiq/core/cloud.dart';
 import 'package:footiq/core/game_state.dart';
@@ -587,6 +588,18 @@ void main() {
     'PVP ekranındaki 3-2-1 düğmesi maç ekranını açar; sunucu yoksa düzgün hata gösterir',
     (tester) async {
       SharedPreferences.setMockInitialValues({});
+      // Ses tanıma eklentisi: izin yok (telefonun izin penceresi açılmaz).
+      const stt = MethodChannel('plugin.csdcorp.com/speech_to_text');
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        stt,
+        (call) async => false,
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          stt,
+          null,
+        ),
+      );
       GameState.instance
         ..resetProgress()
         ..logout();
